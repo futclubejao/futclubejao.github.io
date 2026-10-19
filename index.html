@@ -137,6 +137,21 @@ section{margin-top:32px}
 .foto img{width:100%;height:100%;object-fit:cover;display:block}
 .foto:hover{border-color:var(--sun)}
 
+/* Menu de seções fixo + voltar ao topo */
+.secnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);box-shadow:0 2px 0 var(--sun)}
+.secnav .in{max-width:1080px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.secnav .in::-webkit-scrollbar{display:none}
+.secnav a{flex:none;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.12)}
+.secnav a:hover,.secnav a.on{background:var(--sun)}
+.secnav a:focus-visible{outline:2px solid #ffffff;outline-offset:2px}
+.sec-head h2,#sec-fotos{scroll-margin-top:72px}
+.totop{position:fixed;z-index:20;right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:max(16px,calc(env(safe-area-inset-bottom,0px) + 12px));
+  font:inherit;font-weight:600;font-size:15px;padding:10px 16px;border-radius:999px;border:0;background:var(--navy);color:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+.totop:hover{background:var(--sun)}
+.mais{display:block;margin:16px auto 0;font:inherit;font-weight:600;font-size:15px;padding:12px 24px;border-radius:999px;border:2px solid var(--navy);background:transparent;color:var(--link);cursor:pointer}
+.mais:hover{background:var(--navy);color:#ffffff}
+
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -224,6 +239,18 @@ section{margin-top:32px}
   </div>
 </header>
 
+<nav class="secnav" aria-label="Seções">
+  <div class="in" id="secnav">
+    <a href="#h-polls" data-alvo="h-polls">Enquetes</a>
+    <a href="#h-lances" data-alvo="h-lances">Lances</a>
+    <a href="#sec-fotos" data-alvo="sec-fotos" id="nav-fotos">Fotos</a>
+    <a href="#h-stats" data-alvo="h-stats">Estatísticas</a>
+    <a href="#h-squad" data-alvo="h-squad">Elenco</a>
+    <a href="#h-hall" data-alvo="h-hall">Campeões</a>
+  </div>
+</nav>
+<button class="totop" id="totop" type="button" hidden>↑ Topo</button>
+
 <main class="wrap">
   <section aria-labelledby="h-polls">
     <div class="sec-head"><h2 id="h-polls">Enquetes da semana</h2><span id="poll-date"></span></div>
@@ -242,6 +269,7 @@ section{margin-top:32px}
     </div>
     <p class="count" id="count"></p>
     <div class="grid" id="grid"></div>
+    <button class="mais" id="mais" type="button" hidden></button>
   </section>
 
   <section aria-labelledby="h-fotos" id="sec-fotos">
@@ -282,7 +310,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792437042"></script>
+<script src="lances.js?v=1792437323"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -354,7 +382,9 @@ function card(l){
       <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}<button class="cp" type="button" data-id="${l.id}">🔗 Copiar link</button></div>
     </div></article>`;
 }
-function render(){
+const PAG=12;let mostrar=PAG;
+function render(manter){
+  if(!manter)mostrar=PAG;
   syncFiltros();
   const list=LANCES.filter(l=>(!state.atleta||l.atletas.includes(state.atleta))&&(!state.tipo||tiposDe(l).includes(state.tipo))&&(state.dia===TODOS||l.data===state.dia))
     .sort((a,b)=>b.data.localeCompare(a.data)||a.id.localeCompare(b.id));
@@ -362,7 +392,10 @@ function render(){
   document.getElementById("count").textContent=`${list.length} ${list.length===1?"lance":"lances"} · ${parts.join(" · ")}`;
   const g=document.getElementById("grid");
   listaAtual=list;
-  g.innerHTML=list.map(card).join("");
+  g.innerHTML=list.slice(0,mostrar).map(card).join("");
+  const mais=document.getElementById("mais"),resta=list.length-mostrar;
+  mais.hidden=resta<=0;
+  mais.textContent=`Mostrar mais ${Math.min(PAG,resta)} lances (faltam ${resta})`;
   g.nextElementSibling?.classList.contains("empty")&&g.nextElementSibling.remove();
   if(!list.length)g.insertAdjacentHTML("afterend",`<div class="empty">Nenhum lance com esse filtro. Toque em "Limpar filtros".</div>`);
   renderFotos();
@@ -417,10 +450,29 @@ document.getElementById("grid").addEventListener("click",e=>{
 function filtrarAtleta(a){state.atleta=a;state.tipo=null;state.dia=TODOS;render();document.getElementById("h-lances").scrollIntoView({behavior:"smooth"})}
 document.getElementById("grid").addEventListener("click",e=>{const b=e.target.closest(".name");if(b)filtrarAtleta(b.dataset.a)});
 
+document.getElementById("mais").onclick=()=>{mostrar+=PAG;render(true)};
+
+// Menu de seções: rola até a seção sem mexer no endereço; botão Topo aparece ao descer
+document.getElementById("secnav").addEventListener("click",e=>{
+  const a=e.target.closest("a");if(!a)return;e.preventDefault();
+  document.getElementById(a.dataset.alvo)?.scrollIntoView({behavior:"smooth",block:"start"})});
+const totop=document.getElementById("totop");
+totop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+const navLinks=[...document.querySelectorAll("#secnav a")];
+function marcarSecao(){
+  totop.hidden=window.scrollY<500;
+  let atual=null;
+  for(const a of navLinks){const el=document.getElementById(a.dataset.alvo);if(!el||el.closest("[hidden]"))continue;
+    if(el.getBoundingClientRect().top<140)atual=a}
+  navLinks.forEach(a=>a.classList.toggle("on",a===atual));
+}
+window.addEventListener("scroll",marcarSecao,{passive:true});
+
 function renderFotos(){
   const dia=state.dia===TODOS?ultima:state.dia;
   const fs=FOTOS.filter(f=>f.data===dia);
   document.getElementById("sec-fotos").hidden=!fs.length;
+  document.getElementById("nav-fotos").hidden=!fs.length;
   document.getElementById("fotos-dia").textContent=fmtAno(dia);
   document.getElementById("fotos").innerHTML=fs.map(f=>`<a class="foto" href="${driveUrl(f.drive)}" target="_blank" rel="noopener"><img src="fotos/${esc(f.arquivo)}" alt="Foto do jogo de ${fmtAno(dia)}" loading="lazy"></a>`).join("");
 }
