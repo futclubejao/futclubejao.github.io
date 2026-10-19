@@ -299,6 +299,18 @@ section{margin-top:32px}
 
 .fig-dm{position:absolute;right:7cqw;top:72cqw;z-index:3;flex-direction:row!important;gap:.8cqw;font-size:6cqw!important;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.3)}
 .fig-tag{font-weight:800!important;letter-spacing:.28em!important;color:var(--t1)!important;font-size:6.6cqw!important;top:129cqw!important}
+/* Atleta com 2 cards */
+.fig-stack{position:relative;width:100%}
+.fig-stack .fig-front{position:relative;z-index:2}
+.fig-stack .fig-back{position:absolute;inset:0;z-index:1;transform:translate(9%,-5%) rotate(5deg);pointer-events:none}
+.fig-x2{position:absolute;z-index:3;top:-8px;left:-6px;background:var(--sun);color:#ffffff;font-family:var(--display);font-weight:800;font-size:15px;line-height:1;padding:5px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.fig-leque{position:relative;width:78%;cursor:pointer}
+.fig-leque .fl-0{position:relative;z-index:2;transform:rotate(-3deg);transition:transform .2s}
+.fig-leque .fl-1{position:absolute;z-index:1;top:0;left:28%;width:100%;transform:rotate(6deg);transition:transform .2s}
+.fig-leque.troca .fl-0{z-index:1}.fig-leque.troca .fl-1{z-index:2}
+.pf-card .fig-leque .fig{cursor:pointer}
+.pf-2cards{font-size:13px;color:var(--muted);margin:14px 0 0;text-align:center}
+.squad{padding-top:10px}
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -502,7 +514,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792445107"></script>
+<script src="lances.js?v=1792445816"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -858,7 +870,7 @@ function abrirPerfil(a){
   const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
   const ds=dias.filter(d=>d.startsWith(ano)).sort();
   const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
-  document.getElementById("pf-card").innerHTML=cardDoAtleta(a);
+  document.getElementById("pf-card").innerHTML=cardsDoPerfil(a);
   document.getElementById("pf-nome").textContent=a;
   document.getElementById("pf-ap").textContent=[apelido(a)&&`"${apelido(a)}"`,`Temporada ${ano}`].filter(Boolean).join(" · ");
   const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
@@ -885,6 +897,7 @@ function abrirPerfil(a){
 }
 function fecharPerfil(){document.getElementById("perfil").hidden=true;document.body.style.overflow=""}
 document.getElementById("pf-x").onclick=fecharPerfil;
+document.getElementById("pf-card").addEventListener("click",e=>{const lq=e.target.closest(".fig-leque");if(lq)lq.classList.toggle("troca")});
 document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id==="perfil")fecharPerfil()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
 document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
@@ -983,7 +996,36 @@ function statusCard(a){
   if(ib>=0)return {tier:T[ib],selos:[sa]};
   return {};
 }
-function cardDoAtleta(a,extra){return figurinha(a,{...statusCard(a),...(extra||{})})}
+// Todos os cards que o atleta tem hoje: antes do 5º domingo, quem está no pódio de gols E de assistências tem 2 cards
+function cardsDoAtleta(a){
+  const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
+  const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
+  const ia=top3(S,"gols","golacos").findIndex(s=>s.a===a),ib=top3(S,"assist","gols").findIndex(s=>s.a===a);
+  if(especiais&&ia>=0&&ib>=0)return [statusCard(a)];
+  const L=[];
+  if(ia>=0)L.push({tier:T[ia],selos:[{ico:"bola",rank:(ia+1)+"º",txt:"ARTIL."}],_r:ia});
+  if(ib>=0)L.push({tier:T[ib],selos:[{ico:"chuteira",rank:(ib+1)+"º",txt:"ASSIST."}],_r:ib});
+  return L.length?L.sort((x,y)=>x._r-y._r):[{}];
+}
+// Card do ranking de uma categoria (o card daquela posição; BLACK/DIAMOND quando liberados)
+function cardDaCategoria(a,cat){
+  const cs=cardsDoAtleta(a);
+  if(cs.length===1&&(cs[0].tier==="black"||cs[0].tier==="diamante"))return figurinha(a,cs[0]);
+  return figurinha(a,cs.find(c=>c.selos&&c.selos[0].ico===(cat==="gols"?"bola":"chuteira"))||{});
+}
+// No Elenco: se tiver 2 cards, mostra empilhados (o melhor na frente, o outro aparecendo atrás) + marcador ×2
+function cardDoAtleta(a){
+  const cs=cardsDoAtleta(a);
+  if(cs.length<2)return figurinha(a,cs[0]);
+  return '<div class="fig-stack"><div class="fig-back">'+figurinha(a,cs[1])+'</div><div class="fig-front">'+figurinha(a,cs[0])+'</div><span class="fig-x2" title="Tem 2 cards">×2</span></div>';
+}
+// No perfil: os cards em leque; tocar troca qual fica na frente
+function cardsDoPerfil(a){
+  const cs=cardsDoAtleta(a);
+  if(cs.length<2)return figurinha(a,cs[0]);
+  return '<div class="fig-leque">'+cs.map((c,i)=>'<div class="fl-'+i+'">'+figurinha(a,c)+'</div>').join("")+'</div>'
+    +'<p class="pf-2cards">'+esc(a)+' tem <b>2 cards</b> nesta rodada. Toque nos cards para trocar o da frente.</p>';
+}
 function renderCards(){
   const ano=anos[0],S=calcStats(ano);
   document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
@@ -994,8 +1036,8 @@ function renderCards(){
   if(mR){const l=byId[mR.id];rod.push(figurinha(l.atletas.find(real)||l.atletas[0],{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha da rodada"}))}
   else rod.push(figVazio("Bola murcha","murcha","em votação · vote acima","murcha"));
   document.getElementById("cards-rodada").innerHTML=rod.join("");
-  document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDoAtleta(s.a)).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
-  document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDoAtleta(s.a)).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
+  document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
+  document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
   document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
 }
