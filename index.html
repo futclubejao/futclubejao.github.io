@@ -311,6 +311,24 @@ section{margin-top:32px}
 .pf-card .fig-leque .fig{cursor:pointer}
 .pf-2cards{font-size:13px;color:var(--muted);margin:14px 0 0;text-align:center}
 .squad{padding-top:10px}
+/* Patrocinador */
+.patro-faixa{display:flex;align-items:center;justify-content:center;gap:14px;background:#ffffff;color:#24307a;text-decoration:none;
+  padding-block:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+.patro-faixa img{height:58px;width:auto;display:block}
+.patro-faixa .pf-lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#5a6185}
+.patro-faixa .pf-cta{font-size:13px;font-weight:700}
+.patro-faixa:hover .pf-cta{text-decoration:underline}
+@media (max-width:480px){.patro-faixa .pf-cta{display:none}}
+.patro-mini{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:12px;margin:-4px 0 6px;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 12px}
+.patro-mini img{height:34px;width:auto}
+.patro-player{display:inline-flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px;text-decoration:none;color:#ffffff;font-size:11px;opacity:.9}
+.patro-player img{height:32px;width:auto;background:#ffffff;border-radius:6px;padding:1px 4px}
+.patro-rodape{background:#ffffff;border-top:4px solid var(--sun);margin-top:40px}
+.patro-rodape .pr-in{display:flex;flex-direction:column;align-items:center;gap:10px;padding-block:24px 30px;text-align:center}
+.patro-rodape .pr-lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#5a6185}
+.patro-rodape img{height:120px;width:auto;display:block}
+.patro-rodape .pr-btn{background:#24307a;color:#ffffff;text-decoration:none;font-weight:700;padding:10px 22px;border-radius:999px}
+.patro-rodape .pr-btn:hover{background:var(--sun)}
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -409,6 +427,9 @@ section{margin-top:32px}
     <a href="#h-hall" data-alvo="h-hall">Campeões</a>
   </div>
 </nav>
+<a class="patro-faixa" id="patro-faixa" hidden target="_blank" rel="noopener sponsored">
+  <span class="pf-lbl">Oferecimento</span><img id="patro-faixa-img" alt=""><span class="pf-cta">Conheça a loja →</span>
+</a>
 <button class="totop" id="totop" type="button" hidden>↑ Topo</button>
 
 <div class="pf-wrap" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="pf-nome">
@@ -436,6 +457,7 @@ section{margin-top:32px}
 
   <section aria-labelledby="h-cards">
     <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
+    <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
     <h3 class="fig-tit">Destaques da rodada</h3>
     <div class="fig-row" id="cards-rodada"></div>
     <h3 class="fig-tit">Artilharia da temporada</h3>
@@ -499,10 +521,17 @@ section{margin-top:32px}
     <div class="hall" id="hall"></div>
   </section>
 </main>
+<footer class="patro-rodape" id="patro-rodape" hidden>
+  <div class="wrap pr-in">
+    <span class="pr-lbl">Patrocinador oficial da Central da Pelada</span>
+    <a id="patro-rodape-link" target="_blank" rel="noopener sponsored"><img id="patro-rodape-img" alt=""></a>
+    <a class="pr-btn" id="patro-rodape-btn" target="_blank" rel="noopener sponsored">Visitar a loja virtual</a>
+  </div>
+</footer>
 
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-desc">
   <div class="m-box">
-    <div class="m-top"><span id="m-pos"></span><button class="m-btn" id="m-close" type="button" aria-label="Fechar">✕</button></div>
+    <div class="m-top"><span id="m-pos"></span><a class="patro-player" id="patro-player" hidden target="_blank" rel="noopener sponsored"><span>oferecimento</span><img alt=""></a><button class="m-btn" id="m-close" type="button" aria-label="Fechar">✕</button></div>
     <div class="m-frame">
       <video id="m-video" controls playsinline preload="metadata"></video>
       <iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen hidden></iframe>
@@ -514,7 +543,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792445816"></script>
+<script src="lances.js?v=1792446553"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -901,6 +930,19 @@ document.getElementById("pf-card").addEventListener("click",e=>{const lq=e.targe
 document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id==="perfil")fecharPerfil()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
 document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
+
+// ===== Patrocinador =====
+// Para ligar: preencher {nome, logo, url}. null = site sem patrocinador.
+const PATROCINIO=null;
+function aplicarPatrocinio(){
+  const p=PATROCINIO;if(!p)return;
+  const liga=(id,comImg)=>{const el=document.getElementById(id);if(!el)return;el.hidden=false;el.href=p.url;el.title=p.nome;
+    const im=comImg?document.getElementById(comImg):el.querySelector("img");if(im){im.src=p.logo;im.alt=p.nome}};
+  liga("patro-faixa","patro-faixa-img");liga("patro-cards");liga("patro-player");
+  document.getElementById("patro-rodape").hidden=false;
+  liga("patro-rodape-link","patro-rodape-img");liga("patro-rodape-btn");
+}
+aplicarPatrocinio();
 
 // ===== Figurinhas =====
 // Times do coração: cores + sigla (escudo estilizado, não o oficial). Campo "times" no atletas.json, máx. 2.
