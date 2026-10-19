@@ -285,11 +285,21 @@ section{margin-top:32px}
 .fig.black .fig-card{background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 1cqw,transparent 1cqw 2cqw),linear-gradient(125deg,transparent 40%,rgba(243,210,122,.28) 47%,transparent 53%),repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0 1cqw,transparent 1cqw 2cqw),var(--fundo)}
 .fig.black .fig-card::after{box-shadow:inset 0 0 0 .9cqw #d4af37}
 .fig.black .fig-ap{border-bottom-color:rgba(243,210,122,.45)}
-/* DIAMANTE: cristal azulado com reflexo e coroa */
+/* DIAMANTE: cristal azulado com reflexo (formato de pedra: ver abaixo) */
 .fig.diamante{--fundo:linear-gradient(160deg,#f4fdff,#a8e0f7 22%,#ffffff 38%,#7fc6ea 58%,#e3f7ff 76%,#9fc4ff);--t1:#06264a;--t2:#245a86;filter:drop-shadow(0 0 7px rgba(120,200,255,.8)) drop-shadow(0 3px 6px rgba(0,0,0,.3))}
 .fig.diamante .fig-card{background:conic-gradient(from 210deg at 70% 30%,rgba(255,255,255,.0),rgba(255,182,255,.25),rgba(160,255,240,.25),rgba(255,255,180,.25),rgba(255,255,255,0)),linear-gradient(125deg,transparent 38%,rgba(255,255,255,.8) 46%,transparent 53%),repeating-linear-gradient(118deg,rgba(255,255,255,.3) 0 1.5cqw,transparent 1.5cqw 9cqw),var(--fundo)}
 .fig.diamante .fig-card::after{box-shadow:inset 0 0 0 .9cqw rgba(255,255,255,.9)}
 .fig-coroa{position:absolute;top:1.5cqw;left:50%;transform:translateX(-30%);width:24cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+/* DIAMANTE em formato de cristal lapidado (19/10): contorno de pedra, facetas e diamante no topo */
+.fig.diamante .fig-card,.fig.diamante .fig-card::after{clip-path:url(#gemshape)}
+.fig.diamante .fig-card::after{inset:2.6cqw}
+.fig.diamante .fig-left{top:19cqw;left:7cqw}
+.fig.diamante .fig-foto{top:3cqw;-webkit-mask-image:linear-gradient(to bottom,#000 66%,transparent);mask-image:linear-gradient(to bottom,#000 66%,transparent)}
+.fig.diamante .fig-nums{left:15cqw;right:15cqw}
+.fig.diamante .fig-tag{top:129cqw}
+.fig-gema{position:absolute;top:.8cqw;left:50%;transform:translateX(-50%);width:20cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+.fig-facetas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;fill:none;stroke:rgba(255,255,255,.75);mix-blend-mode:screen;opacity:.8}
+.fig-facetas *{vector-effect:non-scaling-stroke;stroke-width:1.2px}
 @keyframes brilho{0%,100%{background-position:0 0,-60cqw 0,0 0,0 0}50%{background-position:0 0,60cqw 0,0 0,0 0}}
 @media (prefers-reduced-motion:no-preference){.fig.diamante .fig-card,.fig.black .fig-card{background-size:auto,220% 100%,auto,auto;animation:brilho 5s ease-in-out infinite}}
 
@@ -967,7 +977,7 @@ function escudo(sig){const t=TIMES[sig];if(!t)return"";const[nome,c1,c2,c3]=t,id
   <text x="14" y="17.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#ffffff" stroke="#000000" stroke-width="1.6" paint-order="stroke" font-family="Arial,sans-serif">${sig}</text></svg>`}
 // Formato do card (escudo com cantos recortados e ponta embaixo), uma vez na página
 document.body.insertAdjacentHTML("afterbegin",`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><clipPath id="figshape" clipPathUnits="objectBoundingBox">
-  <path d="M0.03,0.085 Q0.11,0.085 0.13,0.025 L0.33,0.025 Q0.42,0 0.5,0 Q0.58,0 0.67,0.025 L0.87,0.025 Q0.89,0.085 0.97,0.085 L0.97,0.85 Q0.97,0.905 0.78,0.925 Q0.58,0.945 0.5,1 Q0.42,0.945 0.22,0.925 Q0.03,0.905 0.03,0.85 Z"/></clipPath></svg>`);
+  <path d="M0.03,0.085 Q0.11,0.085 0.13,0.025 L0.33,0.025 Q0.42,0 0.5,0 Q0.58,0 0.67,0.025 L0.87,0.025 Q0.89,0.085 0.97,0.085 L0.97,0.85 Q0.97,0.905 0.78,0.925 Q0.58,0.945 0.5,1 Q0.42,0.945 0.22,0.925 Q0.03,0.905 0.03,0.85 Z"/></clipPath><clipPath id="gemshape" clipPathUnits="objectBoundingBox"><path d="M0.25,0 L0.75,0 L1,0.16 L1,0.80 L0.5,1 L0,0.80 L0,0.16 Z"/></clipPath></svg>`);
 // Selos coloridos dentro de um círculo branco
 const ICO={
   // bola de futebol clássica: pentágono central + gomos pretos na borda
@@ -988,6 +998,8 @@ const ICO={
   estrela:`<svg viewBox="0 0 64 64"><path d="M32 6l7.6 16.2 17.6 2.1-13 12.1 3.5 17.5L32 45.2l-15.7 8.7 3.5-17.5-13-12.1 17.6-2.1z" fill="#f2b705" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
   murcha:`<svg viewBox="0 0 64 64"><path d="M6 46c1.6-10 9.2-15.6 26-16.4 16.8.8 24.4 6.4 26 16.4-7.6 4.8-44.4 4.8-52 0z" fill="#fff" stroke="#111" stroke-width="2.4"/><path d="M24 32l6 6.5 8-5.6M15 44l6-5M49 44l-6-5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 20c3-3 5 .5 8-2.5M44 18c3-3 5 .5 8-2.5" stroke="#898781" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`};
 const COROA=`<svg class="fig-coroa" viewBox="0 0 64 40" aria-hidden="true"><path d="M6 34L3 10l15 11L32 4l14 17 15-11-3 24z" fill="#f2c94c" stroke="#7a5600" stroke-width="2" stroke-linejoin="round"/><rect x="6" y="33" width="52" height="6" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><circle cx="32" cy="22" r="3.5" fill="#4fc3f7"/><circle cx="18" cy="26" r="2.6" fill="#e53935"/><circle cx="46" cy="26" r="2.6" fill="#e53935"/></svg>`;
+const GEMA=`<svg class="fig-gema" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="ggema" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"/><stop offset=".5" stop-color="#7fd3f5"/><stop offset="1" stop-color="#3a8fd8"/></linearGradient></defs><path d="M14 3h36l12 15L32 50 2 18z" fill="url(#ggema)" stroke="#0b3a66" stroke-width="2" stroke-linejoin="round"/><path d="M2 18h60M14 3l8 15 10-15 10 15 8-15M22 18l10 32 10-32" fill="none" stroke="#0b3a66" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 7l3 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
+const FACETAS=`<svg class="fig-facetas" viewBox="0 0 100 144" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,23 25,0 37.5,23 50,0 62.5,23 75,0 100,23"/><line x1="0" y1="23" x2="100" y2="23"/><line x1="0" y1="115" x2="100" y2="115"/><polyline points="0,115 25,23 50,115 75,23 100,115"/><polyline points="0,115 25,130 50,115 75,130 100,115"/><line x1="25" y1="130" x2="50" y2="144"/><line x1="75" y1="130" x2="50" y2="144"/><line x1="50" y1="115" x2="50" y2="144"/></svg>`;
 const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="34" r="20" fill="#111"/><path d="M6 110c2-31 19-46 44-46s42 15 44 46z" fill="#111"/></svg>`;
 const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
 // Números do atleta na temporada: gols, assistências, jogos (domingos com lance / domingos da temporada)
@@ -1006,7 +1018,7 @@ function figurinha(a,o={}){
   return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${nivel?`, card ${nivel}`:""}: ${n.g} gols, ${n.as} assistências, ${n.jog} de ${n.tot} domingos${o.tag?` – ${esc(o.tag)}`:""}">
     <span class="fig-card">
       <span class="fig-foto">${foto}</span>
-      ${o.coroa?COROA:""}
+      ${o.coroa?COROA:""}${o.tier==="diamante"?GEMA+FACETAS:""}
       <span class="fig-left${selos.length>1?" duo":""}">
         ${selos.map(s=>`<span class="fig-rk">${s.rank}<small>${esc(s.txt)}</small></span><span class="fig-dia">${ICO[s.ico]}</span>`).join("")}
         <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
@@ -1028,7 +1040,7 @@ function top3(S,k,desempate){
   return S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||y[desempate]-x[desempate]||y.lances-x.lances||x.a.localeCompare(y.a,"pt")).slice(0,3);
 }
 // Status atual do atleta: o mesmo card em todo o site (Elenco, rankings e perfil)
-// top 3 em gols OU assist. = ouro/prata/bronze · top 3 nos DOIS = BLACK · 1º nos DOIS = DIAMANTE com coroa
+// top 3 em gols OU assist. = ouro/prata/bronze · top 3 nos DOIS = BLACK · 1º nos DOIS = DIAMANTE (cristal lapidado; coroa fica p/ Craque da Rodada)
 const DOMINGOS_P_ESPECIAIS=5;
 function statusCard(a){
   const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
@@ -1036,7 +1048,7 @@ function statusCard(a){
   const sg={ico:"bola",rank:`${ia+1}º`,txt:"ARTIL."},sa={ico:"chuteira",rank:`${ib+1}º`,txt:"ASSIST."};
   // BLACK e DIAMOND só valem a partir do 5º domingo da temporada (decisão do Gustavo, 19/10/2026)
   const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
-  if(especiais&&ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa],coroa:true};
+  if(especiais&&ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa]};
   if(especiais&&ia>=0&&ib>=0)return {tier:"black",selos:[sg,sa]};
   if(ia>=0&&(ib<0||ia<=ib))return {tier:T[ia],selos:[sg]};
   if(ib>=0)return {tier:T[ib],selos:[sa]};
