@@ -282,7 +282,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792436644"></script>
+<script src="lances.js?v=1792437042"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -386,7 +386,8 @@ function abrir(i){
   idx=i;const l=mLista[i];mAtual=l;
   mFrame.hidden=true;mFrame.src="about:blank";mVideo.hidden=false;document.getElementById("m-full").hidden=false;
   mVideo.poster=`thumbs/${l.id}.jpg`;
-  mVideo.src=`https://drive.usercontent.google.com/download?id=${l.drive}&export=download`;
+  // Vídeos servidos pelo repositório futclubejao/lances-videos (o Drive bloqueia tocar fora do player dele)
+  mVideo.src=`${SITE}lances-videos/v/${l.id}.mp4`;
   mVideo.play().catch(()=>{});
   document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${mLista.length}`;
   document.getElementById("m-tags").innerHTML=tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("");
