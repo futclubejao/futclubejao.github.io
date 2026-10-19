@@ -152,6 +152,57 @@ section{margin-top:32px}
 .mais{display:block;margin:16px auto 0;font:inherit;font-weight:600;font-size:15px;padding:12px 24px;border-radius:999px;border:2px solid var(--navy);background:transparent;color:var(--link);cursor:pointer}
 .mais:hover{background:var(--navy);color:#ffffff}
 
+/* Gráficos: paleta categórica validada (skill dataviz, 8 slots em ordem fixa) */
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--s-out:#898781;--axis:#c3c2b7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--axis:#383835}}
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--axis:#383835}
+.charts{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px}
+.ctl .field{flex:0 1 230px}
+.chart{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;min-width:0}
+.chart figcaption{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.chart figcaption b{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase}
+.chart figcaption span{color:var(--muted);font-size:13px}
+.plot{position:relative;width:100%}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.plot text{font-family:var(--body);font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .base{stroke:var(--axis);stroke-width:1}
+.plot .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.plot .hit{fill:transparent;cursor:crosshair}
+.plot .lbl{font-size:12px;font-weight:600;fill:var(--fg)}
+.tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.4;min-width:130px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.tip b{display:block;margin-bottom:2px}
+.tip .r{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.tip .r span:first-child{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.legend button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;color:var(--fg);background:none;border:0;padding:4px 2px;cursor:pointer}
+.legend button.off{opacity:.35}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.legend button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.empty-chart{color:var(--muted);font-size:14px;padding:24px 0;text-align:center}
+
+/* Card do atleta (perfil) */
+.pf-wrap{position:fixed;inset:0;z-index:40;background:rgba(5,6,13,.6);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.pf{background:var(--bg);color:var(--fg);width:min(560px,100%);max-height:100%;overflow-y:auto;border-radius:14px;padding:20px 18px 22px;position:relative;border-top:6px solid var(--sun)}
+.pf-x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:18px;cursor:pointer}
+.pf-head{display:flex;align-items:center;gap:14px;padding-right:44px}
+.pf-head h3{font-size:32px;font-weight:800;text-transform:uppercase}
+.pf-ap{color:var(--muted);font-size:14px}
+.pf-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.pf-tile{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}
+.pf-tile .v{font-family:var(--display);font-size:30px;font-weight:800;line-height:1}
+.pf-tile .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pf h4{font-family:var(--display);font-size:18px;text-transform:uppercase;margin:18px 0 8px}
+.pf-badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;background:var(--surface);font-size:13px}
+.badge .ic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--navy);font-size:14px}
+.badge.lock{opacity:.4;filter:grayscale(1)}
+.badge small{color:var(--muted)}
+.pf-best{color:var(--muted);font-size:14px;margin:8px 0 0}
+
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -251,6 +302,18 @@ section{margin-top:32px}
 </nav>
 <button class="totop" id="totop" type="button" hidden>↑ Topo</button>
 
+<div class="pf-wrap" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="pf-nome">
+  <div class="pf">
+    <button class="pf-x" id="pf-x" type="button" aria-label="Fechar">✕</button>
+    <div class="pf-head"><span id="pf-av"></span><div><h3 id="pf-nome"></h3><div class="pf-ap" id="pf-ap"></div></div></div>
+    <div class="pf-tiles" id="pf-tiles"></div>
+    <h4>Conquistas</h4><div class="pf-badges" id="pf-badges"></div>
+    <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
+    <p class="pf-best" id="pf-best"></p>
+    <button class="mais" id="pf-lances" type="button"></button>
+  </div>
+</div>
+
 <main class="wrap">
   <section aria-labelledby="h-polls">
     <div class="sec-head"><h2 id="h-polls">Enquetes da semana</h2><span id="poll-date"></span></div>
@@ -282,11 +345,28 @@ section{margin-top:32px}
       <div class="field year"><label for="f-ano">Temporada</label><select id="f-ano"></select></div></div>
     <div class="podium" id="podium"></div>
     <div class="tbl-wrap"><table class="stats-tbl" id="stats-tbl"></table></div>
+    <div class="charts">
+      <div class="ctl">
+        <div class="field"><label for="f-met">Números de</label>
+          <select id="f-met"><option value="gols">Gols</option><option value="assist">Assistências</option><option value="ga">Gols + assistências</option></select></div>
+        <div class="field"><label for="f-top">Atletas no gráfico</label>
+          <select id="f-top"><option value="5">Top 5</option><option value="8">Top 8</option><option value="0">Só o total da turma</option></select></div>
+      </div>
+      <figure class="chart">
+        <figcaption><b id="ch1-t">Gols por domingo</b><span>cada barra é um domingo; passe o dedo para ver os números</span></figcaption>
+        <div class="plot" id="ch-dom"></div>
+      </figure>
+      <figure class="chart">
+        <figcaption><b id="ch2-t">Gols acumulados no ano</b><span>a corrida da temporada; toque num nome da legenda para destacar</span></figcaption>
+        <div class="plot" id="ch-acc"></div>
+        <div class="legend" id="ch-leg"></div>
+      </figure>
+    </div>
     <p class="note">Conta só os lances filmados e postados, não todos os gols do jogo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
   </section>
 
   <section aria-labelledby="h-squad">
-    <div class="sec-head"><h2 id="h-squad">Elenco</h2><span>toque no atleta para ver os lances dele</span></div>
+    <div class="sec-head"><h2 id="h-squad">Elenco</h2><span>toque no atleta para ver o card com números e conquistas</span></div>
     <div class="squad" id="squad"></div>
   </section>
 
@@ -310,7 +390,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792437323"></script>
+<script src="lances.js?v=1792438243"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -516,7 +596,7 @@ document.getElementById("squad").innerHTML=elenco.map(a=>{
     <span class="pp">${esc(apelido(a)||ATLETAS[a]?.pos||"")}</span>
     <span class="ps">${meus.length} ${meus.length===1?"lance":"lances"} · ${gols} ${gols===1?"gol":"gols"}</span>
     ${premios?`<span class="trophy">★ ${premios} ${premios===1?"prêmio":"prêmios"}</span>`:""}</button>`}).join("");
-document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".player");if(b)filtrarAtleta(b.dataset.a)});
+document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".player");if(b)abrirPerfil(b.dataset.a)});
 
 // Estatísticas por temporada
 const COLS=[["dom","Domingos"],["lances","Lances"],["gols","Gols"],["assist","Assist."],["golacos","Golaços"],["furadas","Furadas"],["premios","Prêmios"]];
@@ -552,10 +632,154 @@ function renderStats(){
 }
 document.getElementById("stats-tbl").addEventListener("click",e=>{
   const h=e.target.closest("th button");if(h){ordem=h.dataset.k;renderStats();return}
-  const w=e.target.closest(".who-btn");if(w)filtrarAtleta(w.dataset.a)});
-selAno.onchange=renderStats;
+  const w=e.target.closest(".who-btn");if(w)abrirPerfil(w.dataset.a)});
+selAno.onchange=()=>{renderStats();renderCharts()};
 
-renderPolls();render();renderStats();
+// ===== Gráficos (SVG feito à mão) =====
+const MET={gols:{t:"Gols",f:(l,a)=>l.gol===a?1:0},assist:{t:"Assistências",f:(l,a)=>l.assist===a?1:0},
+  ga:{t:"Gols + assistências",f:(l,a)=>(l.gol===a?1:0)+(l.assist===a?1:0)}};
+const real=a=>a&&!a.startsWith("❓");
+// Cor fixa por atleta: ordem do ranking de G+A da temporada (não muda com o filtro)
+function coresDaTemporada(ano){
+  const L=LANCES.filter(l=>l.data.startsWith(ano)),pts={};
+  L.forEach(l=>{for(const a of [l.gol,l.assist])if(real(a))pts[a]=(pts[a]||0)+1});
+  const ord=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt"));
+  const m={};ord.forEach((a,i)=>m[a]=i<8?`var(--s${i+1})`:"var(--s-out)");return m;
+}
+function niceMax(v){if(v<=4)return Math.max(1,v);const s=Math.ceil(v/4);return Math.ceil(v/s)*s}
+function svgEl(w,h,inner){return `<svg viewBox="0 0 ${w} ${h}" role="img">${inner}</svg>`}
+function eixoY(max,x0,x1,y,H){let s="";const step=Math.max(1,Math.ceil(max/4));
+  for(let v=0;v<=max;v+=step){const yy=y(v);s+=`<line class="${v?"grid":"base"}" x1="${x0}" x2="${x1}" y1="${yy}" y2="${yy}"/><text x="${x0-6}" y="${yy+4}" text-anchor="end">${v}</text>`}return s}
+function eixoX(ds,xc,yb){const k=Math.ceil(ds.length/8);return ds.map((d,i)=>i%k===0||i===ds.length-1?`<text x="${xc(i)}" y="${yb+16}" text-anchor="middle">${fmt(d)}</text>`:"").join("")}
+function dica(plot,html,x,y){let t=plot.querySelector(".tip");if(!t){t=document.createElement("div");t.className="tip";plot.appendChild(t)}
+  t.innerHTML=html;t.hidden=false;const pw=plot.clientWidth,tw=t.offsetWidth;
+  t.style.left=Math.max(0,Math.min(pw-tw,x-tw/2))+"px";t.style.top=Math.max(0,y-t.offsetHeight-10)+"px"}
+function semDica(plot){const t=plot.querySelector(".tip");if(t)t.hidden=true}
+function ligarHover(plot,n,conteudo,cross){
+  const svg=plot.querySelector("svg");
+  svg.querySelectorAll(".hit").forEach(r=>{
+    const i=+r.dataset.i;
+    const mostrar=ev=>{const b=plot.getBoundingClientRect(),sb=svg.getBoundingClientRect(),esc=sb.width/svg.viewBox.baseVal.width;
+      if(cross){cross.setAttribute("x1",r.dataset.cx);cross.setAttribute("x2",r.dataset.cx);cross.style.display=""}
+      dica(plot,conteudo(i),(+r.dataset.cx)*esc+(sb.left-b.left),(+r.dataset.ty)*esc+(sb.top-b.top))};
+    r.addEventListener("pointerenter",mostrar);r.addEventListener("pointerdown",mostrar);
+  });
+  svg.addEventListener("pointerleave",()=>{semDica(plot);if(cross)cross.style.display="none"});
+}
+let destaque=null;
+function renderCharts(){
+  const ano=selAno.value,met=document.getElementById("f-met").value,top=+document.getElementById("f-top").value,M=MET[met];
+  const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=LANCES.filter(l=>l.data.startsWith(ano));
+  document.getElementById("ch1-t").textContent=`${M.t} por domingo`;
+  document.getElementById("ch2-t").textContent=`${M.t} acumulados em ${ano}`;
+  const cor=coresDaTemporada(ano);
+  const nomes=[...new Set(L.flatMap(l=>[l.gol,l.assist]))].filter(real);
+  const porDia=a=>ds.map(d=>L.filter(l=>l.data===d).reduce((s,l)=>s+M.f(l,a),0));
+  let ser=nomes.map(a=>{const v=porDia(a);return {a,v,tot:v.reduce((x,y)=>x+y,0),cor:cor[a]}}).filter(s=>s.tot>0)
+    .sort((x,y)=>y.tot-x.tot||x.a.localeCompare(y.a,"pt"));
+  const totalDia=ds.map((d,i)=>ser.reduce((s,x)=>s+x.v[i],0));
+  let barras,linhas;
+  if(top===0){barras=[{a:"Total da turma",v:totalDia,cor:"var(--s1)"}];linhas=[{a:"Total da turma",v:totalDia,cor:"var(--s1)"}]}
+  else{const sel=ser.slice(0,top),resto=ser.slice(top);
+    barras=[...sel];if(resto.length)barras.push({a:`Outros (${resto.length})`,v:ds.map((_,i)=>resto.reduce((s,x)=>s+x.v[i],0)),cor:"var(--s-out)"});
+    linhas=sel}
+  // --- Barras empilhadas por domingo
+  const W=640,H=240,ml=30,mr=10,mt=10,mb=26,pw=W-ml-mr,ph=H-mt-mb;
+  const el1=document.getElementById("ch-dom"),el2=document.getElementById("ch-acc");
+  if(!ds.length||!ser.length){const msg=`<div class="empty-chart">Ainda não há ${M.t.toLowerCase()} registrados em ${ano}.</div>`;el1.innerHTML=msg;el2.innerHTML=msg;document.getElementById("ch-leg").innerHTML="";return}
+  const max1=niceMax(Math.max(...totalDia)),y1=v=>mt+ph-v/max1*ph,band=pw/ds.length,bw=Math.min(56,band*0.6),xc=i=>ml+band*i+band/2;
+  let s=eixoY(max1,ml,W-mr,y1,H);
+  ds.forEach((d,i)=>{let acc=0;const segs=barras.filter(b=>b.v[i]>0);
+    segs.forEach((b,j)=>{const y0=y1(acc),y2=y1(acc+b.v[i]);acc+=b.v[i];const h=y0-y2;
+      const topo=j===segs.length-1,r=topo?Math.min(4,h/2,bw/2):0,x=xc(i)-bw/2;
+      s+=topo?`<path d="M${x},${y0} V${y2+r} Q${x},${y2} ${x+r},${y2} H${x+bw-r} Q${x+bw},${y2} ${x+bw},${y2+r} V${y0} Z" fill="${b.cor}" stroke="var(--surface)" stroke-width="2"/>`
+             :`<rect x="${x}" y="${y2}" width="${bw}" height="${h}" fill="${b.cor}" stroke="var(--surface)" stroke-width="2"/>`});
+    if(totalDia[i]>0)s+=`<text class="lbl" x="${xc(i)}" y="${y1(totalDia[i])-6}" text-anchor="middle">${totalDia[i]}</text>`;
+    s+=`<rect class="hit" data-i="${i}" data-cx="${xc(i)}" data-ty="${y1(totalDia[i])}" x="${ml+band*i}" y="${mt}" width="${band}" height="${ph}"/>`});
+  s+=eixoX(ds,xc,mt+ph);
+  el1.innerHTML=svgEl(W,H,s);
+  ligarHover(el1,ds.length,i=>`<b>Domingo ${fmtAno(ds[i])}</b>${barras.filter(b=>b.v[i]>0).sort((x,y)=>y.v[i]-x.v[i]).map(b=>`<div class="r"><span><i class="sw" style="background:${b.cor}"></i>${esc(b.a)}</span><span>${b.v[i]}</span></div>`).join("")||"<div>nenhum</div>"}<div class="r"><span>Total</span><span>${totalDia[i]}</span></div>`);
+  // --- Linhas acumuladas
+  const acum=linhas.map(x=>{let c=0;return {...x,c:x.v.map(v=>c+=v)}});
+  const mr2=acum.length<=4?96:12,pw2=W-ml-mr2,max2=niceMax(Math.max(1,...acum.flatMap(x=>x.c))),y2=v=>mt+ph-v/max2*ph;
+  const band2=ds.length>1?pw2/(ds.length-1):0,xc2=i=>ds.length>1?ml+band2*i:ml+pw2/2;
+  let s2=eixoY(max2,ml,W-mr2,y2,H)+`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
+  acum.forEach(x=>{const op=destaque&&destaque!==x.a?0.18:1;
+    const pts=x.c.map((v,i)=>`${xc2(i)},${y2(v)}`).join(" ");
+    s2+=`<g opacity="${op}"><polyline points="${pts}" fill="none" stroke="${x.cor}" stroke-width="${destaque===x.a?3:2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(ds.length<=12)s2+=x.c.map((v,i)=>`<circle cx="${xc2(i)}" cy="${y2(v)}" r="4" fill="${x.cor}" stroke="var(--surface)" stroke-width="2"/>`).join("");
+    if(acum.length<=4)s2+=`<text class="lbl" x="${xc2(ds.length-1)+8}" y="${y2(x.c.at(-1))+4}">${esc(x.a.split(" ")[0])} ${x.c.at(-1)}</text>`;
+    s2+="</g>"});
+  ds.forEach((d,i)=>{const x0=ds.length>1?xc2(i)-band2/2:ml,w=ds.length>1?band2:pw2;
+    s2+=`<rect class="hit" data-i="${i}" data-cx="${xc2(i)}" data-ty="${y2(Math.max(0,...acum.map(x=>x.c[i])))}" x="${Math.max(ml,x0)}" y="${mt}" width="${w}" height="${ph}"/>`});
+  s2+=eixoX(ds,xc2,mt+ph);
+  el2.innerHTML=svgEl(W,H,s2);
+  ligarHover(el2,ds.length,i=>`<b>Até ${fmtAno(ds[i])}</b>${[...acum].sort((x,y)=>y.c[i]-x.c[i]).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</span><span>${x.c[i]}</span></div>`).join("")}`,el2.querySelector(".cross"));
+  document.getElementById("ch-leg").innerHTML=acum.length>1?acum.map(x=>`<button type="button" data-a="${esc(x.a)}" class="${destaque&&destaque!==x.a?"off":""}" aria-pressed="${destaque===x.a}"><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</button>`).join(""):"";
+}
+document.getElementById("ch-leg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;destaque=destaque===b.dataset.a?null:b.dataset.a;renderCharts()});
+document.getElementById("f-met").onchange=renderCharts;
+document.getElementById("f-top").onchange=()=>{destaque=null;renderCharts()};
+
+// ===== Card do atleta =====
+function conquistas(a){
+  const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano)).sort();
+  const golsDia=ds.map(d=>L.filter(l=>l.data===d&&l.gol===a).length);
+  const gols=golsDia.reduce((x,y)=>x+y,0),assist=L.filter(l=>l.assist===a).length;
+  let seq=0,best=0;golsDia.forEach(g=>{seq=g?seq+1:0;best=Math.max(best,seq)});
+  const furadas=n=>L.filter(l=>l.atletas.includes(n)&&tiposDe(l).includes("furada")).length;
+  const reiResenha=atletas.filter(real).every(n=>furadas(n)<=furadas(a))&&furadas(a)>0;
+  const artDia=ds.filter((d,i)=>{const g=golsDia[i];if(!g)return false;
+    return atletas.filter(real).every(n=>L.filter(l=>l.data===d&&l.gol===n).length<=g)}).length;
+  const presente=ds.length>=3&&ds.every(d=>L.some(l=>l.data===d&&l.atletas.includes(a)));
+  return [
+    ["⚽","Primeiro gol","marcou na temporada",gols>=1],
+    ["🌟","Golaço","marcou um golaço",L.some(l=>l.gol===a&&tiposDe(l).includes("golaco"))],
+    ["🎩","Hat-trick","3 gols num domingo",golsDia.some(g=>g>=3)],
+    ["🔥","Pé quente","gols em 3 domingos seguidos",best>=3],
+    ["👑","Artilheiro do dia",artDia?`${artDia}× maior goleador do domingo`:"maior goleador de um domingo",artDia>0],
+    ["🎯","Garçom","3 assistências no ano",assist>=3],
+    ["🔟","Dezena","10 gols no ano",gols>=10],
+    ["😂","Rei da resenha","mais furadas do ano",reiResenha],
+    ["📅","Presença","em todos os domingos (mín. 3)",presente],
+  ];
+}
+function abrirPerfil(a){
+  const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
+  const ds=dias.filter(d=>d.startsWith(ano)).sort();
+  const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
+  document.getElementById("pf-av").innerHTML=av(a,"lg");
+  document.getElementById("pf-nome").textContent=a;
+  document.getElementById("pf-ap").textContent=[apelido(a)&&`"${apelido(a)}"`,`Temporada ${ano}`].filter(Boolean).join(" · ");
+  const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
+    ["Golaços",L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length],["Furadas",meus.filter(l=>tiposDe(l).includes("furada")).length]];
+  document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
+  document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
+  // mini gráfico: gols (azul) e assistências (laranja) por domingo, empilhados
+  const W=480,H=150,ml=24,mr=6,mt=8,mb=24,pw=W-ml-mr,ph=H-mt-mb;
+  const gd=ds.map(d=>L.filter(l=>l.data===d&&l.gol===a).length),ad=ds.map(d=>L.filter(l=>l.data===d&&l.assist===a).length);
+  const mx=niceMax(Math.max(1,...gd.map((v,i)=>v+ad[i]))),y=v=>mt+ph-v/mx*ph,band=pw/Math.max(1,ds.length),bw=Math.min(40,band*0.6),xc=i=>ml+band*i+band/2;
+  let s=eixoY(mx,ml,W-mr,y,H);
+  ds.forEach((d,i)=>{const x=xc(i)-bw/2;
+    if(gd[i])s+=`<rect x="${x}" y="${y(gd[i])}" width="${bw}" height="${y(0)-y(gd[i])}" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>`;
+    if(ad[i])s+=`<rect x="${x}" y="${y(gd[i]+ad[i])}" width="${bw}" height="${y(gd[i])-y(gd[i]+ad[i])}" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>`;
+    s+=`<rect class="hit" data-i="${i}" data-cx="${xc(i)}" data-ty="${y(gd[i]+ad[i])}" x="${ml+band*i}" y="${mt}" width="${band}" height="${ph}"/>`});
+  s+=eixoX(ds,xc,mt+ph);
+  const pc=document.getElementById("pf-chart");
+  pc.innerHTML=svgEl(W,H,s)+`<div class="legend"><span><i class="sw" style="background:var(--s1)"></i> Gols</span><span><i class="sw" style="background:var(--s2)"></i> Assistências</span></div>`;
+  ligarHover(pc,ds.length,i=>`<b>${fmtAno(ds[i])}</b><div class="r"><span><i class="sw" style="background:var(--s1)"></i>Gols</span><span>${gd[i]}</span></div><div class="r"><span><i class="sw" style="background:var(--s2)"></i>Assist.</span><span>${ad[i]}</span></div>`);
+  const tot=gd.map((v,i)=>v+ad[i]),mb2=Math.max(...tot,0);
+  document.getElementById("pf-best").textContent=mb2?`Melhor domingo: ${fmtAno(ds[tot.indexOf(mb2)])}, com ${gd[tot.indexOf(mb2)]} gol(s) e ${ad[tot.indexOf(mb2)]} assistência(s).`:"Ainda sem gols ou assistências registrados nesta temporada.";
+  const bl=document.getElementById("pf-lances");bl.textContent=`▶ Ver os ${meus.length} lances de ${a}`;bl.hidden=!meus.length;bl.dataset.a=a;
+  const p=document.getElementById("perfil");p.hidden=false;document.body.style.overflow="hidden";document.getElementById("pf-x").focus();
+}
+function fecharPerfil(){document.getElementById("perfil").hidden=true;document.body.style.overflow=""}
+document.getElementById("pf-x").onclick=fecharPerfil;
+document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id==="perfil")fecharPerfil()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
+document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
+
+renderPolls();render();renderStats();renderCharts();
 
 // Link direto para um lance: futclubejao.github.io/#2026-10-18_24 abre o vídeo
 (()=>{const h=location.hash.slice(1),l=byId[h];if(!l)return;
