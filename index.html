@@ -390,7 +390,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792438243"></script>
+<script src="lances.js?v=1792438794"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -559,9 +559,13 @@ function renderFotos(){
 
 function renderPolls(){
   document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
-  const polls=[["gol","Gol da semana",["golaco"]],["comico","Lance cômico da semana",["furada","polemica"]]];
-  document.getElementById("polls").innerHTML=polls.map(([kind,titulo,tipos])=>{
-    const cand=LANCES.filter(l=>l.data===ultima&&tiposDe(l).some(t=>tipos.includes(t)));
+  // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
+  const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
+  const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","🫠 Bola murcha do domingo",["furada","polemica"],"murcha"]];
+  document.getElementById("polls").innerHTML=polls.map(([kind,titulo,tipos,chave])=>{
+    const doDia=LANCES.filter(l=>l.data===ultima);
+    const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
+      :doDia.filter(l=>tiposDe(l).some(t=>tipos.includes(t)))).slice(0,5);
     const meu=meusVotos[kind];
     const votos=cand.map(l=>(VOTOS_BASE[l.id]||0)+(meu===l.id?1:0));
     const total=votos.reduce((a,b)=>a+b,0)||1;
@@ -583,7 +587,7 @@ document.getElementById("polls").addEventListener("click",e=>{
 
 if(!CAMPEOES.length)document.getElementById("hall").innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;
 else document.getElementById("hall").innerHTML=CAMPEOES.map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
-  <div class="k">${c.kind==="gol"?"Gol da semana":"Lance cômico"} · ${fmt(c.semana)}</div>
+  <div class="k">${c.kind==="gol"?"Golaço do domingo":"Bola murcha"} · ${fmt(c.semana)}</div>
   <div class="who">${esc(l.atletas.join(", "))}</div><div class="d">${esc(l.desc)} · ${c.votos} votos</div></div>`}).join("");
 
 // Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
