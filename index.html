@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Lances da pelada do Jaó: gols, furadas e polêmicas, por atleta e por domingo.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2324307a'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f47b20'/%3E%3C/svg%3E">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style><title>Lances do Jaó</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: placar no topo, enquetes da semana, filtros fixos em "chips", grade de lances como cards de súmula */
+:root{
+  --bg:#f4f5f9; --surface:#ffffff; --fg:#141a33; --muted:#5a6180; --line:#d9dcea;
+  --navy:#24307a; --sun:#f47b20; --link:#24307a;
+  --grass:#1f6b3a; --grass-2:#2c8a4c; --chalk:#ffffff; --gold:#f47b20; --fun:#d4a106;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff;
+  --grass:#1c5a32; --grass-2:#3fa864; --chalk:#f4f8f5; --gold:#ff8a33; --fun:#f2c230; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff;
+  --grass:#1c5a32; --grass-2:#3fa864; --chalk:#f4f8f5; --gold:#ff8a33; --fun:#f2c230; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
+
+/* Topo: faixa de gramado com linhas de cal */
+.hero{background:var(--navy);color:#ffffff;position:relative;overflow:hidden;border-bottom:6px solid var(--sun)}
+.sun{position:absolute;right:-50px;top:50%;width:230px;height:230px;transform:translateY(-50%);opacity:.95}
+@media (max-width:560px){.sun{width:150px;height:150px;right:-45px;opacity:.5}}
+.hero .wrap{padding-block:28px 26px;position:relative;z-index:1}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.9}
+.hero h1{font-size:clamp(40px,8vw,68px);font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+.hero p{margin:6px 0 0;max-width:52ch;opacity:.95}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;font-family:var(--display);font-size:20px;font-weight:600}
+.stats b{font-size:28px;font-variant-numeric:tabular-nums}
+.demo{display:inline-block;margin-top:14px;background:rgba(0,0,0,.28);border:1px dashed rgba(255,255,255,.6);padding:4px 10px;border-radius:4px;font-size:13px}
+
+section{margin-top:32px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sec-head h2{font-size:30px;font-weight:800;text-transform:uppercase}
+.sec-head span{color:var(--muted);font-size:14px}
+
+/* Enquetes */
+.polls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.poll{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.poll h3{font-size:24px;font-weight:800;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.poll[data-kind="gol"] h3 .dot{background:var(--gold)} .poll[data-kind="comico"] h3 .dot{background:var(--fun)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.opt{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);font:inherit;text-align:left;cursor:pointer;position:relative;overflow:hidden}
+.opt:hover{border-color:var(--grass-2)}
+.opt:focus-visible{outline:2px solid var(--grass-2);outline-offset:2px}
+.opt .bar{position:absolute;inset:0 auto 0 0;background:var(--grass-2);opacity:.14;transition:width .4s}
+.opt .t{position:relative;min-width:0}.opt .t small{display:block;color:var(--muted)}
+.opt .n{position:relative;font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.opt.voted{border-color:var(--grass-2);border-width:2px}
+.poll .foot{font-size:13px;color:var(--muted)}
+
+/* Filtros */
+.filters{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.frow label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;width:64px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;cursor:pointer}
+.chip:hover{border-color:var(--grass-2)}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#ffffff}
+.chip.av-chip{display:inline-flex;align-items:center;gap:6px;padding-left:4px}
+.av{width:24px;height:24px;border-radius:50%;flex:none;display:inline-grid;place-items:center;font-size:11px;font-weight:600;color:#ffffff;background:var(--navy);border:2px solid var(--sun);overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:64px;height:64px;font-size:22px;font-family:var(--display);border-width:3px}
+/* Elenco */
+.squad{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px}
+.player{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;font:inherit;color:var(--fg)}
+.player:hover{border-color:var(--sun)}
+.player:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.player .pn{font-family:var(--display);font-size:22px;font-weight:800;margin-top:4px}
+.player .pp{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.player .ps{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.player .trophy{color:var(--sun);font-weight:600;font-size:13px}
+.chip:focus-visible{outline:2px solid var(--grass-2);outline-offset:2px}
+.selects{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 200px;min-width:0}
+.field label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.field select{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);width:100%}
+.field select:focus-visible,.clear:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.clear{font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--link);cursor:pointer}
+.clear:hover{border-color:var(--sun)}
+.count{margin:12px 2px 0;color:var(--muted);font-size:14px}
+
+/* Cards de lance */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:16px;margin-top:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;max-width:100%;background:repeating-linear-gradient(90deg,var(--grass) 0 28px,var(--grass-2) 28px 56px);position:relative;display:grid;place-items:center;color:var(--chalk);text-decoration:none}
+.thumb::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.5)}
+.thumb::after{content:"";position:absolute;left:50%;top:50%;width:54px;height:54px;border:2px solid rgba(255,255,255,.5);border-radius:50%;transform:translate(-50%,-50%)}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb.has-img::before,.thumb.has-img::after{display:none}
+.thumb:hover .play{background:var(--sun)}
+.play{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.45);display:grid;place-items:center;position:relative;z-index:1}
+.play::before{content:"";border-left:14px solid var(--chalk);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.min{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.55);padding:1px 7px;border-radius:4px;font-size:12px;font-variant-numeric:tabular-nums;z-index:1}
+.tags{position:absolute;left:8px;top:8px;right:8px;display:flex;flex-wrap:wrap;gap:4px;z-index:1}
+.tag{padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;background:var(--chalk);color:#14231a}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.body .desc{font-weight:500}
+.names{display:flex;flex-wrap:wrap;gap:6px}
+.name{font-size:13px;color:var(--link);font-weight:600;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+.name .av{width:22px;height:22px;font-size:10px}
+.name:hover{text-decoration:underline}
+.meta{margin-top:auto;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.badge-win{color:var(--gold);font-weight:600}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px;margin-top:10px}
+
+/* Fotos */
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.foto{display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;max-width:100%}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto:hover{border-color:var(--sun)}
+
+/* Estatísticas */
+.field.year{flex:0 0 140px}
+.podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
+.pod{background:var(--navy);color:#ffffff;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;border-bottom:4px solid var(--sun)}
+.pod .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.85}
+.pod .who{font-family:var(--display);font-size:22px;font-weight:800;line-height:1.1}
+.pod .v{font-family:var(--display);font-size:30px;font-weight:800;color:var(--sun);font-variant-numeric:tabular-nums;line-height:1}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.stats-tbl{width:100%;min-width:620px;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+.stats-tbl th,.stats-tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.stats-tbl th:nth-child(2),.stats-tbl td:nth-child(2){text-align:left}
+.stats-tbl tbody tr:last-child td{border-bottom:0}
+.stats-tbl th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stats-tbl th button{font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;background:none;border:0;padding:0;cursor:pointer}
+.stats-tbl th button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.stats-tbl th.on{color:var(--fg)}
+.stats-tbl th.on button::after{content:" ▼";color:var(--sun)}
+.stats-tbl td.pos{color:var(--muted)}
+.stats-tbl td.lead{font-weight:700;color:var(--link)}
+.stats-tbl .who-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;font:inherit;color:var(--fg);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.stats-tbl .who-btn:hover{color:var(--link)}
+.stats-tbl .ap{color:var(--muted);font-size:13px}
+.note{color:var(--muted);font-size:13px;margin:8px 2px 0}
+
+/* Player (só no site do GitHub) */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(8,10,24,.88);display:grid;place-items:center;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.m-box{width:min(960px,100%);display:flex;flex-direction:column;gap:10px;color:#ffffff}
+.m-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;opacity:.9}
+.m-frame{aspect-ratio:16/9;max-width:100%;max-height:70vh;background:#000;border-radius:10px;overflow:hidden;border-bottom:4px solid var(--sun)}
+.m-frame iframe{width:100%;height:100%;border:0;display:block}
+.m-info{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.m-txt{min-width:0;display:flex;flex-direction:column;gap:4px}
+.m-tags{display:flex;gap:4px;flex-wrap:wrap}
+#m-desc{font-weight:600;font-size:16px}
+.m-names{font-size:14px;opacity:.85}
+.m-btn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:#ffffff;font-size:22px;line-height:1;cursor:pointer}
+.m-btn:hover{background:var(--sun);border-color:var(--sun)}
+.m-btn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.m-btn:disabled{opacity:.3;cursor:default;background:transparent;border-color:rgba(255,255,255,.4)}
+
+/* Campeões */
+.hall{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.win{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.win .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.win[data-kind="gol"] .k{color:var(--gold)} .win[data-kind="comico"] .k{color:var(--fun)}
+.win .who{font-family:var(--display);font-size:22px;font-weight:800}
+.win .d{color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){.opt .bar{transition:none}}
+</style>
+
+</head>
+<body>
+<header class="hero">
+  <svg class="sun" viewBox="-100 -100 200 200" aria-hidden="true">
+    <g fill="#f47b20" id="petals"></g>
+    <circle r="30" fill="#ffffff"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">Pelada do Clube Jaó · Goiânia</div>
+    <h1>Lances do Jaó</h1>
+    <p>Todos os lances da pelada, separados por atleta, dia e tipo. Toque no seu nome e veja tudo o que você aprontou.</p>
+    <div class="stats" id="stats"></div>
+    <div class="demo">Versão de testes · lances de 11/10 e 18/10</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section aria-labelledby="h-polls">
+    <div class="sec-head"><h2 id="h-polls">Enquetes da semana</h2><span id="poll-date"></span></div>
+    <div class="polls" id="polls"></div>
+  </section>
+
+  <section aria-labelledby="h-lances">
+    <div class="sec-head"><h2 id="h-lances">Lances</h2></div>
+    <div class="filters">
+      <div class="selects">
+        <div class="field"><label for="f-atleta">Atleta</label><select id="f-atleta"></select></div>
+        <div class="field"><label for="f-dia">Dia</label><select id="f-dia"></select></div>
+        <button class="clear" id="f-clear" type="button">Limpar filtros</button>
+      </div>
+      <div class="frow" role="group" aria-label="Filtrar por tipo"><label>Tipo</label><div class="frow" id="f-tipo"></div></div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section aria-labelledby="h-fotos" id="sec-fotos">
+    <div class="sec-head"><h2 id="h-fotos">Fotos do dia</h2><span id="fotos-dia"></span></div>
+    <div class="fotos" id="fotos"></div>
+  </section>
+
+  <section aria-labelledby="h-stats">
+    <div class="sec-head"><h2 id="h-stats">Estatísticas</h2>
+      <div class="field year"><label for="f-ano">Temporada</label><select id="f-ano"></select></div></div>
+    <div class="podium" id="podium"></div>
+    <div class="tbl-wrap"><table class="stats-tbl" id="stats-tbl"></table></div>
+    <p class="note">Conta só os lances filmados e postados, não todos os gols do jogo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
+  </section>
+
+  <section aria-labelledby="h-squad">
+    <div class="sec-head"><h2 id="h-squad">Elenco</h2><span>toque no atleta para ver os lances dele</span></div>
+    <div class="squad" id="squad"></div>
+  </section>
+
+  <section aria-labelledby="h-hall">
+    <div class="sec-head"><h2 id="h-hall">Galeria dos campeões</h2><span>vencedores das enquetes anteriores</span></div>
+    <div class="hall" id="hall"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-desc">
+  <div class="m-box">
+    <div class="m-top"><span id="m-pos"></span><button class="m-btn" id="m-close" type="button" aria-label="Fechar">✕</button></div>
+    <div class="m-frame"><iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+    <div class="m-info"><button class="m-btn" id="m-prev" type="button" aria-label="Lance anterior">‹</button>
+      <div class="m-txt"><div class="m-tags" id="m-tags"></div><div id="m-desc"></div><div class="m-names" id="m-names"></div></div>
+      <button class="m-btn" id="m-next" type="button" aria-label="Próximo lance">›</button></div>
+  </div>
+</div>
+
+<script src="lances.js"></script>
+<script>
+const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
+// Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
+const CAMPEOES=[];
+// No protótipo o voto fica só no seu aparelho
+const VOTOS_BASE={};
+const TODOS="*";
+// Um lance pode ter até 2 tipos: tipo (principal) e tipo2 (opcional)
+const tiposDe=l=>[l.tipo,l.tipo2].filter(Boolean);
+const driveUrl=id=>id?`https://drive.google.com/file/d/${id}/view`:"#";
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function av(nome,cls=""){
+  const f=ATLETAS[nome]?.foto;
+  const w=nome.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/^Dr\.?\s+/,"").split(/\s+/).filter(Boolean);
+  const ini=nome.startsWith("❓")?"?":(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase();
+  return `<span class="av ${cls}" aria-hidden="true">${f?`<img src="${esc(f)}" alt="">`:ini}</span>`;
+}
+const apelido=a=>ATLETAS[a]?.apelido||"";
+// Sol do topo: 8 pétalas inspiradas no símbolo do clube
+document.getElementById("petals").innerHTML=[...Array(8)].map((_,i)=>
+  `<path transform="rotate(${i*45})" d="M-14,-34 C-30,-52 -18,-78 6,-92 C-2,-74 18,-62 24,-44 C14,-40 0,-38 -14,-34 Z"/>`).join("");
+
+const fmt=d=>`${d.slice(8,10)}/${d.slice(5,7)}`;
+const fmtAno=d=>`${fmt(d)}/${d.slice(0,4)}`;
+const byId=Object.fromEntries(LANCES.map(l=>[l.id,l]));
+const atletas=[...new Set(LANCES.flatMap(l=>l.atletas))].sort((a,b)=>a.localeCompare(b,"pt"));
+const dias=[...new Set(LANCES.map(l=>l.data))].sort().reverse();
+const ultima=dias[0];
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const state={atleta:null,tipo:null,dia:ultima};
+const meusVotos=store.get("jao-votos",{});
+
+document.getElementById("stats").innerHTML=
+ `<span><b>${LANCES.length}</b> lances</span><span><b>${dias.length}</b> ${dias.length===1?"domingo":"domingos"}</span><span><b>${atletas.filter(a=>!a.startsWith("❓")).length}</b> atletas</span>`;
+
+// Filtros: tipo em botões; atleta e dia em listas. "Todos os dias" só com atleta escolhido.
+const tipoEl=document.getElementById("f-tipo");
+tipoEl.innerHTML=[`<button class="chip" data-v="">Todos</button>`,...Object.keys(TIPOS).map(v=>`<button class="chip" data-v="${v}">${TIPOS[v]}</button>`)].join("");
+tipoEl.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;state.tipo=b.dataset.v||null;render()};
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const selA=document.getElementById("f-atleta"),selD=document.getElementById("f-dia");
+selA.innerHTML=`<option value="">Todos os atletas</option>`+atletas.map(a=>{const n=LANCES.filter(l=>l.atletas.includes(a)).length;const ap=apelido(a);return `<option value="${esc(a)}">${esc(a)}${ap?` (${esc(ap)})`:""} · ${n} ${n===1?"lance":"lances"}</option>`}).join("");
+const porMes={};dias.forEach(d=>{const k=d.slice(0,7);(porMes[k]=porMes[k]||[]).push(d)});
+selD.innerHTML=`<option value="${TODOS}" id="opt-todos">Todos os dias (escolha um atleta)</option>`+Object.entries(porMes).map(([k,ds])=>`<optgroup label="${MESES[+k.slice(5)-1]} ${k.slice(0,4)}">${ds.map(d=>{const n=LANCES.filter(l=>l.data===d).length;return `<option value="${d}">${fmt(d)} · ${n} lances</option>`}).join("")}</optgroup>`).join("");
+selA.onchange=()=>{state.atleta=selA.value||null;render()};
+selD.onchange=()=>{state.dia=selD.value;render()};
+document.getElementById("f-clear").onclick=()=>{state.atleta=null;state.tipo=null;state.dia=ultima;render()};
+
+function syncFiltros(){
+  if(!state.atleta&&state.dia===TODOS)state.dia=ultima;
+  const ot=document.getElementById("opt-todos");
+  ot.disabled=!state.atleta;
+  ot.textContent=state.atleta?`Todos os dias · ${state.atleta}`:"Todos os dias (escolha um atleta)";
+  tipoEl.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.v||null)===state.tipo)));
+  selA.value=state.atleta||"";selD.value=state.dia;
+}
+
+const vencedores=new Set(CAMPEOES.map(c=>c.id));
+function card(l){
+  const info=[l.jogo?`Jogo ${l.jogo}`:"",l.s?`${l.s}s`:""].filter(Boolean).join(" · ");
+  return `<article class="card" data-id="${l.id}">
+    <a class="thumb has-img" href="${driveUrl(l.drive)}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(l.desc)}">
+      <img src="thumbs/${l.id}.jpg" alt="" loading="lazy">
+      <span class="tags">${tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("")}</span><span class="play"></span>${info?`<span class="min">${info}</span>`:""}</a>
+    <div class="body">
+      <div class="names">${l.atletas.map(a=>`<button class="name" data-a="${esc(a)}">${av(a)}${esc(a)}</button>`).join("")}</div>
+      <div class="desc">${esc(l.desc)}</div>
+      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}</div>
+    </div></article>`;
+}
+function render(){
+  syncFiltros();
+  const list=LANCES.filter(l=>(!state.atleta||l.atletas.includes(state.atleta))&&(!state.tipo||tiposDe(l).includes(state.tipo))&&(state.dia===TODOS||l.data===state.dia))
+    .sort((a,b)=>b.data.localeCompare(a.data)||a.id.localeCompare(b.id));
+  const parts=[state.atleta,state.tipo&&TIPOS[state.tipo],state.dia===TODOS?"todos os dias":fmtAno(state.dia)].filter(Boolean);
+  document.getElementById("count").textContent=`${list.length} ${list.length===1?"lance":"lances"} · ${parts.join(" · ")}`;
+  const g=document.getElementById("grid");
+  listaAtual=list;
+  g.innerHTML=list.map(card).join("");
+  g.nextElementSibling?.classList.contains("empty")&&g.nextElementSibling.remove();
+  if(!list.length)g.insertAdjacentHTML("afterend",`<div class="empty">Nenhum lance com esse filtro. Toque em "Limpar filtros".</div>`);
+  renderFotos();
+}
+// Player: no site do GitHub o vídeo abre por cima da página; em outros lugares abre o Drive
+const EMBED=location.hostname.endsWith("github.io");
+let listaAtual=[],idx=-1;
+const modal=document.getElementById("modal"),mFrame=document.getElementById("m-iframe");
+function abrir(i){
+  idx=i;const l=listaAtual[i];
+  mFrame.src=`https://drive.google.com/file/d/${l.drive}/preview`;
+  document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${listaAtual.length}`;
+  document.getElementById("m-tags").innerHTML=tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("");
+  document.getElementById("m-desc").textContent=l.desc;
+  document.getElementById("m-names").textContent=l.atletas.join(" · ");
+  document.getElementById("m-prev").disabled=i===0;
+  document.getElementById("m-next").disabled=i===listaAtual.length-1;
+  if(modal.hidden){modal.hidden=false;document.body.style.overflow="hidden";document.getElementById("m-close").focus()}
+}
+function fechar(){modal.hidden=true;mFrame.src="about:blank";document.body.style.overflow=""}
+document.getElementById("m-close").onclick=fechar;
+document.getElementById("m-prev").onclick=()=>idx>0&&abrir(idx-1);
+document.getElementById("m-next").onclick=()=>idx<listaAtual.length-1&&abrir(idx+1);
+modal.addEventListener("click",e=>{if(e.target===modal)fechar()});
+document.addEventListener("keydown",e=>{if(modal.hidden)return;
+  if(e.key==="Escape")fechar();if(e.key==="ArrowLeft"&&idx>0)abrir(idx-1);if(e.key==="ArrowRight"&&idx<listaAtual.length-1)abrir(idx+1)});
+document.getElementById("grid").addEventListener("click",e=>{
+  const t=e.target.closest(".thumb");if(!t||!EMBED)return;
+  e.preventDefault();const id=t.closest(".card").dataset.id;abrir(listaAtual.findIndex(l=>l.id===id))});
+
+function filtrarAtleta(a){state.atleta=a;state.tipo=null;state.dia=TODOS;render();document.getElementById("h-lances").scrollIntoView({behavior:"smooth"})}
+document.getElementById("grid").addEventListener("click",e=>{const b=e.target.closest(".name");if(b)filtrarAtleta(b.dataset.a)});
+
+function renderFotos(){
+  const dia=state.dia===TODOS?ultima:state.dia;
+  const fs=FOTOS.filter(f=>f.data===dia);
+  document.getElementById("sec-fotos").hidden=!fs.length;
+  document.getElementById("fotos-dia").textContent=fmtAno(dia);
+  document.getElementById("fotos").innerHTML=fs.map(f=>`<a class="foto" href="${driveUrl(f.drive)}" target="_blank" rel="noopener"><img src="fotos/${esc(f.arquivo)}" alt="Foto do jogo de ${fmtAno(dia)}" loading="lazy"></a>`).join("");
+}
+
+function renderPolls(){
+  document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
+  const polls=[["gol","Gol da semana",["golaco"]],["comico","Lance cômico da semana",["furada","polemica"]]];
+  document.getElementById("polls").innerHTML=polls.map(([kind,titulo,tipos])=>{
+    const cand=LANCES.filter(l=>l.data===ultima&&tiposDe(l).some(t=>tipos.includes(t)));
+    const meu=meusVotos[kind];
+    const votos=cand.map(l=>(VOTOS_BASE[l.id]||0)+(meu===l.id?1:0));
+    const total=votos.reduce((a,b)=>a+b,0)||1;
+    return `<div class="poll" data-kind="${kind}"><h3><span class="dot"></span>${titulo}</h3>
+      ${cand.map((l,i)=>`<button class="opt${meu===l.id?" voted":""}" data-kind="${kind}" data-id="${l.id}" aria-pressed="${meu===l.id}">
+        <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
+        <span class="t">${esc(l.atletas.join(", "))}<small>${esc(l.desc)}</small></span>
+        <span class="n">${votos[i]}</span></button>`).join("")}
+      <div class="foot">${meu?"Seu voto foi registrado. Toque em outro lance para trocar.":"Toque num lance para votar. Um voto por pessoa."}</div></div>`;
+  }).join("");
+}
+document.getElementById("polls").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
+
+if(!CAMPEOES.length)document.getElementById("hall").innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;
+else document.getElementById("hall").innerHTML=CAMPEOES.map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
+  <div class="k">${c.kind==="gol"?"Gol da semana":"Lance cômico"} · ${fmt(c.semana)}</div>
+  <div class="who">${esc(l.atletas.join(", "))}</div><div class="d">${esc(l.desc)} · ${c.votos} votos</div></div>`}).join("");
+
+// Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
+const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
+document.getElementById("squad").innerHTML=elenco.map(a=>{
+  const meus=LANCES.filter(l=>l.atletas.includes(a));
+  const gols=LANCES.filter(l=>l.gol===a).length;
+  const premios=CAMPEOES.filter(c=>byId[c.id].atletas.includes(a)).length;
+  return `<button class="player" data-a="${esc(a)}">${av(a,"lg")}<span class="pn">${esc(a)}</span>
+    <span class="pp">${esc(apelido(a)||ATLETAS[a]?.pos||"")}</span>
+    <span class="ps">${meus.length} ${meus.length===1?"lance":"lances"} · ${gols} ${gols===1?"gol":"gols"}</span>
+    ${premios?`<span class="trophy">★ ${premios} ${premios===1?"prêmio":"prêmios"}</span>`:""}</button>`}).join("");
+document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".player");if(b)filtrarAtleta(b.dataset.a)});
+
+// Estatísticas por temporada
+const COLS=[["dom","Domingos"],["lances","Lances"],["gols","Gols"],["assist","Assist."],["golacos","Golaços"],["furadas","Furadas"],["premios","Prêmios"]];
+const anos=[...new Set(dias.map(d=>d.slice(0,4)))].sort().reverse();
+const selAno=document.getElementById("f-ano");
+selAno.innerHTML=anos.map(a=>`<option value="${a}">${a}</option>`).join("");
+let ordem="gols";
+function calcStats(ano){
+  const L=LANCES.filter(l=>l.data.startsWith(ano));
+  const nomes=[...new Set(L.flatMap(l=>l.atletas))].filter(a=>!a.startsWith("❓"));
+  return nomes.map(a=>{
+    const meus=L.filter(l=>l.atletas.includes(a));
+    return {a,dom:new Set(meus.map(l=>l.data)).size,lances:meus.length,
+      gols:L.filter(l=>l.gol===a).length,assist:L.filter(l=>l.assist===a).length,
+      golacos:L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length,
+      furadas:meus.filter(l=>tiposDe(l).includes("furada")).length,
+      premios:CAMPEOES.filter(c=>c.semana.startsWith(ano)&&byId[c.id]?.atletas.includes(a)).length};
+  });
+}
+function lider(S,k){const m=Math.max(0,...S.map(s=>s[k]));return m?{v:m,quem:S.filter(s=>s[k]===m).map(s=>s.a)}:null}
+function renderStats(){
+  const S=calcStats(selAno.value);
+  const pods=[["gols","Artilheiro","gols"],["assist","Garçom","assistências"],["furadas","Rei da resenha","furadas"],["dom","Mais presente","domingos"]];
+  document.getElementById("podium").innerHTML=pods.map(([k,t,u])=>{const l=lider(S,k);return l?`<div class="pod"><span class="k">${t}</span><span class="who">${esc(l.quem.join(", "))}</span><span class="v">${l.v} <small style="font-size:14px">${u}</small></span></div>`:""}).join("");
+  S.sort((x,y)=>y[ordem]-x[ordem]||y.gols-x.gols||y.lances-x.lances||x.a.localeCompare(y.a,"pt"));
+  const max=Math.max(0,...S.map(s=>s[ordem]));
+  document.getElementById("stats-tbl").innerHTML=
+    `<colgroup><col style="width:44px"><col style="width:200px">${COLS.map(()=>`<col style="width:76px">`).join("")}</colgroup>
+    <thead><tr><th>#</th><th>Atleta</th>${COLS.map(([k,t])=>`<th class="${k===ordem?"on":""}"><button data-k="${k}">${t}</button></th>`).join("")}</tr></thead>
+    <tbody>${S.map((s,i)=>`<tr><td class="pos">${i+1}</td>
+      <td><button class="who-btn" data-a="${esc(s.a)}">${av(s.a)}${esc(s.a)}${apelido(s.a)?` <span class="ap">${esc(apelido(s.a))}</span>`:""}</button></td>
+      ${COLS.map(([k])=>`<td class="${k===ordem&&s[k]===max&&max>0?"lead":""}">${s[k]}</td>`).join("")}</tr>`).join("")}</tbody>`;
+}
+document.getElementById("stats-tbl").addEventListener("click",e=>{
+  const h=e.target.closest("th button");if(h){ordem=h.dataset.k;renderStats();return}
+  const w=e.target.closest(".who-btn");if(w)filtrarAtleta(w.dataset.a)});
+selAno.onchange=renderStats;
+
+renderPolls();render();renderStats();
+</script>
+
+</body>
+</html>
