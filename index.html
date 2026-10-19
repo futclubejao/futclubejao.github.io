@@ -167,7 +167,9 @@ section{margin-top:32px}
 .m-box{width:min(960px,100%);display:flex;flex-direction:column;gap:10px;color:#ffffff}
 .m-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;opacity:.9}
 .m-frame{aspect-ratio:16/9;max-width:100%;max-height:70vh;background:#000;border-radius:10px;overflow:hidden;border-bottom:4px solid var(--sun)}
-.m-frame iframe{width:100%;height:100%;border:0;display:block}
+.m-frame iframe,.m-frame video{width:100%;height:100%;border:0;display:block;background:#000}
+.m-full{align-self:center;font:inherit;font-size:18px;font-weight:600;padding:12px 26px;border-radius:999px;border:0;background:var(--sun);color:#ffffff;cursor:pointer}
+.m-full:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
 .m-info{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .m-txt{min-width:0;display:flex;flex-direction:column;gap:4px}
 .m-tags{display:flex;gap:4px;flex-wrap:wrap}
@@ -177,13 +179,11 @@ section{margin-top:32px}
 .m-btn:hover{background:var(--sun);border-color:var(--sun)}
 .m-btn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 .m-btn:disabled{opacity:.3;cursor:default;background:transparent;border-color:rgba(255,255,255,.4)}
-.m-hint{display:none;text-align:center;font-size:13px;opacity:.75}
-/* Celular em pé: vídeo de ponta a ponta + dica para girar */
+/* Celular em pé: vídeo de ponta a ponta */
 @media (orientation:portrait) and (max-width:700px){
   .modal{padding-left:0;padding-right:0}
-  .m-top,.m-info,.m-hint{padding:0 12px}
+  .m-top,.m-info{padding:0 12px}
   .m-frame{border-radius:0}
-  .m-hint{display:block}
 }
 /* Celular deitado: vídeo na tela inteira, setas e fechar por cima */
 @media (orientation:landscape) and (max-height:540px){
@@ -195,6 +195,7 @@ section{margin-top:32px}
   .m-info{position:absolute;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);pointer-events:none;z-index:2}
   .m-info .m-btn{pointer-events:auto;background:rgba(0,0,0,.45)}
   .m-txt{visibility:hidden}
+  .m-full{display:none}
 }
 
 /* Campeões */
@@ -270,15 +271,18 @@ section{margin-top:32px}
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-desc">
   <div class="m-box">
     <div class="m-top"><span id="m-pos"></span><button class="m-btn" id="m-close" type="button" aria-label="Fechar">✕</button></div>
-    <div class="m-frame"><iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+    <div class="m-frame">
+      <video id="m-video" controls playsinline preload="metadata"></video>
+      <iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen hidden></iframe>
+    </div>
+    <button class="m-full" id="m-full" type="button">⛶ Ver em tela cheia</button>
     <div class="m-info"><button class="m-btn" id="m-prev" type="button" aria-label="Lance anterior">‹</button>
       <div class="m-txt"><div class="m-tags" id="m-tags"></div><div id="m-desc"></div><div class="m-names" id="m-names"></div></div>
       <button class="m-btn" id="m-next" type="button" aria-label="Próximo lance">›</button></div>
-    <div class="m-hint">📱↻ Gire o celular para ver em tela cheia</div>
   </div>
 </div>
 
-<script src="lances.js?v=1792436301"></script>
+<script src="lances.js?v=1792436644"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -367,10 +371,23 @@ function render(){
 const EMBED=location.hostname.endsWith("github.io");
 const SITE="https://futclubejao.github.io/";
 let listaAtual=[],mLista=[],idx=-1;
-const modal=document.getElementById("modal"),mFrame=document.getElementById("m-iframe");
+const modal=document.getElementById("modal"),mFrame=document.getElementById("m-iframe"),mVideo=document.getElementById("m-video");
+// Vídeo tocado pelo player do próprio celular (tela cheia de verdade); se falhar, cai no player do Drive
+let mAtual=null;
+mVideo.addEventListener("error",()=>{if(!mAtual||!mVideo.getAttribute("src"))return;
+  mVideo.hidden=true;mFrame.hidden=false;mFrame.src=`https://drive.google.com/file/d/${mAtual.drive}/preview`;
+  document.getElementById("m-full").hidden=true});
+document.getElementById("m-full").onclick=()=>{
+  const v=mVideo;v.play().catch(()=>{});
+  if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();
+  else if(v.requestFullscreen)v.requestFullscreen().catch(()=>{});
+};
 function abrir(i){
-  idx=i;const l=mLista[i];
-  mFrame.src=`https://drive.google.com/file/d/${l.drive}/preview`;
+  idx=i;const l=mLista[i];mAtual=l;
+  mFrame.hidden=true;mFrame.src="about:blank";mVideo.hidden=false;document.getElementById("m-full").hidden=false;
+  mVideo.poster=`thumbs/${l.id}.jpg`;
+  mVideo.src=`https://drive.usercontent.google.com/download?id=${l.drive}&export=download`;
+  mVideo.play().catch(()=>{});
   document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${mLista.length}`;
   document.getElementById("m-tags").innerHTML=tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("");
   document.getElementById("m-desc").textContent=l.desc;
@@ -380,7 +397,7 @@ function abrir(i){
   try{history.replaceState(null,"","#"+l.id)}catch(e){}
   if(modal.hidden){modal.hidden=false;document.body.style.overflow="hidden";document.getElementById("m-close").focus()}
 }
-function fechar(){modal.hidden=true;mFrame.src="about:blank";document.body.style.overflow="";try{history.replaceState(null,"",location.pathname)}catch(e){}}
+function fechar(){modal.hidden=true;mFrame.src="about:blank";mAtual=null;mVideo.pause();mVideo.removeAttribute("src");mVideo.load();document.body.style.overflow="";try{history.replaceState(null,"",location.pathname)}catch(e){}}
 document.getElementById("m-close").onclick=fechar;
 document.getElementById("m-prev").onclick=()=>idx>0&&abrir(idx-1);
 document.getElementById("m-next").onclick=()=>idx<mLista.length-1&&abrir(idx+1);
