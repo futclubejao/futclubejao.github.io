@@ -39,12 +39,12 @@ h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
 
 /* Topo: faixa de gramado com linhas de cal */
 .hero{background:var(--navy);color:#ffffff;position:relative;overflow:hidden;border-bottom:6px solid var(--sun)}
-.sun{position:absolute;right:-50px;top:50%;width:230px;height:230px;transform:translateY(-50%);opacity:.95}
-@media (max-width:560px){.sun{width:150px;height:150px;right:-45px;opacity:.5}}
+.sun{position:absolute;right:-150px;top:50%;width:300px;height:300px;transform:translateY(-50%)}
+@media (max-width:560px){.sun{width:170px;height:170px;right:-95px}}
 .hero .wrap{padding-block:28px 26px;position:relative;z-index:1}
-.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.9}
+.eyebrow{font-size:clamp(14px,2.2vw,18px);letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.95}
 .hero h1{font-size:clamp(40px,8vw,68px);font-weight:800;letter-spacing:.01em;text-transform:uppercase}
-.hero p{margin:6px 0 0;max-width:52ch;opacity:.95}
+.hero p{margin:8px 0 0;font-size:clamp(17px,2.4vw,22px);line-height:1.4;opacity:.97}
 .stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;font-family:var(--display);font-size:20px;font-weight:600}
 .stats b{font-size:28px;font-variant-numeric:tabular-nums}
 .demo{display:inline-block;margin-top:14px;background:rgba(0,0,0,.28);border:1px dashed rgba(255,255,255,.6);padding:4px 10px;border-radius:4px;font-size:13px}
@@ -170,7 +170,10 @@ section{margin-top:32px}
 .plot .base{stroke:var(--axis);stroke-width:1}
 .plot .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
 .plot .hit{fill:transparent;cursor:crosshair}
-.plot .lbl{font-size:12px;font-weight:600;fill:var(--fg)}
+.plot .lbl{font-size:12px;font-weight:700;fill:var(--fg)}
+.plot .lbl-v{font-weight:800}
+.plot .lbl-g{font-size:11px;fill:var(--muted);opacity:.85}
+.legend .leg-g{color:var(--muted)}
 .tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.4;min-width:130px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .tip b{display:block;margin-bottom:2px}
 .tip .r{display:flex;align-items:center;gap:6px;justify-content:space-between}
@@ -425,11 +428,11 @@ section{margin-top:32px}
       <div class="ctl">
         <div class="field"><label for="f-met">Números de</label>
           <select id="f-met"><option value="gols">Gols</option><option value="assist">Assistências</option><option value="ga">Gols + assistências</option></select></div>
-        <div class="field"><label for="f-top">Atletas no gráfico</label>
-          <select id="f-top"><option value="5">Top 5</option><option value="8">Top 8</option><option value="0">Só o total da turma</option></select></div>
+        <div class="field"><label for="f-top">Destacar em cor</label>
+          <select id="f-top"><option value="5">Top 5</option><option value="8">Top 8</option><option value="3">Top 3</option><option value="0">Só o total da turma</option></select></div>
       </div>
       <figure class="chart">
-        <figcaption><b id="ch1-t">Gols por domingo</b><span>cada barra é um domingo; passe o dedo para ver os números</span></figcaption>
+        <figcaption><b id="ch1-t">Gols por domingo</b><span>os destaques em cor, os demais em cinza; passe o dedo para ver os números</span></figcaption>
         <div class="plot" id="ch-dom"></div>
       </figure>
       <figure class="chart">
@@ -466,7 +469,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792440784"></script>
+<script src="lances.js?v=1792441957"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -740,6 +743,33 @@ function ligarHover(plot,n,conteudo,cross){
   svg.addEventListener("pointerleave",()=>{semDica(plot);if(cross)cross.style.display="none"});
 }
 let destaque=null;
+// Linhas no estilo de jornal: destaques coloridos com nome na ponta; demais em cinza fino, nome em cinza (só se couber)
+function desenharLinhas(el,ds,series,titTip){
+  const W=640,H=270,ml=30,mr=124,mt=14,mb=26,pw=W-ml-mr,ph=H-mt-mb,n=ds.length;
+  const max=niceMax(Math.max(1,...series.flatMap(x=>x.v))),y=v=>mt+ph-v/max*ph,xs=i=>n>1?ml+pw*i/(n-1):ml+pw/2;
+  const cor=series.filter(x=>x.cor),cinza=series.filter(x=>!x.cor);
+  let s=eixoY(max,ml,W-mr,y,H)+`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
+  const linha=(x,colorida)=>{
+    const foco=!destaque||destaque===x.a,op=colorida?(foco?1:.2):(destaque?.15:.6),st=colorida?x.cor:"var(--s-out)";
+    let g=`<g opacity="${op}"><polyline points="${x.v.map((v,i)=>`${xs(i)},${y(v)}`).join(" ")}" fill="none" stroke="${st}" stroke-width="${colorida?(destaque===x.a?3.4:2.4):1.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(colorida)g+=x.v.map((v,i)=>(n<=12||i===n-1)?`<circle cx="${xs(i)}" cy="${y(v)}" r="${i===n-1?4.5:3}" fill="${st}" stroke="var(--surface)" stroke-width="1.5"/>`:"").join("");
+    return g+"</g>"};
+  cinza.forEach(x=>s+=linha(x,false));cor.forEach(x=>s+=linha(x,true));
+  // rótulos na ponta: coloridos sempre (empurrados para não encostar), cinzas só onde houver espaço
+  const fim=x=>y(x.v[n-1])+4,lab=[];
+  [...cor].sort((p,q)=>fim(p)-fim(q)).forEach(x=>{let yy=fim(x);const ult=lab.at(-1);if(ult&&yy-ult.y<13)yy=ult.y+13;lab.push({x,y:yy,c:true})});
+  const sobe=lab.at(-1)&&lab.at(-1).y>mt+ph+4?lab.at(-1).y-(mt+ph+4):0;if(sobe)lab.forEach(l=>l.y-=sobe);
+  [...cinza].sort((p,q)=>q.v[n-1]-p.v[n-1]).forEach(x=>{const yy=fim(x);if(lab.every(l=>Math.abs(l.y-yy)>=12))lab.push({x,y:yy,c:false})});
+  lab.forEach(l=>{const op=destaque&&destaque!==l.x.a?.3:1;
+    if(l.c)s+=`<circle cx="${xs(n-1)+14}" cy="${l.y-4}" r="4" fill="${l.x.cor}" opacity="${op}"/>`;
+    s+=`<text class="${l.c?"lbl":"lbl-g"}" x="${xs(n-1)+(l.c?22:9)}" y="${l.y}" opacity="${op}">${esc(l.x.a)} <tspan class="${l.c?"lbl-v":""}">${l.x.v[n-1]}</tspan></text>`});
+  ds.forEach((d,i)=>{const w=n>1?pw/(n-1):pw,x0=n>1?xs(i)-w/2:ml;
+    s+=`<rect class="hit" data-i="${i}" data-cx="${xs(i)}" data-ty="${y(Math.max(0,...cor.map(x=>x.v[i])))}" x="${Math.max(ml,x0)}" y="${mt}" width="${w}" height="${ph}"/>`});
+  s+=eixoX(ds,xs,mt+ph);
+  el.innerHTML=svgEl(W,H,s);
+  ligarHover(el,n,i=>{const lista=series.filter(x=>x.v[i]>0||x.cor).sort((p,q)=>q.v[i]-p.v[i]);
+    return `<b>${titTip(ds[i])}</b>${lista.slice(0,10).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor||"var(--s-out)"}"></i>${esc(x.a)}</span><span>${x.v[i]}</span></div>`).join("")}${lista.length>10?`<div class="r"><span>+ ${lista.length-10} atletas</span></div>`:""}`},el.querySelector(".cross"));
+}
 function renderCharts(){
   const ano=selAno.value,met=document.getElementById("f-met").value,top=+document.getElementById("f-top").value,M=MET[met];
   const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=LANCES.filter(l=>l.data.startsWith(ano));
@@ -748,47 +778,21 @@ function renderCharts(){
   const cor=coresDaTemporada(ano);
   const nomes=[...new Set(L.flatMap(l=>[l.gol,l.assist]))].filter(real);
   const porDia=a=>ds.map(d=>L.filter(l=>l.data===d).reduce((s,l)=>s+M.f(l,a),0));
-  let ser=nomes.map(a=>{const v=porDia(a);return {a,v,tot:v.reduce((x,y)=>x+y,0),cor:cor[a]}}).filter(s=>s.tot>0)
+  const acum=v=>{let c=0;return v.map(x=>c+=x)};
+  const ser=nomes.map(a=>{const v=porDia(a);return {a,v,tot:v.reduce((x,y)=>x+y,0)}}).filter(s=>s.tot>0)
     .sort((x,y)=>y.tot-x.tot||x.a.localeCompare(y.a,"pt"));
-  const totalDia=ds.map((d,i)=>ser.reduce((s,x)=>s+x.v[i],0));
-  let barras,linhas;
-  if(top===0){barras=[{a:"Total da turma",v:totalDia,cor:"var(--s1)"}];linhas=[{a:"Total da turma",v:totalDia,cor:"var(--s1)"}]}
-  else{const sel=ser.slice(0,top),resto=ser.slice(top);
-    barras=[...sel];if(resto.length)barras.push({a:`Outros (${resto.length})`,v:ds.map((_,i)=>resto.reduce((s,x)=>s+x.v[i],0)),cor:"var(--s-out)"});
-    linhas=sel}
-  // --- Barras empilhadas por domingo
-  const W=640,H=240,ml=30,mr=10,mt=10,mb=26,pw=W-ml-mr,ph=H-mt-mb;
-  const el1=document.getElementById("ch-dom"),el2=document.getElementById("ch-acc");
-  if(!ds.length||!ser.length){const msg=`<div class="empty-chart">Ainda não há ${M.t.toLowerCase()} registrados em ${ano}.</div>`;el1.innerHTML=msg;el2.innerHTML=msg;document.getElementById("ch-leg").innerHTML="";return}
-  const max1=niceMax(Math.max(...totalDia)),y1=v=>mt+ph-v/max1*ph,band=pw/ds.length,bw=Math.min(56,band*0.6),xc=i=>ml+band*i+band/2;
-  let s=eixoY(max1,ml,W-mr,y1,H);
-  ds.forEach((d,i)=>{let acc=0;const segs=barras.filter(b=>b.v[i]>0);
-    segs.forEach((b,j)=>{const y0=y1(acc),y2=y1(acc+b.v[i]);acc+=b.v[i];const h=y0-y2;
-      const topo=j===segs.length-1,r=topo?Math.min(4,h/2,bw/2):0,x=xc(i)-bw/2;
-      s+=topo?`<path d="M${x},${y0} V${y2+r} Q${x},${y2} ${x+r},${y2} H${x+bw-r} Q${x+bw},${y2} ${x+bw},${y2+r} V${y0} Z" fill="${b.cor}" stroke="var(--surface)" stroke-width="2"/>`
-             :`<rect x="${x}" y="${y2}" width="${bw}" height="${h}" fill="${b.cor}" stroke="var(--surface)" stroke-width="2"/>`});
-    if(totalDia[i]>0)s+=`<text class="lbl" x="${xc(i)}" y="${y1(totalDia[i])-6}" text-anchor="middle">${totalDia[i]}</text>`;
-    s+=`<rect class="hit" data-i="${i}" data-cx="${xc(i)}" data-ty="${y1(totalDia[i])}" x="${ml+band*i}" y="${mt}" width="${band}" height="${ph}"/>`});
-  s+=eixoX(ds,xc,mt+ph);
-  el1.innerHTML=svgEl(W,H,s);
-  ligarHover(el1,ds.length,i=>`<b>Domingo ${fmtAno(ds[i])}</b>${barras.filter(b=>b.v[i]>0).sort((x,y)=>y.v[i]-x.v[i]).map(b=>`<div class="r"><span><i class="sw" style="background:${b.cor}"></i>${esc(b.a)}</span><span>${b.v[i]}</span></div>`).join("")||"<div>nenhum</div>"}<div class="r"><span>Total</span><span>${totalDia[i]}</span></div>`);
-  // --- Linhas acumuladas
-  const acum=linhas.map(x=>{let c=0;return {...x,c:x.v.map(v=>c+=v)}});
-  const mr2=acum.length<=4?96:12,pw2=W-ml-mr2,max2=niceMax(Math.max(1,...acum.flatMap(x=>x.c))),y2=v=>mt+ph-v/max2*ph;
-  const band2=ds.length>1?pw2/(ds.length-1):0,xc2=i=>ds.length>1?ml+band2*i:ml+pw2/2;
-  let s2=eixoY(max2,ml,W-mr2,y2,H)+`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
-  acum.forEach(x=>{const op=destaque&&destaque!==x.a?0.18:1;
-    const pts=x.c.map((v,i)=>`${xc2(i)},${y2(v)}`).join(" ");
-    s2+=`<g opacity="${op}"><polyline points="${pts}" fill="none" stroke="${x.cor}" stroke-width="${destaque===x.a?3:2}" stroke-linejoin="round" stroke-linecap="round"/>`;
-    if(ds.length<=12)s2+=x.c.map((v,i)=>`<circle cx="${xc2(i)}" cy="${y2(v)}" r="4" fill="${x.cor}" stroke="var(--surface)" stroke-width="2"/>`).join("");
-    if(acum.length<=4)s2+=`<text class="lbl" x="${xc2(ds.length-1)+8}" y="${y2(x.c.at(-1))+4}">${esc(x.a.split(" ")[0])} ${x.c.at(-1)}</text>`;
-    s2+="</g>"});
-  ds.forEach((d,i)=>{const x0=ds.length>1?xc2(i)-band2/2:ml,w=ds.length>1?band2:pw2;
-    s2+=`<rect class="hit" data-i="${i}" data-cx="${xc2(i)}" data-ty="${y2(Math.max(0,...acum.map(x=>x.c[i])))}" x="${Math.max(ml,x0)}" y="${mt}" width="${w}" height="${ph}"/>`});
-  s2+=eixoX(ds,xc2,mt+ph);
-  el2.innerHTML=svgEl(W,H,s2);
-  ligarHover(el2,ds.length,i=>`<b>Até ${fmtAno(ds[i])}</b>${[...acum].sort((x,y)=>y.c[i]-x.c[i]).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</span><span>${x.c[i]}</span></div>`).join("")}`,el2.querySelector(".cross"));
-  document.getElementById("ch-leg").innerHTML=acum.length>1?acum.map(x=>`<button type="button" data-a="${esc(x.a)}" class="${destaque&&destaque!==x.a?"off":""}" aria-pressed="${destaque===x.a}"><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</button>`).join(""):"";
+  const el1=document.getElementById("ch-dom"),el2=document.getElementById("ch-acc"),leg=document.getElementById("ch-leg");
+  if(!ds.length||!ser.length){const msg=`<div class="empty-chart">Ainda não há ${M.t.toLowerCase()} registrados em ${ano}.</div>`;el1.innerHTML=msg;el2.innerHTML=msg;leg.innerHTML="";return}
+  let s1,s2;
+  if(top===0){const tot=ds.map((_,i)=>ser.reduce((s,x)=>s+x.v[i],0));
+    s1=[{a:"Total da turma",v:tot,cor:"var(--s1)"}];s2=[{a:"Total da turma",v:acum(tot),cor:"var(--s1)"}]}
+  else{s1=ser.map((x,i)=>({a:x.a,v:x.v,cor:i<top?cor[x.a]:null}));
+    s2=ser.map((x,i)=>({a:x.a,v:acum(x.v),cor:i<top?cor[x.a]:null}))}
+  desenharLinhas(el1,ds,s1,d=>`Domingo ${fmtAno(d)}`);
+  desenharLinhas(el2,ds,s2,d=>`Até ${fmtAno(d)}`);
+  const dest=s2.filter(x=>x.cor);
+  leg.innerHTML=dest.length>1?dest.map(x=>`<button type="button" data-a="${esc(x.a)}" class="${destaque&&destaque!==x.a?"off":""}" aria-pressed="${destaque===x.a}"><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</button>`).join("")
+    +(s2.length>dest.length?`<span class="leg-g"><i class="sw" style="background:var(--s-out)"></i>demais atletas</span>`:""):"";
 }
 document.getElementById("ch-leg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;destaque=destaque===b.dataset.a?null:b.dataset.a;renderCharts()});
 document.getElementById("f-met").onchange=renderCharts;
