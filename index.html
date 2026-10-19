@@ -203,6 +203,42 @@ section{margin-top:32px}
 .badge small{color:var(--muted)}
 .pf-best{color:var(--muted);font-size:14px;margin:8px 0 0}
 
+/* Figurinhas */
+.fig-tit{font-family:var(--display);font-size:20px;font-weight:800;text-transform:uppercase;margin:18px 0 10px}
+.fig-row{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x proximity}
+.fig-row .fig{flex:0 0 172px;scroll-snap-align:start}
+.fig{position:relative;aspect-ratio:5/7;max-width:100%;border:0;padding:0;border-radius:14px;cursor:pointer;font:inherit;color:var(--fg);text-align:left;
+  background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.18);display:block;transition:transform .15s}
+.fig:hover{transform:translateY(-3px)}
+.fig:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.fig-in{position:absolute;inset:0;border-radius:inherit;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
+.fig.ouro,.fig.prata,.fig.bronze,.fig.murcha{padding:6px}
+.fig.ouro .fig-in,.fig.prata .fig-in,.fig.bronze .fig-in,.fig.murcha .fig-in{inset:6px;border-radius:9px}
+.fig.ouro{background:linear-gradient(135deg,#8a6512,#f6d365 25%,#b8860b 50%,#fff1a8 70%,#9c7410)}
+.fig.prata{background:linear-gradient(135deg,#6f7378,#eef0f2 25%,#9da2a8 50%,#ffffff 70%,#80858b)}
+.fig.bronze{background:linear-gradient(135deg,#5e3518,#d99a5b 25%,#8c5a2b 50%,#f3c491 70%,#6e421d)}
+.fig.murcha{background:repeating-linear-gradient(45deg,#8d8d8d 0 6px,#a5a5a5 6px 12px);transform:rotate(-1.5deg)}
+.fig.murcha:hover{transform:rotate(-1.5deg) translateY(-3px)}
+.fig.murcha .fig-foto img{filter:grayscale(1) contrast(.9)}
+.fig-foto{flex:1;position:relative;background:linear-gradient(180deg,#dfe3ee,#c3c9da);overflow:hidden}
+.fig-foto img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.fig-foto svg.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:82%;height:auto}
+.fig-band{background:var(--navy);color:#ffffff;padding:6px 10px 8px;display:flex;flex-direction:column;gap:0}
+.fig.murcha .fig-band{background:#4a4a4a}
+.fig-nome{font-family:var(--display);font-size:21px;font-weight:800;text-transform:uppercase;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fig-ap{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fig-stat{font-family:var(--display);font-size:15px;font-weight:600;color:var(--sun);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fig-esc{position:absolute;top:7px;left:7px;display:flex;flex-direction:column;gap:4px;z-index:2}
+.fig-esc svg{width:28px;height:32px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.fig-ico{position:absolute;top:7px;right:7px;width:36px;height:36px;border-radius:50%;background:#ffffff;display:grid;place-items:center;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.fig-ico svg{width:26px;height:26px}
+.fig-rank{position:absolute;top:48px;right:7px;z-index:2;font-family:var(--display);font-weight:800;font-size:15px;background:rgba(0,0,0,.6);color:#ffffff;border-radius:6px;padding:0 6px}
+.fig-dm{position:absolute;left:7px;bottom:7px;z-index:2;display:flex;align-items:center;gap:4px;background:#ffffff;color:#c8102e;border:2px solid #c8102e;border-radius:6px;padding:1px 6px 1px 3px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.fig-dm svg{width:14px;height:14px}
+.fig.vazio .fig-foto{display:grid;place-items:center}
+.fig.vazio .fig-q{font-family:var(--display);font-size:70px;font-weight:800;color:rgba(36,48,122,.35)}
+.squad .fig{width:100%}
+
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -293,6 +329,7 @@ section{margin-top:32px}
 <nav class="secnav" aria-label="Seções">
   <div class="in" id="secnav">
     <a href="#h-polls" data-alvo="h-polls">Enquetes</a>
+    <a href="#h-cards" data-alvo="h-cards">Cards</a>
     <a href="#h-lances" data-alvo="h-lances">Lances</a>
     <a href="#sec-fotos" data-alvo="sec-fotos" id="nav-fotos">Fotos</a>
     <a href="#h-stats" data-alvo="h-stats">Estatísticas</a>
@@ -318,6 +355,16 @@ section{margin-top:32px}
   <section aria-labelledby="h-polls">
     <div class="sec-head"><h2 id="h-polls">Enquetes da semana</h2><span id="poll-date"></span></div>
     <div class="polls" id="polls"></div>
+  </section>
+
+  <section aria-labelledby="h-cards">
+    <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
+    <h3 class="fig-tit">Destaques da rodada</h3>
+    <div class="fig-row" id="cards-rodada"></div>
+    <h3 class="fig-tit">⚽ Artilharia da temporada</h3>
+    <div class="fig-row" id="cards-art"></div>
+    <h3 class="fig-tit">👟 Assistências da temporada</h3>
+    <div class="fig-row" id="cards-ass"></div>
   </section>
 
   <section aria-labelledby="h-lances">
@@ -390,7 +437,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792438794"></script>
+<script src="lances.js?v=1792439219"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -592,15 +639,8 @@ else document.getElementById("hall").innerHTML=CAMPEOES.map(c=>{const l=byId[c.i
 
 // Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
 const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
-document.getElementById("squad").innerHTML=elenco.map(a=>{
-  const meus=LANCES.filter(l=>l.atletas.includes(a));
-  const gols=LANCES.filter(l=>l.gol===a).length;
-  const premios=CAMPEOES.filter(c=>byId[c.id].atletas.includes(a)).length;
-  return `<button class="player" data-a="${esc(a)}">${av(a,"lg")}<span class="pn">${esc(a)}</span>
-    <span class="pp">${esc(apelido(a)||ATLETAS[a]?.pos||"")}</span>
-    <span class="ps">${meus.length} ${meus.length===1?"lance":"lances"} · ${gols} ${gols===1?"gol":"gols"}</span>
-    ${premios?`<span class="trophy">★ ${premios} ${premios===1?"prêmio":"prêmios"}</span>`:""}</button>`}).join("");
-document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".player");if(b)abrirPerfil(b.dataset.a)});
+// (o Elenco é desenhado como figurinhas em renderCards, mais abaixo)
+document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
 
 // Estatísticas por temporada
 const COLS=[["dom","Domingos"],["lances","Lances"],["gols","Gols"],["assist","Assist."],["golacos","Golaços"],["furadas","Furadas"],["premios","Prêmios"]];
@@ -783,7 +823,72 @@ document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id===
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
 document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
 
-renderPolls();render();renderStats();renderCharts();
+// ===== Figurinhas =====
+// Times do coração: cores + sigla (escudo estilizado, não o oficial). Campo "times" no atletas.json, máx. 2.
+const TIMES={FLU:["Fluminense","#7a1e3a","#00613c","#ffffff"],VNO:["Vila Nova","#c8102e","#ffffff","#c8102e"],
+  GOI:["Goiás","#00703c","#ffffff","#00703c"],ACG:["Atlético-GO","#c8102e","#111111","#c8102e"],
+  FLA:["Flamengo","#c8102e","#111111","#c8102e"],COR:["Corinthians","#111111","#ffffff","#111111"],
+  PAL:["Palmeiras","#006437","#ffffff","#006437"],SAO:["São Paulo","#c8102e","#ffffff","#111111"],
+  VAS:["Vasco","#111111","#ffffff","#111111"],BOT:["Botafogo","#111111","#ffffff","#111111"],
+  SAN:["Santos","#ffffff","#111111","#ffffff"],GRE:["Grêmio","#0d80bf","#111111","#ffffff"],
+  INT:["Internacional","#c8102e","#ffffff","#c8102e"],CAM:["Atlético-MG","#111111","#ffffff","#111111"],
+  CRU:["Cruzeiro","#003da5","#ffffff","#003da5"],BAH:["Bahia","#0d47a1","#c8102e","#ffffff"],
+  FOR:["Fortaleza","#0d47a1","#c8102e","#ffffff"],CAP:["Athletico-PR","#c8102e","#111111","#c8102e"]};
+function escudo(sig){const t=TIMES[sig];if(!t)return"";const[nome,c1,c2,c3]=t,id="e"+sig;
+  return `<svg viewBox="0 0 28 32" role="img" aria-label="${esc(nome)}"><title>${esc(nome)}</title>
+  <defs><clipPath id="${id}"><path d="M2 2h24v14c0 8-6 12.5-12 14C8 28.5 2 24 2 16z"/></clipPath></defs>
+  <g clip-path="url(#${id})"><rect width="28" height="32" fill="${c1}"/><rect x="9.33" width="9.34" height="32" fill="${c2}"/><rect x="18.67" width="9.33" height="32" fill="${c3}"/></g>
+  <path d="M2 2h24v14c0 8-6 12.5-12 14C8 28.5 2 24 2 16z" fill="none" stroke="#ffffff" stroke-width="1.6"/>
+  <text x="14" y="17.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#ffffff" stroke="#000000" stroke-width="1.6" paint-order="stroke" font-family="Arial,sans-serif">${sig}</text></svg>`}
+const ICO={
+  bola:`<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#fff" stroke="#111" stroke-width="2"/><path d="M16 9l6 4.4-2.3 7h-7.4L10 13.4z" fill="#111"/><path d="M16 9V3M22 13.4l5.6-2M19.7 20.4l3.5 5M12.3 20.4l-3.5 5M10 13.4l-5.6-2" stroke="#111" stroke-width="1.6"/></svg>`,
+  chuteira:`<svg viewBox="0 0 32 32"><path d="M4 9h9l2 6c3 0 9 1.5 12 4 1.5 1.3 1.3 4-1 4H5c-1.5 0-2-1-2-2.5z" fill="#111"/><path d="M6 25.5v2M11 25.5v2M16 25.5v2M21 25.5v2" stroke="#111" stroke-width="2.4" stroke-linecap="round"/><path d="M8 13l3 1M9 16l3 1" stroke="#f47b20" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  estrela:`<svg viewBox="0 0 32 32"><path d="M16 3l3.9 8.3 9.1 1.1-6.7 6.2 1.8 9L16 23.2l-8.1 4.4 1.8-9L3 12.4l9.1-1.1z" fill="#f2b705" stroke="#111" stroke-width="1.5"/></svg>`,
+  murcha:`<svg viewBox="0 0 32 32"><path d="M3 24c1-6 5-9 13-9.5 8 .5 12 3.5 13 9.5-4 2.5-22 2.5-26 0z" fill="#fff" stroke="#111" stroke-width="2"/><path d="M12 16.5l3 3.5 5-3.6M9 23l3-3M23 23l-3-3" stroke="#111" stroke-width="1.5" fill="none"/><path d="M5 10c2-2 3 0 5-2M22 9c2-2 3 0 5-2" stroke="#898781" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`};
+const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="32" r="19" fill="#111"/><path d="M8 110c2-30 18-44 42-44s40 14 42 44z" fill="#111"/></svg>`;
+const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
+function figurinha(a,o={}){
+  const d=ATLETAS[a]||{},ap=apelido(a);
+  const foto=d.foto?`<img src="${esc(d.foto)}" alt="" loading="lazy">`:SIL;
+  return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${o.stat?` – ${esc(o.stat)}`:""}">
+    <span class="fig-in">
+      <span class="fig-foto">${foto}
+        <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
+        ${o.ico?`<span class="fig-ico">${ICO[o.ico]}</span>`:""}${o.rank?`<span class="fig-rank">${o.rank}</span>`:""}
+        ${d.dm?DM:""}</span>
+      <span class="fig-band"><span class="fig-nome">${esc(a)}</span><span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
+        <span class="fig-stat">${esc(o.stat||"")}</span></span>
+    </span></button>`;
+}
+function figVazio(titulo,ico,txt,tier){
+  return `<div class="fig vazio ${tier}" role="note"><span class="fig-in"><span class="fig-foto"><span class="fig-q">?</span>
+    <span class="fig-ico">${ICO[ico]}</span></span>
+    <span class="fig-band"><span class="fig-nome">${titulo}</span><span class="fig-ap">${txt}</span><span class="fig-stat">&nbsp;</span></span></span></div>`;
+}
+function top3(S,k,desempate){
+  return S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||y[desempate]-x[desempate]||y.lances-x.lances||x.a.localeCompare(y.a,"pt")).slice(0,3);
+}
+function renderCards(){
+  const ano=anos[0],S=calcStats(ano),T=["ouro","prata","bronze"];
+  document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
+  const gR=CAMPEOES.find(c=>c.kind==="gol"&&c.semana===ultima),mR=CAMPEOES.find(c=>c.kind==="comico"&&c.semana===ultima);
+  const rod=[];
+  if(gR){const l=byId[gR.id];rod.push(figurinha(l.gol&&real(l.gol)?l.gol:l.atletas[0],{tier:"ouro",ico:"estrela",stat:`Golaço da rodada`}))}
+  else rod.push(figVazio("Golaço","estrela","em votação · vote acima","ouro"));
+  if(mR){const l=byId[mR.id];rod.push(figurinha(l.atletas.find(real)||l.atletas[0],{tier:"murcha",ico:"murcha",stat:"Bola murcha"}))}
+  else rod.push(figVazio("Bola murcha","murcha","em votação · vote acima","murcha"));
+  document.getElementById("cards-rodada").innerHTML=rod.join("");
+  const art=top3(S,"gols","golacos"),ass=top3(S,"assist","gols");
+  document.getElementById("cards-art").innerHTML=art.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"bola",rank:`${i+1}º`,stat:`${s.gols} ${s.gols===1?"gol":"gols"}`})).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
+  document.getElementById("cards-ass").innerHTML=ass.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"chuteira",rank:`${i+1}º`,stat:`${s.assist} ${s.assist===1?"assistência":"assist."}`})).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
+  // Elenco: todos com card normal (sem borda)
+  document.getElementById("squad").innerHTML=elenco.map(a=>{
+    const g=LANCES.filter(l=>l.data.startsWith(ano)&&l.gol===a).length,as=LANCES.filter(l=>l.data.startsWith(ano)&&l.assist===a).length;
+    return figurinha(a,{stat:`${g} G · ${as} A`})}).join("");
+}
+["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
+
+renderPolls();render();renderStats();renderCharts();renderCards();
 
 // Link direto para um lance: futclubejao.github.io/#2026-10-18_24 abre o vídeo
 (()=>{const h=location.hash.slice(1),l=byId[h];if(!l)return;
