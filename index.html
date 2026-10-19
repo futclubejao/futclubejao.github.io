@@ -162,7 +162,7 @@ section{margin-top:32px}
 .note{color:var(--muted);font-size:13px;margin:8px 2px 0}
 
 /* Player (só no site do GitHub) */
-.modal{position:fixed;inset:0;z-index:50;background:rgba(8,10,24,.88);display:grid;place-items:center;
+.modal{position:fixed;inset:0;z-index:50;background:#05060d;display:grid;place-items:center;
   padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .m-box{width:min(960px,100%);display:flex;flex-direction:column;gap:10px;color:#ffffff}
 .m-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;opacity:.9}
@@ -177,6 +177,25 @@ section{margin-top:32px}
 .m-btn:hover{background:var(--sun);border-color:var(--sun)}
 .m-btn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 .m-btn:disabled{opacity:.3;cursor:default;background:transparent;border-color:rgba(255,255,255,.4)}
+.m-hint{display:none;text-align:center;font-size:13px;opacity:.75}
+/* Celular em pé: vídeo de ponta a ponta + dica para girar */
+@media (orientation:portrait) and (max-width:700px){
+  .modal{padding-left:0;padding-right:0}
+  .m-top,.m-info,.m-hint{padding:0 12px}
+  .m-frame{border-radius:0}
+  .m-hint{display:block}
+}
+/* Celular deitado: vídeo na tela inteira, setas e fechar por cima */
+@media (orientation:landscape) and (max-height:540px){
+  .modal{padding:0}
+  .m-box{width:100%;height:100%;position:relative;gap:0;display:block}
+  .m-frame{height:100%;max-height:none;width:auto;margin:0 auto;border-radius:0;border-bottom:0}
+  .m-top{position:absolute;top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));z-index:2}
+  #m-pos{display:none}
+  .m-info{position:absolute;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);pointer-events:none;z-index:2}
+  .m-info .m-btn{pointer-events:auto;background:rgba(0,0,0,.45)}
+  .m-txt{visibility:hidden}
+}
 
 /* Campeões */
 .hall{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
@@ -255,10 +274,11 @@ section{margin-top:32px}
     <div class="m-info"><button class="m-btn" id="m-prev" type="button" aria-label="Lance anterior">‹</button>
       <div class="m-txt"><div class="m-tags" id="m-tags"></div><div id="m-desc"></div><div class="m-names" id="m-names"></div></div>
       <button class="m-btn" id="m-next" type="button" aria-label="Próximo lance">›</button></div>
+    <div class="m-hint">📱↻ Gire o celular para ver em tela cheia</div>
   </div>
 </div>
 
-<script src="lances.js?v=1792434156"></script>
+<script src="lances.js?v=1792436301"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
