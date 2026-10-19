@@ -298,6 +298,7 @@ section{margin-top:32px}
 .fig-left.duo{gap:1cqw;top:9cqw}
 
 .fig-dm{position:absolute;right:7cqw;top:72cqw;z-index:3;flex-direction:row!important;gap:.8cqw;font-size:6cqw!important;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.3)}
+.fig-tag{font-weight:800!important;letter-spacing:.28em!important;color:var(--t1)!important;font-size:6.6cqw!important;top:129cqw!important}
 /* Estatísticas */
 .field.year{flex:0 0 140px}
 .podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
@@ -501,7 +502,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792442662"></script>
+<script src="lances.js?v=1792445107"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -936,11 +937,13 @@ function numsAtleta(a,ano){
   return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
     jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
 }
+const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA"};
 // o: {tier, selos:[{ico,rank,txt}], coroa, tag}
 function figurinha(a,o={}){
   const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,anos[0]),selos=o.selos||[];
   const foto=d.foto?`<img src="${esc(d.foto)}" alt="" loading="lazy">`:SIL;
   const nivel={ouro:"Ouro",prata:"Prata",bronze:"Bronze",black:"Black",diamante:"Diamante"}[o.tier];
+  const rotulo=o.tag||ROTULO[o.tier]||"";
   return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${nivel?`, card ${nivel}`:""}: ${n.g} gols, ${n.as} assistências, ${n.jog} de ${n.tot} domingos${o.tag?` – ${esc(o.tag)}`:""}">
     <span class="fig-card">
       <span class="fig-foto">${foto}</span>
@@ -953,27 +956,30 @@ function figurinha(a,o={}){
       <span class="fig-nome">${esc(a)}</span>
       <span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
       <span class="fig-nums"><span><small>GOL</small><b>${n.g}</b></span><span><small>AST</small><b>${n.as}</b></span><span><small>JOG</small><b>${n.jog}/${n.tot}</b></span></span>
-      ${o.tag?`<span class="fig-tag">${esc(o.tag)}</span>`:""}
+      ${rotulo?`<span class="fig-tag">${esc(rotulo)}</span>`:""}
     </span></button>`;
 }
 function figVazio(titulo,ico,txt,tier){
   return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">
     <span class="fig-foto"><span class="fig-q">?</span></span>
     <span class="fig-left"><span class="fig-dia">${ICO[ico]}</span></span>
-    <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span></span></div>`;
+    <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span><span class="fig-tag">${ROTULO[tier]||""}</span></span></div>`;
 }
 function top3(S,k,desempate){
   return S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||y[desempate]-x[desempate]||y.lances-x.lances||x.a.localeCompare(y.a,"pt")).slice(0,3);
 }
 // Status atual do atleta: o mesmo card em todo o site (Elenco, rankings e perfil)
 // top 3 em gols OU assist. = ouro/prata/bronze · top 3 nos DOIS = BLACK · 1º nos DOIS = DIAMANTE com coroa
+const DOMINGOS_P_ESPECIAIS=5;
 function statusCard(a){
   const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
   const ia=top3(S,"gols","golacos").findIndex(s=>s.a===a),ib=top3(S,"assist","gols").findIndex(s=>s.a===a);
   const sg={ico:"bola",rank:`${ia+1}º`,txt:"ARTIL."},sa={ico:"chuteira",rank:`${ib+1}º`,txt:"ASSIST."};
-  if(ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa],coroa:true};
-  if(ia>=0&&ib>=0)return {tier:"black",selos:[sg,sa]};
-  if(ia>=0)return {tier:T[ia],selos:[sg]};
+  // BLACK e DIAMOND só valem a partir do 5º domingo da temporada (decisão do Gustavo, 19/10/2026)
+  const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
+  if(especiais&&ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa],coroa:true};
+  if(especiais&&ia>=0&&ib>=0)return {tier:"black",selos:[sg,sa]};
+  if(ia>=0&&(ib<0||ia<=ib))return {tier:T[ia],selos:[sg]};
   if(ib>=0)return {tier:T[ib],selos:[sa]};
   return {};
 }
