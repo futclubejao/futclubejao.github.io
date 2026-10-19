@@ -11,7 +11,8 @@
 body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
-</style><title>Lances do Jaó</title>
+</style>
+<title>Lances do Jaó</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
@@ -66,6 +67,12 @@ section{margin-top:32px}
 .opt .t{position:relative;min-width:0}.opt .t small{display:block;color:var(--muted)}
 .opt .n{position:relative;font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
 .opt.voted{border-color:var(--grass-2);border-width:2px}
+.opt-row{display:grid;grid-template-columns:1fr auto;gap:6px}
+.watch{display:grid;place-items:center;width:44px;border:1px solid var(--line);border-radius:8px;color:var(--link);text-decoration:none;font-size:16px}
+.watch:hover{border-color:var(--sun);background:var(--sun);color:#ffffff}
+.watch:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.cp{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;margin-left:auto}
+.cp:hover{color:var(--link)}
 .poll .foot{font-size:13px;color:var(--muted)}
 
 /* Filtros */
@@ -318,7 +325,7 @@ function card(l){
     <div class="body">
       <div class="names">${l.atletas.map(a=>`<button class="name" data-a="${esc(a)}">${av(a)}${esc(a)}</button>`).join("")}</div>
       <div class="desc">${esc(l.desc)}</div>
-      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}</div>
+      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}<button class="cp" type="button" data-id="${l.id}">🔗 Copiar link</button></div>
     </div></article>`;
 }
 function render(){
@@ -336,29 +343,36 @@ function render(){
 }
 // Player: no site do GitHub o vídeo abre por cima da página; em outros lugares abre o Drive
 const EMBED=location.hostname.endsWith("github.io");
-let listaAtual=[],idx=-1;
+const SITE="https://futclubejao.github.io/";
+let listaAtual=[],mLista=[],idx=-1;
 const modal=document.getElementById("modal"),mFrame=document.getElementById("m-iframe");
 function abrir(i){
-  idx=i;const l=listaAtual[i];
+  idx=i;const l=mLista[i];
   mFrame.src=`https://drive.google.com/file/d/${l.drive}/preview`;
-  document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${listaAtual.length}`;
+  document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${mLista.length}`;
   document.getElementById("m-tags").innerHTML=tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("");
   document.getElementById("m-desc").textContent=l.desc;
   document.getElementById("m-names").textContent=l.atletas.join(" · ");
   document.getElementById("m-prev").disabled=i===0;
-  document.getElementById("m-next").disabled=i===listaAtual.length-1;
+  document.getElementById("m-next").disabled=i===mLista.length-1;
+  try{history.replaceState(null,"","#"+l.id)}catch(e){}
   if(modal.hidden){modal.hidden=false;document.body.style.overflow="hidden";document.getElementById("m-close").focus()}
 }
-function fechar(){modal.hidden=true;mFrame.src="about:blank";document.body.style.overflow=""}
+function fechar(){modal.hidden=true;mFrame.src="about:blank";document.body.style.overflow="";try{history.replaceState(null,"",location.pathname)}catch(e){}}
 document.getElementById("m-close").onclick=fechar;
 document.getElementById("m-prev").onclick=()=>idx>0&&abrir(idx-1);
-document.getElementById("m-next").onclick=()=>idx<listaAtual.length-1&&abrir(idx+1);
+document.getElementById("m-next").onclick=()=>idx<mLista.length-1&&abrir(idx+1);
 modal.addEventListener("click",e=>{if(e.target===modal)fechar()});
 document.addEventListener("keydown",e=>{if(modal.hidden)return;
-  if(e.key==="Escape")fechar();if(e.key==="ArrowLeft"&&idx>0)abrir(idx-1);if(e.key==="ArrowRight"&&idx<listaAtual.length-1)abrir(idx+1)});
+  if(e.key==="Escape")fechar();if(e.key==="ArrowLeft"&&idx>0)abrir(idx-1);if(e.key==="ArrowRight"&&idx<mLista.length-1)abrir(idx+1)});
 document.getElementById("grid").addEventListener("click",e=>{
+  const c=e.target.closest(".cp");
+  if(c){const url=SITE+"#"+c.dataset.id;
+    const ok=()=>{c.textContent="✓ Link copiado";setTimeout(()=>c.textContent="🔗 Copiar link",1800)};
+    try{navigator.clipboard.writeText(url).then(ok,()=>{c.textContent=url})}catch(err){c.textContent=url}
+    return}
   const t=e.target.closest(".thumb");if(!t||!EMBED)return;
-  e.preventDefault();const id=t.closest(".card").dataset.id;abrir(listaAtual.findIndex(l=>l.id===id))});
+  e.preventDefault();const id=t.closest(".card").dataset.id;mLista=listaAtual;abrir(listaAtual.findIndex(l=>l.id===id))});
 
 function filtrarAtleta(a){state.atleta=a;state.tipo=null;state.dia=TODOS;render();document.getElementById("h-lances").scrollIntoView({behavior:"smooth"})}
 document.getElementById("grid").addEventListener("click",e=>{const b=e.target.closest(".name");if(b)filtrarAtleta(b.dataset.a)});
@@ -380,14 +394,19 @@ function renderPolls(){
     const votos=cand.map(l=>(VOTOS_BASE[l.id]||0)+(meu===l.id?1:0));
     const total=votos.reduce((a,b)=>a+b,0)||1;
     return `<div class="poll" data-kind="${kind}"><h3><span class="dot"></span>${titulo}</h3>
-      ${cand.map((l,i)=>`<button class="opt${meu===l.id?" voted":""}" data-kind="${kind}" data-id="${l.id}" aria-pressed="${meu===l.id}">
+      ${(pollCands[kind]=cand,cand).map((l,i)=>`<div class="opt-row"><button class="opt${meu===l.id?" voted":""}" data-kind="${kind}" data-id="${l.id}" aria-pressed="${meu===l.id}">
         <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
         <span class="t">${esc(l.atletas.join(", "))}<small>${esc(l.desc)}</small></span>
-        <span class="n">${votos[i]}</span></button>`).join("")}
+        <span class="n">${votos[i]}</span></button>
+        <a class="watch" href="${driveUrl(l.drive)}" target="_blank" rel="noopener" data-kind="${kind}" data-i="${i}" aria-label="Assistir: ${esc(l.desc)}">▶</a></div>`).join("")}
       <div class="foot">${meu?"Seu voto foi registrado. Toque em outro lance para trocar.":"Toque num lance para votar. Um voto por pessoa."}</div></div>`;
   }).join("");
 }
-document.getElementById("polls").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
+const pollCands={};
+document.getElementById("polls").addEventListener("click",e=>{
+  const w=e.target.closest(".watch");
+  if(w){if(EMBED){e.preventDefault();mLista=pollCands[w.dataset.kind];abrir(+w.dataset.i)}return}
+  const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
 
 if(!CAMPEOES.length)document.getElementById("hall").innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;
 else document.getElementById("hall").innerHTML=CAMPEOES.map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
@@ -444,6 +463,12 @@ document.getElementById("stats-tbl").addEventListener("click",e=>{
 selAno.onchange=renderStats;
 
 renderPolls();render();renderStats();
+
+// Link direto para um lance: futclubejao.github.io/#2026-10-18_24 abre o vídeo
+(()=>{const h=location.hash.slice(1),l=byId[h];if(!l)return;
+  state.dia=l.data;render();
+  if(EMBED){mLista=listaAtual;abrir(listaAtual.findIndex(x=>x.id===h))}
+  else document.querySelector(`.card[data-id="${h}"]`)?.scrollIntoView({block:"center"});})();
 </script>
 
 </body>
