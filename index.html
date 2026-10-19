@@ -67,6 +67,8 @@ section{margin-top:32px}
 .opt .t{position:relative;min-width:0}.opt .t small{display:block;color:var(--muted)}
 .opt .n{position:relative;font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
 .opt.voted{border-color:var(--grass-2);border-width:2px}
+.opt-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:-4px}
+.opt-head span:last-child{color:var(--link)}
 .opt-row{display:grid;grid-template-columns:1fr auto;gap:6px}
 .watch{display:grid;place-items:center;width:44px;border:1px solid var(--line);border-radius:8px;color:var(--link);text-decoration:none;font-size:16px}
 .watch:hover{border-color:var(--sun);background:var(--sun);color:#ffffff}
@@ -394,6 +396,7 @@ function renderPolls(){
     const votos=cand.map(l=>(VOTOS_BASE[l.id]||0)+(meu===l.id?1:0));
     const total=votos.reduce((a,b)=>a+b,0)||1;
     return `<div class="poll" data-kind="${kind}"><h3><span class="dot"></span>${titulo}</h3>
+      <div class="opt-head"><span>Toque no lance para votar</span><span>Veja o lance ▾</span></div>
       ${(pollCands[kind]=cand,cand).map((l,i)=>`<div class="opt-row"><button class="opt${meu===l.id?" voted":""}" data-kind="${kind}" data-id="${l.id}" aria-pressed="${meu===l.id}">
         <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
         <span class="t">${esc(l.atletas.join(", "))}<small>${esc(l.desc)}</small></span>
