@@ -186,7 +186,12 @@ section{margin-top:32px}
 /* Card do atleta (perfil) */
 .pf-wrap{position:fixed;inset:0;z-index:40;background:rgba(5,6,13,.6);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;
   padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
-.pf{background:var(--bg);color:var(--fg);width:min(560px,100%);max-height:100%;overflow-y:auto;border-radius:14px;padding:20px 18px 22px;position:relative;border-top:6px solid var(--sun)}
+.pf-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;align-items:start}
+.pf-card .fig{cursor:default}
+.pf-card .fig:hover{transform:none}
+.pf-card .fig.murcha:hover{transform:rotate(-2deg)}
+@media (max-width:700px){.pf-grid{grid-template-columns:minmax(0,1fr)}.pf-card{width:min(280px,82%);margin:4px auto 0}}
+.pf{background:var(--bg);color:var(--fg);width:min(860px,100%);max-height:100%;overflow-y:auto;border-radius:14px;padding:20px 18px 22px;position:relative;border-top:6px solid var(--sun)}
 .pf-x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:18px;cursor:pointer}
 .pf-head{display:flex;align-items:center;gap:14px;padding-right:44px}
 .pf-head h3{font-size:32px;font-weight:800;text-transform:uppercase}
@@ -203,41 +208,60 @@ section{margin-top:32px}
 .badge small{color:var(--muted)}
 .pf-best{color:var(--muted);font-size:14px;margin:8px 0 0}
 
-/* Figurinhas */
+/* Figurinhas (estilo carta de jogador, desenho próprio) */
 .fig-tit{font-family:var(--display);font-size:20px;font-weight:800;text-transform:uppercase;margin:18px 0 10px}
-.fig-row{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x proximity}
-.fig-row .fig{flex:0 0 172px;scroll-snap-align:start}
-.fig{position:relative;aspect-ratio:5/7;max-width:100%;border:0;padding:0;border-radius:14px;cursor:pointer;font:inherit;color:var(--fg);text-align:left;
-  background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.18);display:block;transition:transform .15s}
-.fig:hover{transform:translateY(-3px)}
-.fig:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
-.fig-in{position:absolute;inset:0;border-radius:inherit;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
-.fig.ouro,.fig.prata,.fig.bronze,.fig.murcha{padding:6px}
-.fig.ouro .fig-in,.fig.prata .fig-in,.fig.bronze .fig-in,.fig.murcha .fig-in{inset:6px;border-radius:9px}
-.fig.ouro{background:linear-gradient(135deg,#8a6512,#f6d365 25%,#b8860b 50%,#fff1a8 70%,#9c7410)}
-.fig.prata{background:linear-gradient(135deg,#6f7378,#eef0f2 25%,#9da2a8 50%,#ffffff 70%,#80858b)}
-.fig.bronze{background:linear-gradient(135deg,#5e3518,#d99a5b 25%,#8c5a2b 50%,#f3c491 70%,#6e421d)}
-.fig.murcha{background:repeating-linear-gradient(45deg,#8d8d8d 0 6px,#a5a5a5 6px 12px);transform:rotate(-1.5deg)}
-.fig.murcha:hover{transform:rotate(-1.5deg) translateY(-3px)}
-.fig.murcha .fig-foto img{filter:grayscale(1) contrast(.9)}
-.fig-foto{flex:1;position:relative;background:linear-gradient(180deg,#dfe3ee,#c3c9da);overflow:hidden}
+.fig-row{display:flex;gap:14px;overflow-x:auto;padding:6px 4px 12px;scroll-snap-type:x proximity}
+.fig-row .fig{flex:0 0 176px;scroll-snap-align:start}
+.fig{--t1:#0b1033;--t2:#5a6185;position:relative;display:block;width:100%;aspect-ratio:5/7.2;border:0;padding:0;background:none;cursor:pointer;font:inherit;
+  container-type:inline-size;filter:drop-shadow(0 3px 6px rgba(0,0,0,.28));transition:transform .15s}
+.fig:hover{transform:translateY(-4px)}
+.fig:focus-visible{outline:3px solid var(--sun);outline-offset:4px}
+.fig-card{position:absolute;inset:0;clip-path:url(#figshape);overflow:hidden;color:var(--t1);
+  background:
+    linear-gradient(125deg,transparent 38%,rgba(255,255,255,.55) 46%,transparent 53%),
+    repeating-linear-gradient(118deg,rgba(255,255,255,.14) 0 1.5px,transparent 1.5px 9cqw),
+    linear-gradient(200deg,rgba(255,255,255,.35),transparent 40%),
+    var(--fundo)}
+.fig-card::after{content:"";position:absolute;inset:3.2cqw;clip-path:url(#figshape);border:0;
+  box-shadow:inset 0 0 0 .8cqw rgba(255,255,255,.35);pointer-events:none}
+/* fundos por nível */
+.fig.normal{--fundo:linear-gradient(160deg,#2c3a8f,#1b2463 55%,#24307a);--t1:#ffffff;--t2:#c9cff0}
+.fig.ouro{--fundo:linear-gradient(160deg,#f8e49a,#d9ad3c 35%,#f6dc86 52%,#b98a22 78%,#efd27a)}
+.fig.prata{--fundo:linear-gradient(160deg,#f4f6f8,#b8bec6 35%,#eef1f4 52%,#8f969f 78%,#dfe3e8);--t1:#1e2329;--t2:#4b525b}
+.fig.bronze{--fundo:linear-gradient(160deg,#f0c08e,#b9773f 35%,#e8b07a 52%,#8a522a 78%,#d99a62);--t1:#2e1608;--t2:#5e3518}
+.fig.murcha{--fundo:repeating-linear-gradient(45deg,#9a9a9a 0 3cqw,#b1b1b1 3cqw 6cqw);--t1:#222;--t2:#444;transform:rotate(-2deg)}
+.fig.murcha:hover{transform:rotate(-2deg) translateY(-4px)}
+.fig.ouro .fig-card{--t2:#5b430c}
+/* coluna esquerda: posição, selo da categoria, escudos, DM */
+.fig-left{position:absolute;left:8.5cqw;top:11cqw;width:20cqw;display:flex;flex-direction:column;align-items:center;gap:2.2cqw;z-index:2}
+.fig-rk{font-family:var(--display);font-weight:800;font-size:15cqw;line-height:.9;color:var(--t1)}
+.fig-rk small{font-size:7cqw;display:block;text-align:center;letter-spacing:.05em;color:var(--t2)}
+.fig-dia{width:13cqw;height:13cqw;transform:rotate(45deg);border-radius:2.4cqw;background:var(--t1);display:grid;place-items:center;box-shadow:0 0 0 .7cqw rgba(255,255,255,.5)}
+.fig.normal .fig-dia{background:var(--sun)}
+.fig-dia svg{width:9.5cqw;height:9.5cqw;transform:rotate(-45deg)}
+.fig-esc svg{width:13cqw;height:15cqw;display:block;filter:drop-shadow(0 .4cqw .6cqw rgba(0,0,0,.35))}
+.fig-esc{display:flex;flex-direction:column;gap:1.6cqw}
+.fig-dm{display:flex;flex-direction:column;align-items:center;background:#ffffff;color:#c8102e;border:.7cqw solid #c8102e;border-radius:1.8cqw;padding:.6cqw 1.2cqw;font-size:5.6cqw;font-weight:800;line-height:1.05}
+.fig-dm svg{width:7cqw;height:7cqw}
+/* foto */
+.fig-foto{position:absolute;right:5cqw;top:6cqw;width:70cqw;height:84cqw;z-index:1;
+  -webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent);mask-image:linear-gradient(to bottom,#000 72%,transparent)}
 .fig-foto img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
-.fig-foto svg.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:82%;height:auto}
-.fig-band{background:var(--navy);color:#ffffff;padding:6px 10px 8px;display:flex;flex-direction:column;gap:0}
-.fig.murcha .fig-band{background:#4a4a4a}
-.fig-nome{font-family:var(--display);font-size:21px;font-weight:800;text-transform:uppercase;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fig-ap{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fig-stat{font-family:var(--display);font-size:15px;font-weight:600;color:var(--sun);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fig-esc{position:absolute;top:7px;left:7px;display:flex;flex-direction:column;gap:4px;z-index:2}
-.fig-esc svg{width:28px;height:32px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-.fig-ico{position:absolute;top:7px;right:7px;width:36px;height:36px;border-radius:50%;background:#ffffff;display:grid;place-items:center;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.35)}
-.fig-ico svg{width:26px;height:26px}
-.fig-rank{position:absolute;top:48px;right:7px;z-index:2;font-family:var(--display);font-weight:800;font-size:15px;background:rgba(0,0,0,.6);color:#ffffff;border-radius:6px;padding:0 6px}
-.fig-dm{position:absolute;left:7px;bottom:7px;z-index:2;display:flex;align-items:center;gap:4px;background:#ffffff;color:#c8102e;border:2px solid #c8102e;border-radius:6px;padding:1px 6px 1px 3px;font-size:11px;font-weight:700;letter-spacing:.04em}
-.fig-dm svg{width:14px;height:14px}
-.fig.vazio .fig-foto{display:grid;place-items:center}
-.fig.vazio .fig-q{font-family:var(--display);font-size:70px;font-weight:800;color:rgba(36,48,122,.35)}
-.squad .fig{width:100%}
+.fig.murcha .fig-foto img{filter:grayscale(1) contrast(.9)}
+.fig-foto svg.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:86%;height:auto}
+.fig.normal .fig-foto svg.sil circle,.fig.normal .fig-foto svg.sil path{fill:#05081f}
+.fig-q{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:46cqw;color:var(--t1);opacity:.35}
+/* nome, apelido e números */
+.fig-nome{position:absolute;left:6cqw;right:6cqw;top:88cqw;z-index:2;text-align:center;font-family:var(--display);font-weight:800;font-size:12.5cqw;line-height:1;
+  text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.fig-ap{position:absolute;left:8cqw;right:8cqw;top:101cqw;text-align:center;font-size:5.6cqw;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  border-bottom:.5cqw solid color-mix(in srgb,var(--t1) 25%,transparent);padding-bottom:1.5cqw}
+.fig-nums{position:absolute;left:10cqw;right:10cqw;top:111cqw;display:flex;justify-content:space-around;text-align:center;font-variant-numeric:tabular-nums}
+.fig-nums span{display:flex;flex-direction:column;align-items:center}
+.fig-nums small{font-size:5.4cqw;font-weight:700;letter-spacing:.06em;color:var(--t2)}
+.fig-nums b{font-family:var(--display);font-weight:800;font-size:11cqw;line-height:1;color:var(--t1)}
+.fig-tag{position:absolute;left:0;right:0;top:128cqw;text-align:center;font-family:var(--display);font-weight:800;font-size:6.2cqw;letter-spacing:.08em;text-transform:uppercase;color:var(--t2)}
+.squad{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))!important;gap:16px!important}
 
 /* Estatísticas */
 .field.year{flex:0 0 140px}
@@ -342,12 +366,17 @@ section{margin-top:32px}
 <div class="pf-wrap" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="pf-nome">
   <div class="pf">
     <button class="pf-x" id="pf-x" type="button" aria-label="Fechar">✕</button>
-    <div class="pf-head"><span id="pf-av"></span><div><h3 id="pf-nome"></h3><div class="pf-ap" id="pf-ap"></div></div></div>
-    <div class="pf-tiles" id="pf-tiles"></div>
-    <h4>Conquistas</h4><div class="pf-badges" id="pf-badges"></div>
-    <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
-    <p class="pf-best" id="pf-best"></p>
-    <button class="mais" id="pf-lances" type="button"></button>
+    <div class="pf-grid">
+      <div class="pf-card" id="pf-card"></div>
+      <div class="pf-info">
+        <div class="pf-head"><div><h3 id="pf-nome"></h3><div class="pf-ap" id="pf-ap"></div></div></div>
+        <div class="pf-tiles" id="pf-tiles"></div>
+        <h4>Conquistas</h4><div class="pf-badges" id="pf-badges"></div>
+        <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
+        <p class="pf-best" id="pf-best"></p>
+        <button class="mais" id="pf-lances" type="button"></button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -361,9 +390,9 @@ section{margin-top:32px}
     <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
     <h3 class="fig-tit">Destaques da rodada</h3>
     <div class="fig-row" id="cards-rodada"></div>
-    <h3 class="fig-tit">⚽ Artilharia da temporada</h3>
+    <h3 class="fig-tit">Artilharia da temporada</h3>
     <div class="fig-row" id="cards-art"></div>
-    <h3 class="fig-tit">👟 Assistências da temporada</h3>
+    <h3 class="fig-tit">Assistências da temporada</h3>
     <div class="fig-row" id="cards-ass"></div>
   </section>
 
@@ -437,7 +466,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792439219"></script>
+<script src="lances.js?v=1792440784"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
@@ -792,7 +821,7 @@ function abrirPerfil(a){
   const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
   const ds=dias.filter(d=>d.startsWith(ano)).sort();
   const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
-  document.getElementById("pf-av").innerHTML=av(a,"lg");
+  document.getElementById("pf-card").innerHTML=cardDoAtleta(a);
   document.getElementById("pf-nome").textContent=a;
   document.getElementById("pf-ap").textContent=[apelido(a)&&`"${apelido(a)}"`,`Temporada ${ano}`].filter(Boolean).join(" · ");
   const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
@@ -840,30 +869,46 @@ function escudo(sig){const t=TIMES[sig];if(!t)return"";const[nome,c1,c2,c3]=t,id
   <g clip-path="url(#${id})"><rect width="28" height="32" fill="${c1}"/><rect x="9.33" width="9.34" height="32" fill="${c2}"/><rect x="18.67" width="9.33" height="32" fill="${c3}"/></g>
   <path d="M2 2h24v14c0 8-6 12.5-12 14C8 28.5 2 24 2 16z" fill="none" stroke="#ffffff" stroke-width="1.6"/>
   <text x="14" y="17.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#ffffff" stroke="#000000" stroke-width="1.6" paint-order="stroke" font-family="Arial,sans-serif">${sig}</text></svg>`}
+// Formato do card (escudo com cantos recortados e ponta embaixo), uma vez na página
+document.body.insertAdjacentHTML("afterbegin",`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><clipPath id="figshape" clipPathUnits="objectBoundingBox">
+  <path d="M0.03,0.085 Q0.11,0.085 0.13,0.025 L0.33,0.025 Q0.42,0 0.5,0 Q0.58,0 0.67,0.025 L0.87,0.025 Q0.89,0.085 0.97,0.085 L0.97,0.85 Q0.97,0.905 0.78,0.925 Q0.58,0.945 0.5,1 Q0.42,0.945 0.22,0.925 Q0.03,0.905 0.03,0.85 Z"/></clipPath></svg>`);
+// Selos (glifo branco dentro do losango)
 const ICO={
-  bola:`<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#fff" stroke="#111" stroke-width="2"/><path d="M16 9l6 4.4-2.3 7h-7.4L10 13.4z" fill="#111"/><path d="M16 9V3M22 13.4l5.6-2M19.7 20.4l3.5 5M12.3 20.4l-3.5 5M10 13.4l-5.6-2" stroke="#111" stroke-width="1.6"/></svg>`,
-  chuteira:`<svg viewBox="0 0 32 32"><path d="M4 9h9l2 6c3 0 9 1.5 12 4 1.5 1.3 1.3 4-1 4H5c-1.5 0-2-1-2-2.5z" fill="#111"/><path d="M6 25.5v2M11 25.5v2M16 25.5v2M21 25.5v2" stroke="#111" stroke-width="2.4" stroke-linecap="round"/><path d="M8 13l3 1M9 16l3 1" stroke="#f47b20" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-  estrela:`<svg viewBox="0 0 32 32"><path d="M16 3l3.9 8.3 9.1 1.1-6.7 6.2 1.8 9L16 23.2l-8.1 4.4 1.8-9L3 12.4l9.1-1.1z" fill="#f2b705" stroke="#111" stroke-width="1.5"/></svg>`,
-  murcha:`<svg viewBox="0 0 32 32"><path d="M3 24c1-6 5-9 13-9.5 8 .5 12 3.5 13 9.5-4 2.5-22 2.5-26 0z" fill="#fff" stroke="#111" stroke-width="2"/><path d="M12 16.5l3 3.5 5-3.6M9 23l3-3M23 23l-3-3" stroke="#111" stroke-width="1.5" fill="none"/><path d="M5 10c2-2 3 0 5-2M22 9c2-2 3 0 5-2" stroke="#898781" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`};
-const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="32" r="19" fill="#111"/><path d="M8 110c2-30 18-44 42-44s40 14 42 44z" fill="#111"/></svg>`;
+  bola:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M12 8.2l3.6 2.6-1.4 4.2H9.8l-1.4-4.2z" fill="#fff"/><path d="M12 8.2V3M15.6 10.8l4.8-1.6M14.2 15l2.9 4.1M9.8 15l-2.9 4.1M8.4 10.8L3.6 9.2" stroke="#fff" stroke-width="1.5"/></svg>`,
+  chuteira:`<svg viewBox="0 0 24 24"><path d="M2.5 13.2c0-2.3 1.4-3.6 3.4-3.6h3.3l1.3-3.3h3.2l.7 4.2c3.2.6 6.8 1.6 7.4 3.9.3 1.2-.5 2.2-1.9 2.2H4.2c-1 0-1.7-.7-1.7-1.6z" fill="#fff"/><path d="M5 17v2.2M9 17v2.2M13 17v2.2M17 17v2.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 9.6l2.4.6M10 11.6l2.4.6" stroke="#24307a" stroke-width="1.1" stroke-linecap="round"/></svg>`,
+  estrela:`<svg viewBox="0 0 24 24"><path d="M12 2.6l2.8 6 6.5.8-4.8 4.5 1.3 6.5L12 17.2l-5.8 3.2 1.3-6.5-4.8-4.5 6.5-.8z" fill="#fff"/></svg>`,
+  murcha:`<svg viewBox="0 0 24 24"><path d="M2.8 17.6c.7-4.4 3.7-6.6 9.2-6.9 5.5.3 8.5 2.5 9.2 6.9-3 1.9-15.4 1.9-18.4 0z" fill="#fff"/><path d="M9 12.2l2.5 2.6 3.4-2.5" stroke="#555" stroke-width="1.2" fill="none"/><path d="M4.5 7.5c1.5-1.4 2.3.2 3.8-1.3M16 6.5c1.5-1.4 2.3.2 3.8-1.3" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>`};
+const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="34" r="20" fill="#111"/><path d="M6 110c2-31 19-46 44-46s42 15 44 46z" fill="#111"/></svg>`;
 const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
+// Números do atleta na temporada: gols, assistências, jogos (domingos com lance / domingos da temporada)
+function numsAtleta(a,ano){
+  const L=LANCES.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano));
+  return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
+    jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
+}
 function figurinha(a,o={}){
-  const d=ATLETAS[a]||{},ap=apelido(a);
+  const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,anos[0]);
   const foto=d.foto?`<img src="${esc(d.foto)}" alt="" loading="lazy">`:SIL;
-  return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${o.stat?` – ${esc(o.stat)}`:""}">
-    <span class="fig-in">
-      <span class="fig-foto">${foto}
+  return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}: ${n.g} gols, ${n.as} assistências, ${n.jog} de ${n.tot} domingos${o.tag?` – ${esc(o.tag)}`:""}">
+    <span class="fig-card">
+      <span class="fig-foto">${foto}</span>
+      <span class="fig-left">
+        ${o.rank?`<span class="fig-rk">${o.rank}<small>${esc(o.rankTxt||"")}</small></span>`:""}
+        ${o.ico?`<span class="fig-dia">${ICO[o.ico]}</span>`:""}
         <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
-        ${o.ico?`<span class="fig-ico">${ICO[o.ico]}</span>`:""}${o.rank?`<span class="fig-rank">${o.rank}</span>`:""}
-        ${d.dm?DM:""}</span>
-      <span class="fig-band"><span class="fig-nome">${esc(a)}</span><span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
-        <span class="fig-stat">${esc(o.stat||"")}</span></span>
+        ${d.dm?DM:""}
+      </span>
+      <span class="fig-nome">${esc(a)}</span>
+      <span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
+      <span class="fig-nums"><span><small>GOL</small><b>${n.g}</b></span><span><small>AST</small><b>${n.as}</b></span><span><small>JOG</small><b>${n.jog}/${n.tot}</b></span></span>
+      ${o.tag?`<span class="fig-tag">${esc(o.tag)}</span>`:""}
     </span></button>`;
 }
 function figVazio(titulo,ico,txt,tier){
-  return `<div class="fig vazio ${tier}" role="note"><span class="fig-in"><span class="fig-foto"><span class="fig-q">?</span>
-    <span class="fig-ico">${ICO[ico]}</span></span>
-    <span class="fig-band"><span class="fig-nome">${titulo}</span><span class="fig-ap">${txt}</span><span class="fig-stat">&nbsp;</span></span></span></div>`;
+  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">
+    <span class="fig-foto"><span class="fig-q">?</span></span>
+    <span class="fig-left"><span class="fig-dia">${ICO[ico]}</span></span>
+    <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span></span></div>`;
 }
 function top3(S,k,desempate){
   return S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||y[desempate]-x[desempate]||y.lances-x.lances||x.a.localeCompare(y.a,"pt")).slice(0,3);
@@ -873,18 +918,24 @@ function renderCards(){
   document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
   const gR=CAMPEOES.find(c=>c.kind==="gol"&&c.semana===ultima),mR=CAMPEOES.find(c=>c.kind==="comico"&&c.semana===ultima);
   const rod=[];
-  if(gR){const l=byId[gR.id];rod.push(figurinha(l.gol&&real(l.gol)?l.gol:l.atletas[0],{tier:"ouro",ico:"estrela",stat:`Golaço da rodada`}))}
+  if(gR){const l=byId[gR.id];rod.push(figurinha(l.gol&&real(l.gol)?l.gol:l.atletas[0],{tier:"ouro",ico:"estrela",tag:"Golaço da rodada"}))}
   else rod.push(figVazio("Golaço","estrela","em votação · vote acima","ouro"));
-  if(mR){const l=byId[mR.id];rod.push(figurinha(l.atletas.find(real)||l.atletas[0],{tier:"murcha",ico:"murcha",stat:"Bola murcha"}))}
+  if(mR){const l=byId[mR.id];rod.push(figurinha(l.atletas.find(real)||l.atletas[0],{tier:"murcha",ico:"murcha",tag:"Bola murcha da rodada"}))}
   else rod.push(figVazio("Bola murcha","murcha","em votação · vote acima","murcha"));
   document.getElementById("cards-rodada").innerHTML=rod.join("");
   const art=top3(S,"gols","golacos"),ass=top3(S,"assist","gols");
-  document.getElementById("cards-art").innerHTML=art.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"bola",rank:`${i+1}º`,stat:`${s.gols} ${s.gols===1?"gol":"gols"}`})).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
-  document.getElementById("cards-ass").innerHTML=ass.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"chuteira",rank:`${i+1}º`,stat:`${s.assist} ${s.assist===1?"assistência":"assist."}`})).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
-  // Elenco: todos com card normal (sem borda)
-  document.getElementById("squad").innerHTML=elenco.map(a=>{
-    const g=LANCES.filter(l=>l.data.startsWith(ano)&&l.gol===a).length,as=LANCES.filter(l=>l.data.startsWith(ano)&&l.assist===a).length;
-    return figurinha(a,{stat:`${g} G · ${as} A`})}).join("");
+  document.getElementById("cards-art").innerHTML=art.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"bola",rank:`${i+1}º`,rankTxt:"ARTIL."})).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
+  document.getElementById("cards-ass").innerHTML=ass.map((s,i)=>figurinha(s.a,{tier:T[i],ico:"chuteira",rank:`${i+1}º`,rankTxt:"ASSIST."})).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
+  // Elenco: todos com card normal (azul, sem moldura metálica)
+  document.getElementById("squad").innerHTML=elenco.map(a=>figurinha(a)).join("");
+}
+// Melhor versão do card de cada atleta (ouro/prata/bronze se estiver no pódio)
+function cardDoAtleta(a){
+  const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
+  const ia=top3(S,"gols","golacos").findIndex(s=>s.a===a),ib=top3(S,"assist","gols").findIndex(s=>s.a===a);
+  if(ia>=0&&(ib<0||ia<=ib))return figurinha(a,{tier:T[ia],ico:"bola",rank:`${ia+1}º`,rankTxt:"ARTIL."});
+  if(ib>=0)return figurinha(a,{tier:T[ib],ico:"chuteira",rank:`${ib+1}º`,rankTxt:"ASSIST."});
+  return figurinha(a);
 }
 ["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
 
