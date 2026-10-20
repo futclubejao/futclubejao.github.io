@@ -153,9 +153,10 @@ section{margin-top:32px}
 .mais:hover{background:var(--navy);color:#ffffff}
 
 /* Gráficos: paleta categórica validada (skill dataviz, 8 slots em ordem fixa) */
-:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--s-out:#898781;--axis:#c3c2b7}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--axis:#383835}}
-:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;--axis:#383835}
+/* paleta editorial (19/10) validada com validate_palette.js: claro vs #fff e escuro vs #161a33 */
+:root{--s1:#2f5d9e;--s2:#d0473c;--s3:#1f8a68;--s4:#e0812f;--s5:#8a44a6;--s6:#b8961c;--s7:#5a9be0;--s8:#c2185b;--s-out:#c4c4c4;--s-gray:#c4c4c4;--s-gray-t:#8f8f8f;--axis:#9b9a92}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#5b86d0;--s2:#e0574a;--s3:#1f9476;--s4:#d9772a;--s5:#a468cc;--s6:#b3911a;--s7:#4f97e0;--s8:#e04a86;--s-out:#474c6b;--s-gray:#474c6b;--s-gray-t:#80869f;--axis:#5a5f80}}
+:root[data-theme="dark"]{--s1:#5b86d0;--s2:#e0574a;--s3:#1f9476;--s4:#d9772a;--s5:#a468cc;--s6:#b3911a;--s7:#4f97e0;--s8:#e04a86;--s-out:#474c6b;--s-gray:#474c6b;--s-gray-t:#80869f;--axis:#5a5f80}
 .charts{display:flex;flex-direction:column;gap:16px;margin-top:20px}
 .ctl{display:flex;flex-wrap:wrap;gap:10px}
 .ctl .field{flex:0 1 230px}
@@ -173,6 +174,14 @@ section{margin-top:32px}
 .plot .lbl{font-size:12px;font-weight:700;fill:var(--fg)}
 .plot .lbl-v{font-weight:800}
 .plot .lbl-g{font-size:11px;fill:var(--muted);opacity:.85}
+/* linhas estilo editorial */
+.plot .ln-g{fill:none;stroke:var(--s-gray);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+.plot .lbl-g{font-size:11.5px;fill:var(--s-gray-t);opacity:1}
+.plot .ytk{font-size:11.5px;fill:var(--muted)}
+/* Campeões: ranking de prêmios + destaques de cada rodada */
+.hall-tbl{margin-bottom:18px}
+.hall-tbl td:first-child,.hall-tbl th:first-child{text-align:center}
+.hall-rod{margin-top:6px}
 .legend .leg-g{color:var(--muted)}
 .tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.4;min-width:130px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .tip b{display:block;margin-bottom:2px}
@@ -496,7 +505,6 @@ section{margin-top:32px}
     <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
     <h3 class="fig-tit">Destaques da rodada</h3>
     <div class="fig-row" id="cards-rodada"></div>
-    <div id="cards-ant-wrap" hidden><h3 class="fig-tit" id="cards-ant-t">Destaques da rodada anterior</h3><div class="fig-row" id="cards-ant"></div></div>
     <h3 class="fig-tit">Artilharia da temporada</h3>
     <div class="fig-row" id="cards-art"></div>
     <h3 class="fig-tit">Assistências da temporada</h3>
@@ -559,8 +567,8 @@ section{margin-top:32px}
   </section>
 
   <section aria-labelledby="h-hall">
-    <div class="sec-head"><h2 id="h-hall">Galeria dos campeões</h2><span>vencedores das enquetes anteriores</span></div>
-    <div class="hall" id="hall"></div>
+    <div class="sec-head"><h2 id="h-hall">Campeões</h2><span>ranking de prêmios e os destaques de cada rodada</span></div>
+    <div id="hall"></div>
   </section>
 </main>
 <footer class="patro-rodape" id="patro-rodape" hidden>
@@ -809,10 +817,7 @@ document.getElementById("polls").addEventListener("click",e=>{
   if(w){if(EMBED){e.preventDefault();mLista=pollCands[w.dataset.kind];abrir(+w.dataset.i)}return}
   const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
 
-if(!CAMPEOES.length)document.getElementById("hall").innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;
-else document.getElementById("hall").innerHTML=[...CAMPEOES].sort((x,y)=>y.semana.localeCompare(x.semana)).map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
-  <div class="k">${PREMIO[c.kind]} · ${fmt(c.semana)}</div>
-  <div class="who">${esc(l?l.atletas.join(", "):ganhador(c))}</div><div class="d">${l?esc(l.desc)+" · ":""}${c.votos} votos</div></div>`}).join("");
+// (Campeões é desenhado em renderHall, chamado por renderCards)
 
 // Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
 const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
@@ -888,33 +893,41 @@ function ligarHover(plot,n,conteudo,cross){
   svg.addEventListener("pointerleave",()=>{semDica(plot);if(cross)cross.style.display="none"});
 }
 let destaque=null;
-// Linhas no estilo de jornal: destaques coloridos com nome na ponta; demais em cinza fino, nome em cinza (só se couber)
-function desenharLinhas(el,ds,series,titTip){
-  const W=640,H=270,ml=30,mr=124,mt=14,mb=26,pw=W-ml-mr,ph=H-mt-mb,n=ds.length;
+// Estilo editorial: destaques coloridos e grossos, demais em cinza fino; nome de todos na ponta
+// (cinza para os demais, omitido só quando não cabe perto da própria linha); eixo leve com o número sobre a grade
+function desenharLinhas(el,ds,series,titTip,unid){
+  // desenha na largura real do gráfico (texto fica legível no celular)
+  const W=Math.round(Math.min(640,Math.max(330,el.clientWidth||640))),H=W<520?300:280,ml=4,mr=W<520?112:132,mt=22,mb=26,pw=W-ml-mr,ph=H-mt-mb,n=ds.length;
   const max=niceMax(Math.max(1,...series.flatMap(x=>x.v))),y=v=>mt+ph-v/max*ph,xs=i=>n>1?ml+pw*i/(n-1):ml+pw/2;
   const cor=series.filter(x=>x.cor),cinza=series.filter(x=>!x.cor);
-  let s=eixoY(max,ml,W-mr,y,H)+`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
-  const linha=(x,colorida)=>{
-    const foco=!destaque||destaque===x.a,op=colorida?(foco?1:.2):(destaque?.15:.6),st=colorida?x.cor:"var(--s-out)";
-    let g=`<g opacity="${op}"><polyline points="${x.v.map((v,i)=>`${xs(i)},${y(v)}`).join(" ")}" fill="none" stroke="${st}" stroke-width="${colorida?(destaque===x.a?3.4:2.4):1.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
-    if(colorida)g+=x.v.map((v,i)=>(n<=12||i===n-1)?`<circle cx="${xs(i)}" cy="${y(v)}" r="${i===n-1?4.5:3}" fill="${st}" stroke="var(--surface)" stroke-width="1.5"/>`:"").join("");
-    return g+"</g>"};
-  cinza.forEach(x=>s+=linha(x,false));cor.forEach(x=>s+=linha(x,true));
-  // rótulos na ponta: coloridos sempre (empurrados para não encostar), cinzas só onde houver espaço
-  const fim=x=>y(x.v[n-1])+4,lab=[];
-  [...cor].sort((p,q)=>fim(p)-fim(q)).forEach(x=>{let yy=fim(x);const ult=lab.at(-1);if(ult&&yy-ult.y<13)yy=ult.y+13;lab.push({x,y:yy,c:true})});
-  const sobe=lab.at(-1)&&lab.at(-1).y>mt+ph+4?lab.at(-1).y-(mt+ph+4):0;if(sobe)lab.forEach(l=>l.y-=sobe);
-  [...cinza].sort((p,q)=>q.v[n-1]-p.v[n-1]).forEach(x=>{const yy=fim(x);if(lab.every(l=>Math.abs(l.y-yy)>=12))lab.push({x,y:yy,c:false})});
-  lab.forEach(l=>{const op=destaque&&destaque!==l.x.a?.3:1;
-    if(l.c)s+=`<circle cx="${xs(n-1)+14}" cy="${l.y-4}" r="4" fill="${l.x.cor}" opacity="${op}"/>`;
-    s+=`<text class="${l.c?"lbl":"lbl-g"}" x="${xs(n-1)+(l.c?22:9)}" y="${l.y}" opacity="${op}">${esc(l.x.a)} <tspan class="${l.c?"lbl-v":""}">${l.x.v[n-1]}</tspan></text>`});
+  let s="";const step=Math.max(1,Math.ceil(max/4));
+  for(let v=0;v<=max;v+=step){const yy=y(v);
+    s+=`<line class="${v?"grid":"base"}" x1="${ml}" x2="${W-mr+6}" y1="${yy}" y2="${yy}"/>`;
+    if(v)s+=`<text class="ytk" x="${ml}" y="${yy-5}">${v}${v+step>max?` ${unid}`:""}</text>`}
+  s+=`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
+  const pts=x=>x.v.map((v,i)=>`${xs(i)},${y(v)}`).join(" ");
+  cinza.forEach(x=>{s+=`<polyline class="ln-g" points="${pts(x)}" opacity="${destaque?.4:1}"/>`});
+  cor.forEach(x=>{const f=destaque===x.a,op=!destaque||f?1:.22;
+    s+=`<g opacity="${op}"><polyline points="${pts(x)}" fill="none" stroke="var(--surface)" stroke-width="${f?7:6}" stroke-linejoin="round" stroke-linecap="round"/>`
+      +`<polyline points="${pts(x)}" fill="none" stroke="${x.cor}" stroke-width="${f?3.8:3}" stroke-linejoin="round" stroke-linecap="round"/>`
+      +`<circle cx="${xs(n-1)}" cy="${y(x.v[n-1])}" r="3.8" fill="${x.cor}" stroke="var(--surface)" stroke-width="1.5"/></g>`});
+  // rótulos: empilha sem encostar (13px); destaque nunca some, cinza que ficaria >14px longe da linha é omitido
+  const lab=[...cor.map(x=>({x,c:true})),...cinza.map(x=>({x,c:false}))].map(l=>({...l,t:y(l.x.v[n-1])+4})).sort((p,q)=>p.t-q.t||(q.c-p.c));
+  const ok=[];for(const l of lab){let yy=l.t;const u=ok.at(-1);if(u&&yy-u.y<13)yy=u.y+13;if(!l.c&&yy-l.t>14)continue;ok.push({...l,y:yy})}
+  const sobra=ok.length?ok.at(-1).y-(mt+ph-2):0;if(sobra>0)ok.forEach(l=>l.y-=sobra);
+  ok.forEach(l=>{const op=destaque&&destaque!==l.x.a?.35:1;
+    if(l.c)s+=`<line x1="${xs(n-1)+9}" x2="${xs(n-1)+19}" y1="${l.y-4}" y2="${l.y-4}" stroke="${l.x.cor}" stroke-width="3" stroke-linecap="round" opacity="${op}"/>`;
+    s+=`<text class="${l.c?"lbl":"lbl-g"}" x="${xs(n-1)+(l.c?24:10)}" y="${l.y}" opacity="${op}">${esc(l.x.a)} <tspan class="${l.c?"lbl-v":""}">${l.x.v[n-1]}</tspan></text>`});
   ds.forEach((d,i)=>{const w=n>1?pw/(n-1):pw,x0=n>1?xs(i)-w/2:ml;
     s+=`<rect class="hit" data-i="${i}" data-cx="${xs(i)}" data-ty="${y(Math.max(0,...cor.map(x=>x.v[i])))}" x="${Math.max(ml,x0)}" y="${mt}" width="${w}" height="${ph}"/>`});
   s+=eixoX(ds,xs,mt+ph);
   el.innerHTML=svgEl(W,H,s);
   ligarHover(el,n,i=>{const lista=series.filter(x=>x.v[i]>0||x.cor).sort((p,q)=>q.v[i]-p.v[i]);
-    return `<b>${titTip(ds[i])}</b>${lista.slice(0,10).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor||"var(--s-out)"}"></i>${esc(x.a)}</span><span>${x.v[i]}</span></div>`).join("")}${lista.length>10?`<div class="r"><span>+ ${lista.length-10} atletas</span></div>`:""}`},el.querySelector(".cross"));
+    return `<b>${titTip(ds[i])}</b>${lista.slice(0,10).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor||"var(--s-gray)"}"></i>${esc(x.a)}</span><span>${x.v[i]}</span></div>`).join("")}${lista.length>10?`<div class="r"><span>+ ${lista.length-10} atletas</span></div>`:""}`},el.querySelector(".cross"));
 }
+
+// redesenha os gráficos quando a largura da tela muda
+let _rc;addEventListener("resize",()=>{clearTimeout(_rc);_rc=setTimeout(()=>{if(typeof renderCharts==="function")renderCharts()},250)});
 function renderCharts(){
   const ano=selAno.value,met=document.getElementById("f-met").value,top=+document.getElementById("f-top").value,M=MET[met];
   const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=LANCES.filter(l=>l.data.startsWith(ano));
@@ -933,8 +946,8 @@ function renderCharts(){
     s1=[{a:"Total da turma",v:tot,cor:"var(--s1)"}];s2=[{a:"Total da turma",v:acum(tot),cor:"var(--s1)"}]}
   else{s1=ser.map((x,i)=>({a:x.a,v:x.v,cor:i<top?cor[x.a]:null}));
     s2=ser.map((x,i)=>({a:x.a,v:acum(x.v),cor:i<top?cor[x.a]:null}))}
-  desenharLinhas(el1,ds,s1,d=>`Domingo ${fmtAno(d)}`);
-  desenharLinhas(el2,ds,s2,d=>`Até ${fmtAno(d)}`);
+  desenharLinhas(el1,ds,s1,d=>`Domingo ${fmtAno(d)}`,M.t.toLowerCase());
+  desenharLinhas(el2,ds,s2,d=>`Até ${fmtAno(d)}`,M.t.toLowerCase());
   const dest=s2.filter(x=>x.cor);
   leg.innerHTML=dest.length>1?dest.map(x=>`<button type="button" data-a="${esc(x.a)}" class="${destaque&&destaque!==x.a?"off":""}" aria-pressed="${destaque===x.a}"><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</button>`).join("")
     +(s2.length>dest.length?`<span class="leg-g"><i class="sw" style="background:var(--s-out)"></i>demais atletas</span>`:""):"";
@@ -1169,19 +1182,32 @@ const LEGENDA=[
   ["murcha","Bola murcha","murcha","Votado pela turma: a maior furada do domingo. Card de zoeira."]];
 document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
   `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
+// ===== Campeões: ranking de prêmios + destaques de cada rodada (histórico) =====
+function renderHall(){
+  const el=document.getElementById("hall"),sems=[...new Set(CAMPEOES.map(c=>c.semana))].sort().reverse();
+  if(!sems.length){el.innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;return}
+  const R={};CAMPEOES.forEach(c=>{const a=ganhador(c);if(!a)return;(R[a]=R[a]||{a,craque:0,gol:0,comico:0})[c.kind]++});
+  const lin=Object.values(R).map(r=>({...r,tot:r.craque+r.gol+r.comico}))
+    .sort((x,y)=>y.tot-x.tot||y.craque-x.craque||y.gol-x.gol||x.a.localeCompare(y.a,"pt"));
+  el.innerHTML=`<h3 class="fig-tit">Ranking de prêmios</h3>
+    <div class="tbl-wrap hall-tbl"><table class="stats-tbl"><colgroup><col style="width:44px"><col style="width:200px"><col style="width:96px"><col style="width:96px"><col style="width:116px"><col style="width:70px"></colgroup>
+    <thead><tr><th>#</th><th>Atleta</th><th>👑 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
+    <tbody>${lin.map((r,i)=>`<tr><td class="pos">${i+1}</td><td><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button></td>
+      <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div>
+    ${sems.map(sem=>`<div class="hall-rod"><h3 class="fig-tit">Destaques da rodada de ${fmtAno(sem)}</h3><div class="fig-row">${destaques(sem,false)}</div></div>`).join("")}`;
+}
+document.getElementById("hall").addEventListener("click",e=>{const b=e.target.closest(".who-btn,.fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
 function renderCards(){
   const ano=anos[0],S=calcStats(ano);
   document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
   document.getElementById("cards-rodada").innerHTML=destaques(ultima,true);
-  const ant=dias[1],hAnt=ant?destaques(ant,false):"";
-  document.getElementById("cards-ant").innerHTML=hAnt;document.getElementById("cards-ant-wrap").hidden=!hAnt;
-  if(ant)document.getElementById("cards-ant-t").textContent=`Destaques da rodada anterior · ${fmt(ant)}`;
+  renderHall();
   document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
   document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
   document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
 }
-["cards-rodada","cards-ant","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
+["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
 
 renderPolls();render();renderStats();renderCharts();renderCards();
 
