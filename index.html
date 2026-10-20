@@ -437,7 +437,9 @@ section{margin-top:32px}
 .patro-faixa .pf-lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#5a6185}
 .patro-faixa .pf-cta{font-size:13px;font-weight:700}
 .patro-faixa:hover .pf-cta{text-decoration:underline}
-@media (max-width:480px){.patro-faixa .pf-cta{display:none}}
+@media (max-width:480px){.patro-faixa:not(.patro-vazio) .pf-cta{display:none}.patro-vazio .pf-lbl{display:none}}
+.patro-vazio .pf-cta{display:inline;color:#24307a}
+.patro-rodape .pr-vazio{border:2px dashed #aeb4d6;border-radius:12px;color:#5a6185;font-weight:700;font-size:20px;padding:28px 56px}
 .patro-mini{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:12px;margin:-4px 0 6px;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 12px}
 .patro-mini img{height:34px;width:auto}
 .patro-player{display:inline-flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px;text-decoration:none;color:#ffffff;font-size:11px;opacity:.9}
@@ -686,7 +688,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792504439"></script>
+<script src="lances.js?v=1792505868"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1119,9 +1121,16 @@ document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.
 
 // ===== Patrocinador =====
 // Para ligar: preencher {nome, logo, url}. null = site sem patrocinador.
-const PATROCINIO={nome:"Sherife",logo:"patrocinio/sherife.png",url:"https://www.sherifelojas.com/?utm_source=centraldapelada&utm_medium=site&utm_campaign=pelada-jao"};
+// Sherife (desligado 20/10 p/ o teaser): {nome:"Sherife",logo:"patrocinio/sherife.png",url:"https://www.sherifelojas.com/?utm_source=centraldapelada&utm_medium=site&utm_campaign=pelada-jao"}
+const PATROCINIO=null;
 function aplicarPatrocinio(){
-  const p=PATROCINIO;if(!p)return;
+  const p=PATROCINIO;
+  if(!p){ // sem patrocinador: mostra o espaço reservado
+    const f=document.getElementById("patro-faixa"),r=document.getElementById("patro-rodape");
+    f.hidden=false;f.classList.add("patro-vazio");f.removeAttribute("rel");f.removeAttribute("target");
+    f.innerHTML='<span class="pf-lbl">Espaço para patrocinador</span><span class="pf-cta">Seu logo aqui · Anuncie na Central da Pelada</span>';
+    r.hidden=false;r.querySelector(".pr-in").innerHTML='<span class="pr-lbl">Espaço para patrocinador</span><div class="pr-vazio">Seu logo aqui</div><span class="pr-lbl">Anuncie na Central da Pelada</span>';
+    return}
   const liga=(id,comImg)=>{const el=document.getElementById(id);if(!el)return;el.hidden=false;el.href=p.url;el.title=p.nome;
     const im=comImg?document.getElementById(comImg):el.querySelector("img");if(im){im.src=p.logo;im.alt=p.nome}};
   liga("patro-faixa","patro-faixa-img");liga("patro-cards");liga("patro-player");
