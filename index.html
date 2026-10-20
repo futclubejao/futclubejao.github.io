@@ -418,9 +418,15 @@ section{margin-top:32px}
 
 .fig-dm{position:absolute;right:7cqw;top:72cqw;z-index:3;flex-direction:row!important;gap:.8cqw;font-size:6cqw!important;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.3)}
 .fig-tag{font-weight:800!important;letter-spacing:.28em!important;color:var(--t1)!important;font-size:6.6cqw!important;top:129cqw!important}
-/* Bola murcha: nome mais longo, cabe no card (20/10) */
-.fig.murcha .fig-tag{letter-spacing:.08em!important;font-size:4.8cqw!important;top:129.6cqw!important;white-space:nowrap}
-.fig.murcha .fig-nums{top:108cqw}
+/* PADRÃO ÚNICO dos cards (20/10, opção B; medido pelo pior caso = Bola murcha e o nome THIAGO NEGRÃO) */
+.fig-nome{font-size:10cqw!important;top:89cqw!important}
+.fig-ap{top:100.5cqw!important;font-size:5.2cqw!important;border-bottom:0!important;padding-bottom:0!important}
+.fig-nums{top:110cqw!important;left:9cqw;right:9cqw}
+.fig-nums::before{content:"";position:absolute;left:4cqw;right:4cqw;top:-2.8cqw;height:.5cqw;background:color-mix(in srgb,var(--t1) 28%,transparent)}
+.fig-nums small{font-size:4.8cqw}
+.fig-nums b{font-size:10cqw}
+.fig-tag{top:128.6cqw!important;font-size:5cqw!important;letter-spacing:.14em!important;white-space:nowrap}
+.fig.murcha::before{top:9cqw;right:9cqw}
 /* Atleta com 2 cards */
 .fig-stack{position:relative;width:100%}
 .fig-stack .fig-front{position:relative;z-index:2}
@@ -691,7 +697,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792535406"></script>
+<script src="lances.js?v=1792536189"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1161,7 +1167,7 @@ function escudo(sig){const t=TIMES[sig];if(!t)return"";const[nome,c1,c2,c3]=t,id
   <text x="14" y="17.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#ffffff" stroke="#000000" stroke-width="1.6" paint-order="stroke" font-family="Arial,sans-serif">${sig}</text></svg>`}
 // Formato do card (escudo com cantos recortados e ponta embaixo), uma vez na página
 document.body.insertAdjacentHTML("afterbegin",`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><clipPath id="figshape" clipPathUnits="objectBoundingBox">
-  <path d="M0.03,0.085 Q0.11,0.085 0.13,0.025 L0.33,0.025 Q0.42,0 0.5,0 Q0.58,0 0.67,0.025 L0.87,0.025 Q0.89,0.085 0.97,0.085 L0.97,0.85 Q0.97,0.905 0.78,0.925 Q0.58,0.945 0.5,1 Q0.42,0.945 0.22,0.925 Q0.03,0.905 0.03,0.85 Z"/></clipPath><clipPath id="gemshape" clipPathUnits="objectBoundingBox"><path d="M0.25,0 L0.75,0 L1,0.16 L1,0.80 L0.5,1 L0,0.80 L0,0.16 Z"/></clipPath></svg>`);
+  <path d="M0.03,0.06 Q0.10,0.06 0.12,0.012 L0.88,0.012 Q0.90,0.06 0.97,0.06 L0.97,0.86 Q0.97,0.912 0.80,0.938 Q0.62,0.962 0.5,0.988 Q0.38,0.962 0.2,0.938 Q0.03,0.912 0.03,0.86 Z"/></clipPath><clipPath id="gemshape" clipPathUnits="objectBoundingBox"><path d="M0.25,0 L0.75,0 L1,0.16 L1,0.80 L0.5,1 L0,0.80 L0,0.16 Z"/></clipPath></svg>`);
 // Selos coloridos dentro de um círculo branco
 const ICO={
   // bola de futebol clássica: pentágono central + gomos pretos na borda
