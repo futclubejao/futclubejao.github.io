@@ -300,6 +300,26 @@ section{margin-top:32px}
 .fig-gema{position:absolute;top:.8cqw;left:50%;transform:translateX(-50%);width:20cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
 .fig-facetas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;fill:none;stroke:rgba(255,255,255,.75);mix-blend-mode:screen;opacity:.8}
 .fig-facetas *{vector-effect:non-scaling-stroke;stroke-width:1.2px}
+/* CRAQUE DA RODADA: vinho real com borda dourada e coroa (19/10) */
+.fig.craque{--fundo:linear-gradient(160deg,#8c1a3a,#4a0a1d 50%,#7a1230 70%,#3d0817);--t1:#ffe9a8;--t2:#f3cf7a;filter:drop-shadow(0 0 5px rgba(242,201,76,.55)) drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.fig.craque .fig-card::after{box-shadow:inset 0 0 0 .9cqw #e0ac1d}
+.fig.craque .fig-ap{border-bottom-color:rgba(243,210,122,.45)}
+.poll[data-kind="craque"] h3 .dot{background:#8c1a3a}
+.win[data-kind="craque"] .k{color:#8c1a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .win[data-kind="craque"] .k{color:#f3cf7a}}
+:root[data-theme="dark"] .win[data-kind="craque"] .k{color:#f3cf7a}
+/* histórico de cards no perfil */
+.pf-hsum{margin:0 0 6px;font-size:14px}
+.pf-hrow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px}
+.pf-hrow .ph{flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.pf-hrow .fig{width:96px;cursor:default}
+/* legenda: o que cada card significa */
+.cards-leg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.cl-item{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cl-item .fig{flex:0 0 78px;width:78px;cursor:default}
+.cl-item h4{margin:0;font-family:var(--display);font-size:18px;font-weight:800;text-transform:uppercase;line-height:1.1}
+.cl-item p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:var(--muted)}
+.cards-link{font-size:13px;color:var(--link)}
 @keyframes brilho{0%,100%{background-position:0 0,-60cqw 0,0 0,0 0}50%{background-position:0 0,60cqw 0,0 0,0 0}}
 @media (prefers-reduced-motion:no-preference){.fig.diamante .fig-card,.fig.black .fig-card{background-size:auto,220% 100%,auto,auto;animation:brilho 5s ease-in-out infinite}}
 
@@ -437,7 +457,7 @@ section{margin-top:32px}
     <a href="#h-lances" data-alvo="h-lances">Lances</a>
     <a href="#sec-fotos" data-alvo="sec-fotos" id="nav-fotos">Fotos</a>
     <a href="#h-stats" data-alvo="h-stats">Estatísticas</a>
-    <a href="#h-squad" data-alvo="h-squad">Elenco</a>
+    <a href="#h-squad" data-alvo="h-squad">Atletas</a>
     <a href="#h-hall" data-alvo="h-hall">Campeões</a>
   </div>
 </nav>
@@ -454,6 +474,7 @@ section{margin-top:32px}
       <div class="pf-info">
         <div class="pf-head"><div><h3 id="pf-nome"></h3><div class="pf-ap" id="pf-ap"></div></div></div>
         <div class="pf-tiles" id="pf-tiles"></div>
+        <h4>Cards conquistados</h4><div id="pf-hist"></div>
         <h4>Conquistas</h4><div class="pf-badges" id="pf-badges"></div>
         <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
         <p class="pf-best" id="pf-best"></p>
@@ -471,9 +492,11 @@ section{margin-top:32px}
 
   <section aria-labelledby="h-cards">
     <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
+    <a class="cards-link" href="#h-tipos">O que cada card significa ↓</a>
     <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
     <h3 class="fig-tit">Destaques da rodada</h3>
     <div class="fig-row" id="cards-rodada"></div>
+    <div id="cards-ant-wrap" hidden><h3 class="fig-tit" id="cards-ant-t">Destaques da rodada anterior</h3><div class="fig-row" id="cards-ant"></div></div>
     <h3 class="fig-tit">Artilharia da temporada</h3>
     <div class="fig-row" id="cards-art"></div>
     <h3 class="fig-tit">Assistências da temporada</h3>
@@ -525,8 +548,13 @@ section{margin-top:32px}
     <p class="note">Conta só os lances filmados e postados, não todos os gols do jogo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
   </section>
 
+  <section aria-labelledby="h-tipos">
+    <div class="sec-head"><h2 id="h-tipos">Os cards</h2><span>o que cada card significa e como se ganha</span></div>
+    <div class="cards-leg" id="cards-leg"></div>
+  </section>
+
   <section aria-labelledby="h-squad">
-    <div class="sec-head"><h2 id="h-squad">Elenco</h2><span>toque no atleta para ver o card com números e conquistas</span></div>
+    <div class="sec-head"><h2 id="h-squad">Atletas</h2><span>toque no atleta para ver o card com números e conquistas</span></div>
     <div class="squad" id="squad"></div>
   </section>
 
@@ -560,8 +588,16 @@ section{margin-top:32px}
 <script src="lances.js?v=1792446553"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
-// Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N}
-const CAMPEOES=[];
+// Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
+// ⚠️ TESTE (19/10): vencedores e votos FICTÍCIOS escolhidos pelo Gustavo para ver os cards. Trocar pelos reais.
+const CAMPEOES=[
+  {kind:"craque",semana:"2026-10-11",atleta:"Viana",votos:9},
+  {kind:"gol",semana:"2026-10-11",id:"2026-10-11_58",votos:11},
+  {kind:"comico",semana:"2026-10-11",id:"2026-10-11_47",votos:8},
+  {kind:"craque",semana:"2026-10-18",atleta:"Neto",votos:10},
+  {kind:"gol",semana:"2026-10-18",id:"2026-10-18_24",votos:12},
+  {kind:"comico",semana:"2026-10-18",id:"2026-10-18_20",votos:9}];
+const PREMIO={gol:"🌟 Golaço da rodada",comico:"🫠 Bola murcha",craque:"👑 Craque da rodada"};
 // No protótipo o voto fica só no seu aparelho
 const VOTOS_BASE={};
 const TODOS="*";
@@ -584,6 +620,12 @@ document.getElementById("petals").innerHTML=[...Array(8)].map((_,i)=>
 const fmt=d=>`${d.slice(8,10)}/${d.slice(5,7)}`;
 const fmtAno=d=>`${fmt(d)}/${d.slice(0,4)}`;
 const byId=Object.fromEntries(LANCES.map(l=>[l.id,l]));
+// Quem leva o card do prêmio: craque = atleta votado; golaço = autor do gol; bola murcha = 1º atleta do lance
+function ganhador(c){
+  if(c.atleta)return c.atleta;const l=byId[c.id];if(!l)return null;
+  const ok=a=>a&&!a.startsWith("❓");
+  return c.kind==="gol"&&ok(l.gol)?l.gol:(l.atletas.find(ok)||l.atletas[0]);
+}
 const atletas=[...new Set(LANCES.flatMap(l=>l.atletas))].sort((a,b)=>a.localeCompare(b,"pt"));
 const dias=[...new Set(LANCES.map(l=>l.data))].sort().reverse();
 const ultima=dias[0];
@@ -724,12 +766,27 @@ function renderFotos(){
   document.getElementById("fotos").innerHTML=fs.map(f=>`<a class="foto" href="${driveUrl(f.drive)}" target="_blank" rel="noopener"><img src="fotos/${esc(f.arquivo)}" alt="Foto do jogo de ${fmtAno(dia)}" loading="lazy"></a>`).join("");
 }
 
+// Enquete do Craque da Rodada: até 5 atletas do domingo, ordenados por gols + assistências
+function pollCraque(){
+  const doDia=LANCES.filter(l=>l.data===ultima),pts={};
+  doDia.forEach(l=>l.atletas.forEach(a=>{if(a&&!a.startsWith("❓"))pts[a]=pts[a]||0}));
+  doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
+  const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
+  const meu=meusVotos.craque,votos=cand.map(a=>meu===a?1:0),total=votos.reduce((x,y)=>x+y,0)||1;
+  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>👑 Craque da rodada</h3>
+    <div class="opt-head"><span>Toque no atleta para votar</span><span></span></div>
+    ${cand.map((a,i)=>`<div class="opt-row"><button class="opt${meu===a?" voted":""}" data-kind="craque" data-id="${esc(a)}" aria-pressed="${meu===a}">
+      <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
+      <span class="t">${esc(a)}<small>${pts[a]} ${pts[a]===1?"gol/assistência":"gols + assistências"} no domingo</small></span>
+      <span class="n">${votos[i]}</span></button></div>`).join("")}
+    <div class="foot">${meu?"Seu voto foi registrado. Toque em outro atleta para trocar.":"Toque num atleta para votar. Um voto por pessoa."}</div></div>`;
+}
 function renderPolls(){
   document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
   // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
   const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
   const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","🫠 Bola murcha do domingo",["furada","polemica"],"murcha"]];
-  document.getElementById("polls").innerHTML=polls.map(([kind,titulo,tipos,chave])=>{
+  document.getElementById("polls").innerHTML=pollCraque()+polls.map(([kind,titulo,tipos,chave])=>{
     const doDia=LANCES.filter(l=>l.data===ultima);
     const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
       :doDia.filter(l=>tiposDe(l).some(t=>tipos.includes(t)))).slice(0,5);
@@ -753,9 +810,9 @@ document.getElementById("polls").addEventListener("click",e=>{
   const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
 
 if(!CAMPEOES.length)document.getElementById("hall").innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;
-else document.getElementById("hall").innerHTML=CAMPEOES.map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
-  <div class="k">${c.kind==="gol"?"Golaço do domingo":"Bola murcha"} · ${fmt(c.semana)}</div>
-  <div class="who">${esc(l.atletas.join(", "))}</div><div class="d">${esc(l.desc)} · ${c.votos} votos</div></div>`}).join("");
+else document.getElementById("hall").innerHTML=[...CAMPEOES].sort((x,y)=>y.semana.localeCompare(x.semana)).map(c=>{const l=byId[c.id];return `<div class="win" data-kind="${c.kind}">
+  <div class="k">${PREMIO[c.kind]} · ${fmt(c.semana)}</div>
+  <div class="who">${esc(l?l.atletas.join(", "):ganhador(c))}</div><div class="d">${l?esc(l.desc)+" · ":""}${c.votos} votos</div></div>`}).join("");
 
 // Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
 const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
@@ -777,7 +834,7 @@ function calcStats(ano){
       gols:L.filter(l=>l.gol===a).length,assist:L.filter(l=>l.assist===a).length,
       golacos:L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length,
       furadas:meus.filter(l=>tiposDe(l).includes("furada")).length,
-      premios:CAMPEOES.filter(c=>c.semana.startsWith(ano)&&byId[c.id]?.atletas.includes(a)).length};
+      premios:CAMPEOES.filter(c=>c.semana.startsWith(ano)&&ganhador(c)===a).length};
   });
 }
 function lider(S,k){const m=Math.max(0,...S.map(s=>s[k]));return m?{v:m,quem:S.filter(s=>s[k]===m).map(s=>s.a)}:null}
@@ -919,6 +976,9 @@ function abrirPerfil(a){
   const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
     ["Golaços",L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length],["Furadas",meus.filter(l=>tiposDe(l).includes("furada")).length]];
   document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
+  const meusP=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana)),qt=k=>meusP.filter(c=>c.kind===k).length;
+  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">👑 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
+    +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,PREMIO_CARD[c.kind]).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
   document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
   // mini gráfico: gols (azul) e assistências (laranja) por domingo, empilhados
   const W=480,H=150,ml=24,mr=6,mt=8,mb=24,pw=W-ml-mr,ph=H-mt-mb;
@@ -996,7 +1056,8 @@ const ICO={
   // chuteira de lado: cano, cadarço, solado e travas
   chuteira:`<svg viewBox="0 0 64 64"><path d="M8 44C6 38 5 31 8 25c1-3 4-4 7-3l7 2c3 1 5 0 7-1 7 4 17 8 25 10 5 1.5 7 5 5.5 9-.5 1.5-2 2-3.5 2z" fill="#111"/><path d="M6 44h55v2.5c0 1.4-1.1 2.5-2.5 2.5h-50C7.1 49 6 47.9 6 46.5z" fill="#f47b20"/><g fill="#111"><rect x="9" y="48" width="4" height="6" rx="1.2"/><rect x="17" y="48" width="4" height="6" rx="1.2"/><rect x="35" y="48" width="4" height="6" rx="1.2"/><rect x="44" y="48" width="4" height="6" rx="1.2"/><rect x="53" y="48" width="4" height="6" rx="1.2"/></g><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M30.5 27.5l2-3.6M35.5 30l2-3.6M40.5 32.2l2-3.6"/></g><path d="M13 37c9 2.5 22 2.5 35-1" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
   estrela:`<svg viewBox="0 0 64 64"><path d="M32 6l7.6 16.2 17.6 2.1-13 12.1 3.5 17.5L32 45.2l-15.7 8.7 3.5-17.5-13-12.1 17.6-2.1z" fill="#f2b705" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
-  murcha:`<svg viewBox="0 0 64 64"><path d="M6 46c1.6-10 9.2-15.6 26-16.4 16.8.8 24.4 6.4 26 16.4-7.6 4.8-44.4 4.8-52 0z" fill="#fff" stroke="#111" stroke-width="2.4"/><path d="M24 32l6 6.5 8-5.6M15 44l6-5M49 44l-6-5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 20c3-3 5 .5 8-2.5M44 18c3-3 5 .5 8-2.5" stroke="#898781" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`};
+  murcha:`<svg viewBox="0 0 64 64"><path d="M6 46c1.6-10 9.2-15.6 26-16.4 16.8.8 24.4 6.4 26 16.4-7.6 4.8-44.4 4.8-52 0z" fill="#fff" stroke="#111" stroke-width="2.4"/><path d="M24 32l6 6.5 8-5.6M15 44l6-5M49 44l-6-5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 20c3-3 5 .5 8-2.5M44 18c3-3 5 .5 8-2.5" stroke="#898781" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`,
+  coroa:`<svg viewBox="0 0 64 64"><path d="M8 46L5 20l13 10L32 12l14 18 13-10-3 26z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><rect x="8" y="45" width="48" height="7" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><circle cx="32" cy="34" r="3.5" fill="#4fc3f7"/></svg>`};
 const COROA=`<svg class="fig-coroa" viewBox="0 0 64 40" aria-hidden="true"><path d="M6 34L3 10l15 11L32 4l14 17 15-11-3 24z" fill="#f2c94c" stroke="#7a5600" stroke-width="2" stroke-linejoin="round"/><rect x="6" y="33" width="52" height="6" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><circle cx="32" cy="22" r="3.5" fill="#4fc3f7"/><circle cx="18" cy="26" r="2.6" fill="#e53935"/><circle cx="46" cy="26" r="2.6" fill="#e53935"/></svg>`;
 const GEMA=`<svg class="fig-gema" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="ggema" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"/><stop offset=".5" stop-color="#7fd3f5"/><stop offset="1" stop-color="#3a8fd8"/></linearGradient></defs><path d="M14 3h36l12 15L32 50 2 18z" fill="url(#ggema)" stroke="#0b3a66" stroke-width="2" stroke-linejoin="round"/><path d="M2 18h60M14 3l8 15 10-15 10 15 8-15M22 18l10 32 10-32" fill="none" stroke="#0b3a66" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 7l3 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
 const FACETAS=`<svg class="fig-facetas" viewBox="0 0 100 144" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,23 25,0 37.5,23 50,0 62.5,23 75,0 100,23"/><line x1="0" y1="23" x2="100" y2="23"/><line x1="0" y1="115" x2="100" y2="115"/><polyline points="0,115 25,23 50,115 75,23 100,115"/><polyline points="0,115 25,130 50,115 75,130 100,115"/><line x1="25" y1="130" x2="50" y2="144"/><line x1="75" y1="130" x2="50" y2="144"/><line x1="50" y1="115" x2="50" y2="144"/></svg>`;
@@ -1008,7 +1069,7 @@ function numsAtleta(a,ano){
   return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
     jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
 }
-const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA"};
+const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA",craque:"CRAQUE"};
 // o: {tier, selos:[{ico,rank,txt}], coroa, tag}
 function figurinha(a,o={}){
   const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,anos[0]),selos=o.selos||[];
@@ -1031,7 +1092,7 @@ function figurinha(a,o={}){
     </span></button>`;
 }
 function figVazio(titulo,ico,txt,tier){
-  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">
+  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">${tier==="craque"?COROA:""}${tier==="diamante"?GEMA+FACETAS:""}
     <span class="fig-foto"><span class="fig-q">?</span></span>
     <span class="fig-left"><span class="fig-dia">${ICO[ico]}</span></span>
     <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span><span class="fig-tag">${ROTULO[tier]||""}</span></span></div>`;
@@ -1084,22 +1145,43 @@ function cardsDoPerfil(a){
   return '<div class="fig-leque">'+cs.map((c,i)=>'<div class="fl-'+i+'">'+figurinha(a,c)+'</div>').join("")+'</div>'
     +'<p class="pf-2cards">'+esc(a)+' tem <b>2 cards</b> nesta rodada. Toque nos cards para trocar o da frente.</p>';
 }
+// Card de cada prêmio de rodada (usado nos destaques e no histórico do perfil)
+const PREMIO_CARD={
+  craque:{tier:"craque",selos:[{ico:"coroa",rank:"",txt:""}],coroa:true,tag:"Craque"},
+  gol:{tier:"ouro",selos:[{ico:"estrela",rank:"",txt:""}],tag:"Golaço"},
+  comico:{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha"}};
+function destaques(sem,vazio){
+  const VAZIO={craque:["Craque","coroa","craque"],gol:["Golaço","estrela","ouro"],comico:["Bola murcha","murcha","murcha"]};
+  return ["craque","gol","comico"].map(k=>{const c=CAMPEOES.find(x=>x.kind===k&&x.semana===sem);
+    if(c)return figurinha(ganhador(c),PREMIO_CARD[k]);
+    return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
+}
+// Legenda: o que cada card significa
+const LEGENDA=[
+  ["normal","Atleta","bola","Card de todo atleta: gols, assistências e jogos da temporada."],
+  ["bronze","Bronze","bola","3º lugar na artilharia ou nas assistências da temporada."],
+  ["prata","Silver","bola","2º lugar na artilharia ou nas assistências da temporada."],
+  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards."],
+  ["black","Black","bola","Top 3 na artilharia E nas assistências (a partir do 5º domingo)."],
+  ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
+  ["craque","Craque da rodada","coroa","Votado pela turma: o melhor do domingo. Leva a coroa."],
+  ["ouro","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo."],
+  ["murcha","Bola murcha","murcha","Votado pela turma: a maior furada do domingo. Card de zoeira."]];
+document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
+  `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
 function renderCards(){
   const ano=anos[0],S=calcStats(ano);
   document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
-  const gR=CAMPEOES.find(c=>c.kind==="gol"&&c.semana===ultima),mR=CAMPEOES.find(c=>c.kind==="comico"&&c.semana===ultima);
-  const rod=[];
-  if(gR){const l=byId[gR.id];rod.push(figurinha(l.gol&&real(l.gol)?l.gol:l.atletas[0],{tier:"ouro",selos:[{ico:"estrela",rank:"",txt:""}],tag:"Golaço da rodada"}))}
-  else rod.push(figVazio("Golaço","estrela","em votação · vote acima","ouro"));
-  if(mR){const l=byId[mR.id];rod.push(figurinha(l.atletas.find(real)||l.atletas[0],{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha da rodada"}))}
-  else rod.push(figVazio("Bola murcha","murcha","em votação · vote acima","murcha"));
-  document.getElementById("cards-rodada").innerHTML=rod.join("");
+  document.getElementById("cards-rodada").innerHTML=destaques(ultima,true);
+  const ant=dias[1],hAnt=ant?destaques(ant,false):"";
+  document.getElementById("cards-ant").innerHTML=hAnt;document.getElementById("cards-ant-wrap").hidden=!hAnt;
+  if(ant)document.getElementById("cards-ant-t").textContent=`Destaques da rodada anterior · ${fmt(ant)}`;
   document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
   document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
   document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
 }
-["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
+["cards-rodada","cards-ant","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
 
 renderPolls();render();renderStats();renderCharts();renderCards();
 
