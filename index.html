@@ -182,6 +182,33 @@ section{margin-top:32px}
 .hall-tbl{margin-bottom:18px}
 .hall-tbl td:first-child,.hall-tbl th:first-child{text-align:center}
 .hall-rod{margin-top:6px}
+/* escolha da rodada na seção Cards */
+.rod-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+.rod-head .fig-tit{margin:0}
+.rod-head select{max-width:220px}
+.rod-vazio{color:var(--muted);font-size:14px;padding:8px 2px}
+/* verso do card no perfil: atributos (19/10, números de EXEMPLO até ter votação) */
+.pf-flip.virado .pf-frente{display:none}
+.pf-flip:not(.virado) .pf-verso{display:none}
+.pf-verso{animation:virar .35s ease-out}
+@keyframes virar{from{transform:perspective(700px) rotateY(80deg);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pf-verso{animation:none}}
+.flip-btn{display:block;margin:10px auto 0;font:inherit;font-size:14px;font-weight:600;color:var(--link);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.fig.verso{--fundo:linear-gradient(160deg,#2c3a8f,#1b2463 55%,#24307a);--t1:#ffffff;--t2:#c9cff0;cursor:pointer}
+.vs-top{position:absolute;left:9cqw;right:9cqw;top:11cqw;display:flex;align-items:flex-end;gap:3cqw;color:var(--t1);z-index:2}
+.vs-top b{font-family:var(--display);font-weight:800;font-size:24cqw;line-height:.8}
+.vs-top span{display:flex;flex-direction:column;font-family:var(--display);font-weight:800;font-size:7cqw;line-height:1.05;text-transform:uppercase;min-width:0}
+.vs-top small{font-family:var(--body);font-weight:500;font-size:4.6cqw;color:var(--t2);text-transform:none;letter-spacing:.02em}
+.vs-bars{position:absolute;left:9cqw;right:9cqw;top:40cqw;display:flex;flex-direction:column;gap:1.3cqw;z-index:2}
+.vs-bar{display:grid;grid-template-columns:24cqw 1fr 9cqw;gap:2cqw;align-items:center;color:var(--t1);line-height:1.15}
+.vs-bar i{font-style:normal;font-size:4.6cqw;color:var(--t2);white-space:nowrap}
+.vs-bar u{position:relative;height:2.2cqw;border-radius:1.1cqw;background:rgba(255,255,255,.16)}
+.vs-bar u s{position:absolute;inset:0 auto 0 0;border-radius:1.1cqw;background:#f47b20}
+.vs-bar u em{position:absolute;top:-1cqw;bottom:-1cqw;width:.8cqw;border-radius:.4cqw;background:#ffffff}
+.vs-bar b{font-family:var(--display);font-weight:800;font-size:5.8cqw;text-align:right}
+.vs-leg{position:absolute;left:8cqw;right:8cqw;top:111cqw;text-align:center;font-size:4.2cqw;line-height:1.3;color:var(--t2);z-index:2}
+.vs-leg span{display:inline-block;width:3.2cqw;height:1.6cqw;border-radius:.8cqw;background:#f47b20;vertical-align:middle;margin:0 1cqw}
+.vs-leg em{display:inline-block;width:.8cqw;height:3cqw;background:#fff;vertical-align:middle;margin:0 1cqw}
 .legend .leg-g{color:var(--muted)}
 .tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.4;min-width:130px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .tip b{display:block;margin-bottom:2px}
@@ -503,7 +530,8 @@ section{margin-top:32px}
     <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
     <a class="cards-link" href="#h-tipos">O que cada card significa ↓</a>
     <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
-    <h3 class="fig-tit">Destaques da rodada</h3>
+    <div class="rod-head"><h3 class="fig-tit">Destaques da rodada</h3>
+      <div class="field"><label for="f-rod">Rodada</label><select id="f-rod"></select></div></div>
     <div class="fig-row" id="cards-rodada"></div>
     <h3 class="fig-tit">Artilharia da temporada</h3>
     <div class="fig-row" id="cards-art"></div>
@@ -567,7 +595,7 @@ section{margin-top:32px}
   </section>
 
   <section aria-labelledby="h-hall">
-    <div class="sec-head"><h2 id="h-hall">Campeões</h2><span>ranking de prêmios e os destaques de cada rodada</span></div>
+    <div class="sec-head"><h2 id="h-hall">Campeões</h2><span>ranking de prêmios das rodadas</span></div>
     <div id="hall"></div>
   </section>
 </main>
@@ -983,7 +1011,7 @@ function abrirPerfil(a){
   const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
   const ds=dias.filter(d=>d.startsWith(ano)).sort();
   const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
-  document.getElementById("pf-card").innerHTML=cardsDoPerfil(a);
+  document.getElementById("pf-card").innerHTML=`<div class="pf-flip"><div class="pf-frente">${cardsDoPerfil(a)}</div><div class="pf-verso">${versoAtributos(a)}</div></div><button class="flip-btn" type="button">↻ Ver atributos</button>`;
   document.getElementById("pf-nome").textContent=a;
   document.getElementById("pf-ap").textContent=[apelido(a)&&`"${apelido(a)}"`,`Temporada ${ano}`].filter(Boolean).join(" · ");
   const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
@@ -1013,7 +1041,10 @@ function abrirPerfil(a){
 }
 function fecharPerfil(){document.getElementById("perfil").hidden=true;document.body.style.overflow=""}
 document.getElementById("pf-x").onclick=fecharPerfil;
-document.getElementById("pf-card").addEventListener("click",e=>{const lq=e.target.closest(".fig-leque");if(lq)lq.classList.toggle("troca")});
+document.getElementById("pf-card").addEventListener("click",e=>{
+  const fb=e.target.closest(".flip-btn,.fig.verso");
+  if(fb){const f=document.querySelector("#pf-card .pf-flip"),v=f.classList.toggle("virado");document.querySelector("#pf-card .flip-btn").textContent=v?"↻ Ver números":"↻ Ver atributos";return}
+  const lq=e.target.closest(".fig-leque");if(lq)lq.classList.toggle("troca")});
 document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id==="perfil")fecharPerfil()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
 document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
@@ -1152,6 +1183,22 @@ function cardDoAtleta(a){
   return '<div class="fig-stack"><div class="fig-back">'+figurinha(a,cs[1])+'</div><div class="fig-front">'+figurinha(a,cs[0])+'</div><span class="fig-x2" title="Tem 2 cards">×2</span></div>';
 }
 // No perfil: os cards em leque; tocar troca qual fica na frente
+// ===== Verso do card: atributos 0–100 =====
+// ⚠️ EXEMPLO (19/10): números fictícios gerados a partir do nome, só para ver o visual. Valerão os votos da turma
+// (mediana dos colegas) quando houver servidor; o traço branco é a autoavaliação do atleta.
+const ATRIB=[["Velocidade","VEL"],["Chute","CHU"],["Passe","PAS"],["Habilidade","HAB"],["Cabeceio","CAB"],["Defesa","DEF"],["Força","FOR"],["Resistência","RES"]];
+function atributosExemplo(a){
+  let h=0;for(const ch of a)h=(h*31+ch.charCodeAt(0))>>>0;
+  const r=()=>{h=(h*1103515245+12345)>>>0;return (h>>>8)/16777216};
+  return ATRIB.map(([n])=>{const v=Math.round(48+r()*42);return {n,v,eu:Math.max(30,Math.min(99,Math.round(v-4+r()*14)))}});
+}
+function versoAtributos(a){
+  const at=atributosExemplo(a),geral=Math.round(at.reduce((s,x)=>s+x.v,0)/at.length);
+  return `<div class="fig verso" role="img" aria-label="Atributos de ${esc(a)} (exemplo): nota geral ${geral}"><span class="fig-card">
+    <span class="vs-top"><b>${geral}</b><span>${esc(a)}<small>nota geral · exemplo</small></span></span>
+    <span class="vs-bars">${at.map(x=>`<span class="vs-bar"><i>${x.n}</i><u><s style="width:${x.v}%"></s><em style="left:calc(${x.eu}% - .4cqw)"></em></u><b>${x.v}</b></span>`).join("")}</span>
+    <span class="vs-leg"><span></span>nota da turma <em></em>autoavaliação<br>números de exemplo</span></span></div>`;
+}
 function cardsDoPerfil(a){
   const cs=cardsDoAtleta(a);
   if(cs.length<2)return figurinha(a,cs[0]);
@@ -1194,13 +1241,20 @@ function renderHall(){
     <thead><tr><th>#</th><th>Atleta</th><th>👑 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
     <tbody>${lin.map((r,i)=>`<tr><td class="pos">${i+1}</td><td><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button></td>
       <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div>
-    ${sems.map(sem=>`<div class="hall-rod"><h3 class="fig-tit">Destaques da rodada de ${fmtAno(sem)}</h3><div class="fig-row">${destaques(sem,false)}</div></div>`).join("")}`;
+    <p class="note">Os cards de cada rodada ficam na seção Cards: escolha a rodada na lista.</p>`;
 }
 document.getElementById("hall").addEventListener("click",e=>{const b=e.target.closest(".who-btn,.fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
+// Destaques de uma rodada escolhida na lista (a última mostra também o que ainda está em votação)
+function renderRodada(){
+  const sem=document.getElementById("f-rod").value||ultima,h=destaques(sem,sem===ultima);
+  document.getElementById("cards-rodada").innerHTML=h||`<p class="rod-vazio">Sem destaques registrados na rodada de ${fmtAno(sem)}.</p>`;
+}
 function renderCards(){
   const ano=anos[0],S=calcStats(ano);
   document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
-  document.getElementById("cards-rodada").innerHTML=destaques(ultima,true);
+  const selR=document.getElementById("f-rod");
+  if(!selR.options.length){selR.innerHTML=dias.map(d=>`<option value="${d}">${fmtAno(d)}${d===ultima?" · última":""}</option>`).join("");selR.onchange=renderRodada}
+  renderRodada();
   renderHall();
   document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
   document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
