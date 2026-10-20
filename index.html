@@ -632,7 +632,7 @@ section{margin-top:32px}
         <div class="legend" id="ch-leg"></div>
       </figure>
     </div>
-    <p class="note">Conta só os lances filmados e postados, não todos os gols do jogo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
+    <p class="note">Gols e assistências: lances filmados + os anotados no domingo sem vídeo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
   </section>
 
   <section aria-labelledby="h-tipos">
@@ -686,7 +686,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792446553"></script>
+<script src="lances.js?v=1792504439"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -729,6 +729,8 @@ function ganhador(c){
 }
 const atletas=[...new Set(LANCES.flatMap(l=>l.atletas))].sort((a,b)=>a.localeCompare(b,"pt"));
 const dias=[...new Set(LANCES.map(l=>l.data))].sort().reverse();
+// Gols/assistências sem vídeo (anotados no domingo): contam nas estatísticas, não aparecem nos lances
+const STATS=LANCES.concat(typeof EXTRAS==="object"?EXTRAS:[]);
 const ultima=dias[0];
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const state={atleta:null,tipo:null,dia:ultima};
@@ -869,7 +871,7 @@ function renderFotos(){
 
 // Enquete do Craque da Rodada: até 5 atletas do domingo, ordenados por gols + assistências
 function pollCraque(){
-  const doDia=LANCES.filter(l=>l.data===ultima),pts={};
+  const doDia=STATS.filter(l=>l.data===ultima),pts={};
   doDia.forEach(l=>l.atletas.forEach(a=>{if(a&&!a.startsWith("❓"))pts[a]=pts[a]||0}));
   doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
   const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
@@ -924,7 +926,7 @@ const selAno=document.getElementById("f-ano");
 selAno.innerHTML=anos.map(a=>`<option value="${a}">${a}</option>`).join("");
 let ordem="gols";
 function calcStats(ano){
-  const L=LANCES.filter(l=>l.data.startsWith(ano));
+  const L=STATS.filter(l=>l.data.startsWith(ano));
   const nomes=[...new Set(L.flatMap(l=>l.atletas))].filter(a=>!a.startsWith("❓"));
   return nomes.map(a=>{
     const meus=L.filter(l=>l.atletas.includes(a));
@@ -960,7 +962,7 @@ const MET={gols:{t:"Gols",f:(l,a)=>l.gol===a?1:0},assist:{t:"Assistências",f:(l
 const real=a=>a&&!a.startsWith("❓");
 // Cor fixa por atleta: ordem do ranking de G+A da temporada (não muda com o filtro)
 function coresDaTemporada(ano){
-  const L=LANCES.filter(l=>l.data.startsWith(ano)),pts={};
+  const L=STATS.filter(l=>l.data.startsWith(ano)),pts={};
   L.forEach(l=>{for(const a of [l.gol,l.assist])if(real(a))pts[a]=(pts[a]||0)+1});
   const ord=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt"));
   const m={};ord.forEach((a,i)=>m[a]=i<8?`var(--s${i+1})`:"var(--s-out)");return m;
@@ -1023,7 +1025,7 @@ function desenharLinhas(el,ds,series,titTip,unid){
 let _rc;addEventListener("resize",()=>{clearTimeout(_rc);_rc=setTimeout(()=>{if(typeof renderCharts==="function")renderCharts()},250)});
 function renderCharts(){
   const ano=selAno.value,met=document.getElementById("f-met").value,top=+document.getElementById("f-top").value,M=MET[met];
-  const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=LANCES.filter(l=>l.data.startsWith(ano));
+  const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=STATS.filter(l=>l.data.startsWith(ano));
   document.getElementById("ch1-t").textContent=`${M.t} por domingo`;
   document.getElementById("ch2-t").textContent=`${M.t} acumulados em ${ano}`;
   const cor=coresDaTemporada(ano);
@@ -1051,7 +1053,7 @@ document.getElementById("f-top").onchange=()=>{destaque=null;renderCharts()};
 
 // ===== Card do atleta =====
 function conquistas(a){
-  const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano)).sort();
+  const ano=anos[0],L=STATS.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano)).sort();
   const golsDia=ds.map(d=>L.filter(l=>l.data===d&&l.gol===a).length);
   const gols=golsDia.reduce((x,y)=>x+y,0),assist=L.filter(l=>l.assist===a).length;
   let seq=0,best=0;golsDia.forEach(g=>{seq=g?seq+1:0;best=Math.max(best,seq)});
@@ -1073,7 +1075,7 @@ function conquistas(a){
   ];
 }
 function abrirPerfil(a){
-  const ano=anos[0],L=LANCES.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
+  const ano=anos[0],L=STATS.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
   const ds=dias.filter(d=>d.startsWith(ano)).sort();
   const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
   document.getElementById("pf-card").innerHTML=`<div class="pf-flip"><div class="pf-frente">${cardsDoPerfil(a)}</div><div class="pf-verso">${versoAtributos(a)}</div></div><button class="flip-btn" type="button">↻ Ver atributos</button>`;
@@ -1177,7 +1179,7 @@ const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx=
 const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
 // Números do atleta na temporada: gols, assistências, jogos (domingos com lance / domingos da temporada)
 function numsAtleta(a,ano){
-  const L=LANCES.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano));
+  const L=STATS.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano));
   return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
     jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
 }
