@@ -186,6 +186,34 @@ section{margin-top:32px}
 .rod-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
 .rod-head .fig-tit{margin:0}
 .rod-head select{max-width:220px}
+/* texto que cabe no card: nome encolhe conforme o tamanho; rótulo de baixo menor */
+.fig-nome{font-size:clamp(7.5cqw,calc(132cqw / var(--n,8)),12.5cqw)}
+.fig-tag{font-size:5.4cqw;letter-spacing:.05em}
+/* troféu do Craque da rodada (a coroa é só do MVP) */
+.fig-trofeu{position:absolute;top:-1cqw;left:50%;transform:translateX(-30%);width:22cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+/* cores dos prêmios nos gráficos (validadas: claro vs #fff, escuro vs #161a33) */
+:root{--pr-craque:#a3203f;--pr-gol:#c9971f;--pr-murcha:#1f7ea8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pr-craque:#d0486a;--pr-gol:#b3871a;--pr-murcha:#2a8bc0}}
+:root[data-theme="dark"]{--pr-craque:#d0486a;--pr-gol:#b3871a;--pr-murcha:#2a8bc0}
+/* linha do tempo no perfil: um quadrado por domingo */
+.tl{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 6px}
+.tl-c{width:38px;height:38px;border-radius:6px;background:color-mix(in srgb,var(--muted) 14%,transparent);display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px}
+.tl-c small{font-size:9.5px;line-height:1;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl-c.on small{color:#fff;font-weight:700;text-shadow:0 0 3px rgba(0,0,0,.45)}
+.tl-leg{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.tl-leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tl-leg i.vz{background:color-mix(in srgb,var(--muted) 14%,transparent)}
+/* quadro de medalhas em Campeões */
+.md{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.md-row{display:grid;grid-template-columns:minmax(110px,190px) minmax(0,1fr) 30px;gap:10px;align-items:center}
+.md-bar{display:flex;gap:2px;height:24px}
+.md-seg{border-radius:4px;color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;min-width:20px}
+.md-seg.gol{color:#2e1f02}
+.md-tot{font-family:var(--display);font-size:19px;text-align:right}
+.md .who-btn{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--fg);text-align:left;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fig.murcha .fig-tag{font-size:4.8cqw;letter-spacing:0}
+.md details{margin-top:6px}
+.hall details summary{cursor:pointer;color:var(--link);font-size:14px;margin:4px 0 10px}
 .rod-vazio{color:var(--muted);font-size:14px;padding:8px 2px}
 /* verso do card no perfil: atributos (19/10, números de EXEMPLO até ter votação) */
 .pf-flip.virado .pf-frente{display:none}
@@ -635,7 +663,7 @@ const CAMPEOES=[
   {kind:"craque",semana:"2026-10-18",atleta:"Neto",votos:10},
   {kind:"gol",semana:"2026-10-18",id:"2026-10-18_24",votos:12},
   {kind:"comico",semana:"2026-10-18",id:"2026-10-18_20",votos:9}];
-const PREMIO={gol:"🌟 Golaço da rodada",comico:"🫠 Bola murcha",craque:"👑 Craque da rodada"};
+const PREMIO={gol:"🌟 Golaço da rodada",comico:"🫠 Bola murcha",craque:"🏆 Craque da rodada"};
 // No protótipo o voto fica só no seu aparelho
 const VOTOS_BASE={};
 const TODOS="*";
@@ -811,7 +839,7 @@ function pollCraque(){
   doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
   const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
   const meu=meusVotos.craque,votos=cand.map(a=>meu===a?1:0),total=votos.reduce((x,y)=>x+y,0)||1;
-  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>👑 Craque da rodada</h3>
+  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada</h3>
     <div class="opt-head"><span>Toque no atleta para votar</span><span></span></div>
     ${cand.map((a,i)=>`<div class="opt-row"><button class="opt${meu===a?" voted":""}" data-kind="craque" data-id="${esc(a)}" aria-pressed="${meu===a}">
       <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
@@ -1020,8 +1048,9 @@ function abrirPerfil(a){
     ["Golaços",L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length],["Furadas",meus.filter(l=>tiposDe(l).includes("furada")).length]];
   document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
   const meusP=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana)),qt=k=>meusP.filter(c=>c.kind===k).length;
-  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">👑 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
+  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">🏆 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
     +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,PREMIO_CARD[c.kind]).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
+  document.querySelector("#pf-hist .pf-hsum").insertAdjacentHTML("afterend",linhaDoTempo(a));
   document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
   // mini gráfico: gols (azul) e assistências (laranja) por domingo, empilhados
   const W=480,H=150,ml=24,mr=6,mt=8,mb=24,pw=W-ml-mr,ph=H-mt-mb;
@@ -1103,8 +1132,10 @@ const ICO={
   chuteira:`<svg viewBox="0 0 64 64"><path d="M8 44C6 38 5 31 8 25c1-3 4-4 7-3l7 2c3 1 5 0 7-1 7 4 17 8 25 10 5 1.5 7 5 5.5 9-.5 1.5-2 2-3.5 2z" fill="#111"/><path d="M6 44h55v2.5c0 1.4-1.1 2.5-2.5 2.5h-50C7.1 49 6 47.9 6 46.5z" fill="#f47b20"/><g fill="#111"><rect x="9" y="48" width="4" height="6" rx="1.2"/><rect x="17" y="48" width="4" height="6" rx="1.2"/><rect x="35" y="48" width="4" height="6" rx="1.2"/><rect x="44" y="48" width="4" height="6" rx="1.2"/><rect x="53" y="48" width="4" height="6" rx="1.2"/></g><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M30.5 27.5l2-3.6M35.5 30l2-3.6M40.5 32.2l2-3.6"/></g><path d="M13 37c9 2.5 22 2.5 35-1" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
   estrela:`<svg viewBox="0 0 64 64"><path d="M32 6l7.6 16.2 17.6 2.1-13 12.1 3.5 17.5L32 45.2l-15.7 8.7 3.5-17.5-13-12.1 17.6-2.1z" fill="#f2b705" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
   murcha:`<svg viewBox="0 0 64 64"><path d="M6 46c1.6-10 9.2-15.6 26-16.4 16.8.8 24.4 6.4 26 16.4-7.6 4.8-44.4 4.8-52 0z" fill="#fff" stroke="#111" stroke-width="2.4"/><path d="M24 32l6 6.5 8-5.6M15 44l6-5M49 44l-6-5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 20c3-3 5 .5 8-2.5M44 18c3-3 5 .5 8-2.5" stroke="#898781" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`,
-  coroa:`<svg viewBox="0 0 64 64"><path d="M8 46L5 20l13 10L32 12l14 18 13-10-3 26z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><rect x="8" y="45" width="48" height="7" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><circle cx="32" cy="34" r="3.5" fill="#4fc3f7"/></svg>`};
+  coroa:`<svg viewBox="0 0 64 64"><path d="M8 46L5 20l13 10L32 12l14 18 13-10-3 26z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><rect x="8" y="45" width="48" height="7" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><circle cx="32" cy="34" r="3.5" fill="#4fc3f7"/></svg>`,
+  trofeu:`<svg viewBox="0 0 64 64"><path d="M20 10h24v10c0 9-5 15-12 16-7-1-12-7-12-16z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 14h-7c0 8 4 12 9 13M44 14h7c0 8-4 12-9 13" fill="none" stroke="#7a5600" stroke-width="2.4" stroke-linecap="round"/><path d="M29 36h6v8h-6z" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><rect x="21" y="44" width="22" height="8" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><path d="M26 14v8" stroke="#fff6cf" stroke-width="2.4" stroke-linecap="round"/></svg>`};
 const COROA=`<svg class="fig-coroa" viewBox="0 0 64 40" aria-hidden="true"><path d="M6 34L3 10l15 11L32 4l14 17 15-11-3 24z" fill="#f2c94c" stroke="#7a5600" stroke-width="2" stroke-linejoin="round"/><rect x="6" y="33" width="52" height="6" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><circle cx="32" cy="22" r="3.5" fill="#4fc3f7"/><circle cx="18" cy="26" r="2.6" fill="#e53935"/><circle cx="46" cy="26" r="2.6" fill="#e53935"/></svg>`;
+const TROFEU=`<svg class="fig-trofeu" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 10h24v10c0 9-5 15-12 16-7-1-12-7-12-16z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 14h-7c0 8 4 12 9 13M44 14h7c0 8-4 12-9 13" fill="none" stroke="#7a5600" stroke-width="2.4" stroke-linecap="round"/><path d="M29 36h6v8h-6z" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><rect x="21" y="44" width="22" height="8" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><path d="M26 14v8" stroke="#fff6cf" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 const GEMA=`<svg class="fig-gema" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="ggema" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"/><stop offset=".5" stop-color="#7fd3f5"/><stop offset="1" stop-color="#3a8fd8"/></linearGradient></defs><path d="M14 3h36l12 15L32 50 2 18z" fill="url(#ggema)" stroke="#0b3a66" stroke-width="2" stroke-linejoin="round"/><path d="M2 18h60M14 3l8 15 10-15 10 15 8-15M22 18l10 32 10-32" fill="none" stroke="#0b3a66" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 7l3 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
 const FACETAS=`<svg class="fig-facetas" viewBox="0 0 100 144" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,23 25,0 37.5,23 50,0 62.5,23 75,0 100,23"/><line x1="0" y1="23" x2="100" y2="23"/><line x1="0" y1="115" x2="100" y2="115"/><polyline points="0,115 25,23 50,115 75,23 100,115"/><polyline points="0,115 25,130 50,115 75,130 100,115"/><line x1="25" y1="130" x2="50" y2="144"/><line x1="75" y1="130" x2="50" y2="144"/><line x1="50" y1="115" x2="50" y2="144"/></svg>`;
 const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="34" r="20" fill="#111"/><path d="M6 110c2-31 19-46 44-46s42 15 44 46z" fill="#111"/></svg>`;
@@ -1125,38 +1156,41 @@ function figurinha(a,o={}){
   return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${nivel?`, card ${nivel}`:""}: ${n.g} gols, ${n.as} assistências, ${n.jog} de ${n.tot} domingos${o.tag?` – ${esc(o.tag)}`:""}">
     <span class="fig-card">
       <span class="fig-foto">${foto}</span>
-      ${o.coroa?COROA:""}${o.tier==="diamante"?GEMA+FACETAS:""}
+      ${o.coroa?COROA:""}${o.trofeu?TROFEU:""}${o.tier==="diamante"?GEMA+FACETAS:""}
       <span class="fig-left${selos.length>1?" duo":""}">
         ${selos.map(s=>`<span class="fig-rk">${s.rank}<small>${esc(s.txt)}</small></span><span class="fig-dia">${ICO[s.ico]}</span>`).join("")}
         <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
       </span>
       ${d.dm?DM:""}
-      <span class="fig-nome">${esc(a)}</span>
+      <span class="fig-nome" style="--n:${a.length}">${esc(a)}</span>
       <span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
       <span class="fig-nums"><span><small>GOL</small><b>${n.g}</b></span><span><small>AST</small><b>${n.as}</b></span><span><small>JOG</small><b>${n.jog}/${n.tot}</b></span></span>
       ${rotulo?`<span class="fig-tag">${esc(rotulo)}</span>`:""}
     </span></button>`;
 }
 function figVazio(titulo,ico,txt,tier){
-  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">${tier==="craque"?COROA:""}${tier==="diamante"?GEMA+FACETAS:""}
+  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">${tier==="craque"?TROFEU:""}${tier==="black"?COROA:""}${tier==="diamante"?GEMA+FACETAS:""}
     <span class="fig-foto"><span class="fig-q">?</span></span>
     <span class="fig-left"><span class="fig-dia">${ICO[ico]}</span></span>
     <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span><span class="fig-tag">${ROTULO[tier]||""}</span></span></div>`;
 }
-function top3(S,k,desempate){
-  return S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||y[desempate]-x[desempate]||y.lances-x.lances||x.a.localeCompare(y.a,"pt")).slice(0,3);
+// Pódio com empate (decisão do Gustavo, 19/10): empatados levam o MESMO card e a posição seguinte é pulada
+// (ex.: dois empatados em 1º = dois GOLD, ninguém SILVER, o próximo é BRONZE). _pos = posição real (1, 2 ou 3).
+function top3(S,k){
+  const L=S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||x.a.localeCompare(y.a,"pt"));
+  return L.map(s=>({...s,_pos:1+L.filter(o=>o[k]>s[k]).length})).filter(s=>s._pos<=3);
 }
+const posPodio=(S,k,a)=>{const p=top3(S,k).find(s=>s.a===a);return p?p._pos-1:-1};
 // Status atual do atleta: o mesmo card em todo o site (Elenco, rankings e perfil)
 // top 3 em gols OU assist. = ouro/prata/bronze · top 3 nos DOIS = BLACK · 1º nos DOIS = DIAMANTE (cristal lapidado; coroa fica p/ Craque da Rodada)
 const DOMINGOS_P_ESPECIAIS=5;
 function statusCard(a){
   const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
-  const ia=top3(S,"gols","golacos").findIndex(s=>s.a===a),ib=top3(S,"assist","gols").findIndex(s=>s.a===a);
+  const ia=posPodio(S,"gols",a),ib=posPodio(S,"assist",a);
   const sg={ico:"bola",rank:`${ia+1}º`,txt:"ARTIL."},sa={ico:"chuteira",rank:`${ib+1}º`,txt:"ASSIST."};
   // BLACK e DIAMOND só valem a partir do 5º domingo da temporada (decisão do Gustavo, 19/10/2026)
   const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
   if(especiais&&ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa]};
-  if(especiais&&ia>=0&&ib>=0)return {tier:"black",selos:[sg,sa]};
   if(ia>=0&&(ib<0||ia<=ib))return {tier:T[ia],selos:[sg]};
   if(ib>=0)return {tier:T[ib],selos:[sa]};
   return {};
@@ -1165,8 +1199,8 @@ function statusCard(a){
 function cardsDoAtleta(a){
   const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
   const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
-  const ia=top3(S,"gols","golacos").findIndex(s=>s.a===a),ib=top3(S,"assist","gols").findIndex(s=>s.a===a);
-  if(especiais&&ia>=0&&ib>=0)return [statusCard(a)];
+  const ia=posPodio(S,"gols",a),ib=posPodio(S,"assist",a);
+  if(especiais&&ia===0&&ib===0)return [statusCard(a)];
   const L=[];
   if(ia>=0)L.push({tier:T[ia],selos:[{ico:"bola",rank:(ia+1)+"º",txt:"ARTIL."}],_r:ia});
   if(ib>=0)L.push({tier:T[ib],selos:[{ico:"chuteira",rank:(ib+1)+"º",txt:"ASSIST."}],_r:ib});
@@ -1209,11 +1243,11 @@ function cardsDoPerfil(a){
 }
 // Card de cada prêmio de rodada (usado nos destaques e no histórico do perfil)
 const PREMIO_CARD={
-  craque:{tier:"craque",selos:[{ico:"coroa",rank:"",txt:""}],coroa:true,tag:"Craque"},
+  craque:{tier:"craque",selos:[{ico:"trofeu",rank:"",txt:""}],trofeu:true,tag:"Craque"},
   gol:{tier:"ouro",selos:[{ico:"estrela",rank:"",txt:""}],tag:"Golaço"},
   comico:{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha"}};
 function destaques(sem,vazio){
-  const VAZIO={craque:["Craque","coroa","craque"],gol:["Golaço","estrela","ouro"],comico:["Bola murcha","murcha","murcha"]};
+  const VAZIO={craque:["Craque","trofeu","craque"],gol:["Golaço","estrela","ouro"],comico:["Bola murcha","murcha","murcha"]};
   return ["craque","gol","comico"].map(k=>{const c=CAMPEOES.find(x=>x.kind===k&&x.semana===sem);
     if(c)return figurinha(ganhador(c),PREMIO_CARD[k]);
     return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
@@ -1223,10 +1257,10 @@ const LEGENDA=[
   ["normal","Atleta","bola","Card de todo atleta: gols, assistências e jogos da temporada."],
   ["bronze","Bronze","bola","3º lugar na artilharia ou nas assistências da temporada."],
   ["prata","Silver","bola","2º lugar na artilharia ou nas assistências da temporada."],
-  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards."],
-  ["black","Black","bola","Top 3 na artilharia E nas assistências (a partir do 5º domingo)."],
+  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards. Empate: todos levam o mesmo card e a posição seguinte é pulada."],
+  ["black","MVP do ano","bola","Black com coroa: o craque do ano. Os que mais vezes foram Craque da rodada vão para a votação final. Fica no histórico com o ano (em breve)."],
   ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
-  ["craque","Craque da rodada","coroa","Votado pela turma: o melhor do domingo. Leva a coroa."],
+  ["craque","Craque da rodada","trofeu","Votado pela turma: o melhor do domingo. Leva o troféu dourado."],
   ["ouro","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo."],
   ["murcha","Bola murcha","murcha","Votado pela turma: a maior furada do domingo. Card de zoeira."]];
 document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
@@ -1238,12 +1272,29 @@ function renderHall(){
   const R={};CAMPEOES.forEach(c=>{const a=ganhador(c);if(!a)return;(R[a]=R[a]||{a,craque:0,gol:0,comico:0})[c.kind]++});
   const lin=Object.values(R).map(r=>({...r,tot:r.craque+r.gol+r.comico}))
     .sort((x,y)=>y.tot-x.tot||y.craque-x.craque||y.gol-x.gol||x.a.localeCompare(y.a,"pt"));
-  el.innerHTML=`<h3 class="fig-tit">Ranking de prêmios</h3>
+  const maxT=Math.max(...lin.map(r=>r.tot)),K=[["craque","pr-craque"],["gol","pr-gol"],["comico","pr-murcha"]];
+  // quadro de medalhas: barra empilhada por atleta (cor = prêmio, número dentro), ordenado pelo total
+  el.innerHTML=`<h3 class="fig-tit">Quadro de prêmios</h3>
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>🏆 Craque da rodada</span><span><i style="background:var(--pr-gol)"></i>🌟 Golaço</span><span><i style="background:var(--pr-murcha)"></i>🫠 Bola murcha</span></div>
+    <div class="md">${lin.map(r=>`<div class="md-row"><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button>
+      <div class="md-bar">${K.filter(([k])=>r[k]).map(([k,v])=>`<span class="md-seg ${k}" style="flex:${r[k]};background:var(--${v})" title="${esc(PREMIO[k])}: ${r[k]}">${r[k]}</span>`).join("")}${maxT>r.tot?`<span style="flex:${maxT-r.tot}"></span>`:""}</div>
+      <b class="md-tot">${r.tot}</b></div>`).join("")}</div>
+    <details><summary>Ver em tabela</summary>
     <div class="tbl-wrap hall-tbl"><table class="stats-tbl"><colgroup><col style="width:44px"><col style="width:200px"><col style="width:96px"><col style="width:96px"><col style="width:116px"><col style="width:70px"></colgroup>
-    <thead><tr><th>#</th><th>Atleta</th><th>👑 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
+    <thead><tr><th>#</th><th>Atleta</th><th>🏆 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
     <tbody>${lin.map((r,i)=>`<tr><td class="pos">${i+1}</td><td><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button></td>
-      <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div>
+      <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div></details>
     <p class="note">Os cards de cada rodada ficam na seção Cards: escolha a rodada na lista.</p>`;
+}
+// Linha do tempo do perfil: um quadrado por domingo da temporada, colorido pelo(s) prêmio(s) do atleta naquele dia
+function linhaDoTempo(a){
+  const ds=dias.filter(d=>d.startsWith(anos[0])).sort(),V={craque:"var(--pr-craque)",gol:"var(--pr-gol)",comico:"var(--pr-murcha)"};
+  const cel=ds.map(d=>{const ks=["craque","gol","comico"].filter(k=>CAMPEOES.some(c=>c.kind===k&&c.semana===d&&ganhador(c)===a));
+    const fundo=ks.length?`background:linear-gradient(to bottom,${ks.map((k,i)=>`${V[k]} ${i*100/ks.length}% ${(i+1)*100/ks.length}%`).join(",")})`:"";
+    const t=`${fmtAno(d)}: ${ks.length?ks.map(k=>PREMIO[k]).join(" + "):"sem prêmio"}`;
+    return `<span class="tl-c${ks.length?" on":""}" style="${fundo}" title="${esc(t)}" role="listitem" aria-label="${esc(t)}"><small>${fmt(d)}</small></span>`}).join("");
+  return `<div class="tl" role="list" aria-label="Prêmios por domingo">${cel}</div>
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>Craque</span><span><i style="background:var(--pr-gol)"></i>Golaço</span><span><i style="background:var(--pr-murcha)"></i>Bola murcha</span><span><i class="vz"></i>sem prêmio</span></div>`;
 }
 document.getElementById("hall").addEventListener("click",e=>{const b=e.target.closest(".who-btn,.fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
 // Destaques de uma rodada escolhida na lista (a última mostra também o que ainda está em votação)
@@ -1258,8 +1309,8 @@ function renderCards(){
   if(!selR.options.length){selR.innerHTML=dias.map(d=>`<option value="${d}">${fmtAno(d)}${d===ultima?" · última":""}</option>`).join("");selR.onchange=renderRodada}
   renderRodada();
   renderHall();
-  document.getElementById("cards-art").innerHTML=top3(S,"gols","golacos").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
-  document.getElementById("cards-ass").innerHTML=top3(S,"assist","gols").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
+  document.getElementById("cards-art").innerHTML=top3(S,"gols").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
+  document.getElementById("cards-ass").innerHTML=top3(S,"assist").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
   document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
 }
