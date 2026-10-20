@@ -186,6 +186,21 @@ section{margin-top:32px}
 .rod-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
 .rod-head .fig-tit{margin:0}
 .rod-head select{max-width:220px}
+/* Sugestões (19/10): chamada fixa abaixo do menu + seção com formulário */
+.sug-cta{display:block;text-align:center;background:color-mix(in srgb,var(--sun) 14%,var(--bg));color:var(--fg);text-decoration:none;font-size:14px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.sug-cta b{color:var(--sun)}
+.sug{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sun);border-radius:12px;padding:16px 18px}
+.sug-lead{font-size:16px;margin:0 0 6px}
+.sug-ex{color:var(--muted);font-size:14px;margin:0 0 14px}
+.sug form{display:grid;gap:10px;max-width:640px}
+.sug label{font-size:13px;font-weight:600;color:var(--muted)}
+.sug input,.sug textarea{width:100%;font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.sug textarea{min-height:110px;resize:vertical}
+.sug button{justify-self:start;font:inherit;font-weight:700;font-size:15px;color:#fff;background:var(--sun);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+.sug button:disabled{opacity:.6;cursor:default}
+.sug-st{font-size:14px;margin:0;min-height:1.4em}
+.sug-st.ok{color:#1f8a68}.sug-st.erro{color:#c62828}
+.priv{color:var(--muted);font-size:12px;text-align:center;margin:18px 0 0}
 /* texto que cabe no card: nome encolhe conforme o tamanho; rótulo de baixo menor */
 .fig-nome{font-size:clamp(7.5cqw,calc(132cqw / var(--n,8)),12.5cqw)}
 .fig-tag{font-size:5.4cqw;letter-spacing:.05em}
@@ -525,8 +540,10 @@ section{margin-top:32px}
     <a href="#h-stats" data-alvo="h-stats">Estatísticas</a>
     <a href="#h-squad" data-alvo="h-squad">Atletas</a>
     <a href="#h-hall" data-alvo="h-hall">Campeões</a>
+    <a href="#h-sug" data-alvo="h-sug">Sugestões</a>
   </div>
 </nav>
+<a class="sug-cta" href="#h-sug" id="sug-cta">💡 Tem ideia para a Central? <b>Dê sua sugestão</b>, as boas entram no site.</a>
 <a class="patro-faixa" id="patro-faixa" hidden target="_blank" rel="noopener sponsored">
   <span class="pf-lbl">Oferecimento</span><img id="patro-faixa-img" alt=""><span class="pf-cta">Conheça a loja →</span>
 </a>
@@ -627,6 +644,20 @@ section{margin-top:32px}
   <section aria-labelledby="h-hall">
     <div class="sec-head"><h2 id="h-hall">Campeões</h2><span>ranking de prêmios das rodadas</span></div>
     <div id="hall"></div>
+  </section>
+  <section aria-labelledby="h-sug" id="sec-sug">
+    <div class="sec-head"><h2 id="h-sug">Sugestões</h2><span>a Central é feita junto com a turma</span></div>
+    <div class="sug">
+      <p class="sug-lead"><b>Você pode e deve dar sugestões.</b> Ideia de card, prêmio, estatística, enquete, correção de lance, o que achar que melhora. As boas são incorporadas ao site.</p>
+      <p class="sug-ex">Exemplo: "e se a pelada tivesse um patrocinador?" Virou parte do projeto.</p>
+      <form id="sug-form">
+        <div><label for="sug-nome">Seu nome (opcional)</label><input id="sug-nome" maxlength="80" autocomplete="name"></div>
+        <div><label for="sug-txt">Sua sugestão</label><textarea id="sug-txt" required minlength="3" maxlength="2000" placeholder="Escreva aqui sua ideia, crítica ou correção"></textarea></div>
+        <button type="submit" id="sug-btn">Enviar sugestão</button>
+        <p class="sug-st" id="sug-st" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <p class="priv">O site conta visitas e cliques de forma anônima (sem nome e sem dados pessoais), só para saber o que a turma mais usa.</p>
   </section>
 </main>
 <footer class="patro-rodape" id="patro-rodape" hidden>
@@ -1323,6 +1354,55 @@ renderPolls();render();renderStats();renderCharts();renderCards();
   state.dia=l.data;render();
   if(EMBED){mLista=listaAtual;abrir(listaAtual.findIndex(x=>x.id===h))}
   else document.querySelector(`.card[data-id="${h}"]`)?.scrollIntoView({block:"center"});})();
+
+// ===== Supabase (19/10): sugestões + métricas anônimas de uso =====
+// Chave PÚBLICA (publishable): o banco só aceita GRAVAR em sugestoes/eventos (RLS); ninguém lê pelo site.
+const SB={url:"https://fvxecqjiyjstyacqrumr.supabase.co/rest/v1",key:"sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS"};
+function sbGravar(tabela,dados){
+  return fetch(`${SB.url}/${tabela}`,{method:"POST",keepalive:true,
+    headers:{apikey:SB.key,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(dados)});
+}
+// Métricas: só no site publicado (não conta testes locais); sessão = código aleatório do navegador, sem dado pessoal
+const METRICAS=location.hostname.endsWith("github.io");
+const sessao=(()=>{let s=null;try{s=localStorage.getItem("jao-sessao")}catch(e){}
+  if(!s){s=Math.random().toString(36).slice(2,12)+Date.now().toString(36);try{localStorage.setItem("jao-sessao",s)}catch(e){}}return s.slice(0,40)})();
+const dispositivo=/iPad|Tablet/i.test(navigator.userAgent)?"tablet":(matchMedia("(max-width:700px)").matches||/Mobi/i.test(navigator.userAgent)?"celular":"computador");
+const origem=(()=>{const u=new URLSearchParams(location.search).get("utm_source");if(u)return u.slice(0,200);
+  try{const r=document.referrer&&new URL(document.referrer).hostname;return r&&r!==location.hostname?r.slice(0,200):"direto"}catch(e){return "direto"}})();
+function track(tipo,alvo){
+  if(!METRICAS)return;
+  try{sbGravar("eventos",{tipo,alvo:alvo==null?null:String(alvo).slice(0,200),sessao,origem,dispositivo}).catch(()=>{})}catch(e){}
+}
+track("visita",location.hash?location.hash.slice(1):"inicio");
+// seções vistas (uma vez por visita)
+if("IntersectionObserver" in window){const vistas=new Set();
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const id=e.target.getAttribute("aria-labelledby");
+    if(e.isIntersecting&&!vistas.has(id)){vistas.add(id);track("secao",id)}}),{threshold:.35});
+  document.querySelectorAll("main > section[aria-labelledby]").forEach(s=>io.observe(s))}
+// cliques: lance aberto, perfil, voto, link copiado, verso do card, patrocinador
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const sp=t.closest("a[rel~=sponsored]");if(sp){track("patrocinador",sp.id||sp.href);return}
+  const th=t.closest(".thumb,.watch");if(th){track("lance",th.closest("[data-id]")?.dataset.id||th.dataset.i);return}
+  const op=t.closest(".opt[data-kind]");if(op){track("voto",`${op.dataset.kind}:${op.dataset.id}`);return}
+  const cp=t.closest(".cp");if(cp){track("compartilhar",cp.dataset.id);return}
+  const fb=t.closest(".flip-btn");if(fb){track("card","verso-atributos");return}
+  const ab=t.closest(".fig[data-a],.who-btn,.name");if(ab){track("perfil",ab.dataset.a);return}
+  const sc=t.closest("#sug-cta");if(sc)track("secao","cta-sugestao");
+},true);
+// formulário de sugestões
+document.getElementById("sug-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=document.getElementById("sug-btn"),st=document.getElementById("sug-st"),txt=document.getElementById("sug-txt");
+  const texto=txt.value.trim(),nome=document.getElementById("sug-nome").value.trim();
+  if(texto.length<3){st.className="sug-st erro";st.textContent="Escreva um pouco mais antes de enviar.";return}
+  btn.disabled=true;st.className="sug-st";st.textContent="Enviando…";
+  try{const r=await sbGravar("sugestoes",{texto:texto.slice(0,2000),nome:nome?nome.slice(0,80):null,pagina:location.hostname||"local"});
+    if(!r.ok)throw new Error(r.status);
+    st.className="sug-st ok";st.textContent="Valeu! Sua sugestão chegou. As boas entram no site.";txt.value="";track("sugestao","enviada");
+  }catch(err){st.className="sug-st erro";st.textContent="Não deu para enviar agora. Tente de novo em instantes."}
+  btn.disabled=false;
+});
 </script>
 
 </body>
