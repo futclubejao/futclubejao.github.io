@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Teste de login · Central da Pelada</title>
+<style>
+:root{--bg:#f4f5f9;--fg:#141a33;--muted:#5a6180;--navy:#24307a;--sun:#f47b20;--card:#fff;--line:#d9dcea}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1022;--fg:#e8eaf5;--muted:#a0a6c4;--navy:#2a3794;--card:#161a33;--line:#2a2f52}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--navy);color:#fff;border-bottom:6px solid var(--sun);padding:20px 16px}
+header h1{margin:0;font-size:24px}
+main{max-width:460px;margin:24px auto;padding:0 16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+button{font:inherit;font-weight:600;border:0;border-radius:999px;padding:12px 18px;cursor:pointer;width:100%}
+.g{background:#fff;color:#1f1f1f;border:1px solid #dadce0}
+.p{background:var(--navy);color:#fff}
+.s{background:transparent;color:var(--fg);border:1px solid var(--line)}
+input{font:inherit;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--bg);color:var(--fg)}
+.or{text-align:center;color:var(--muted);margin:14px 0;font-size:14px}
+.msg{font-size:14px;color:var(--muted);margin-top:10px;min-height:1em}
+pre{white-space:pre-wrap;font-size:13px;background:var(--bg);padding:10px;border-radius:8px}
+</style>
+</head>
+<body>
+<header><h1>Teste de login</h1></header>
+<main>
+  <div class="box" id="fora">
+    <button class="g" id="bt-google">Entrar com Google</button>
+    <div class="or">ou receba um link por e-mail</div>
+    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+    <button class="p" id="bt-email">Enviar link de acesso</button>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div class="box" id="dentro" hidden>
+    <p><b>Você entrou!</b></p>
+    <pre id="quem"></pre>
+    <button class="s" id="bt-sair">Sair</button>
+  </div>
+  <p class="msg">Página só para testar o login (será apagada).</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
+const volta=location.origin+location.pathname;
+const $=id=>document.getElementById(id);
+function mostra(s){
+  const u=s&&s.user;
+  $("fora").hidden=!!u; $("dentro").hidden=!u;
+  if(u)$("quem").textContent=`Nome: ${u.user_metadata.full_name||u.user_metadata.name||"—"}\nE-mail: ${u.email}\nEntrou por: ${u.app_metadata.provider}`;
+}
+sb.auth.getSession().then(({data})=>mostra(data.session));
+sb.auth.onAuthStateChange((_e,s)=>mostra(s));
+$("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:volta}});
+$("bt-email").onclick=async()=>{
+  const e=$("email").value.trim(); if(!e){$("msg").textContent="Digite um e-mail.";return}
+  $("msg").textContent="Enviando…";
+  const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:volta}});
+  $("msg").textContent=error?"Erro: "+error.message:"Pronto! Abra seu e-mail e clique no link (veja também o spam).";
+};
+$("bt-sair").onclick=()=>sb.auth.signOut();
+</script>
+</body>
+</html>
