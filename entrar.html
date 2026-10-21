@@ -75,6 +75,9 @@ input,select{font:inherit;width:100%;padding:12px;border:1px solid var(--line);b
 .mini{font-size:14px;color:var(--muted)}
 textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);margin:8px 0}
 .gsvg{width:18px;height:18px;flex:none}
+.ped.feito{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+.ped.feito b{color:var(--ok)}
+.wa{background:#1f8f4e;color:#fff}
 </style>
 </head>
 <body>
@@ -100,8 +103,11 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
   <!-- 2. sem convite -->
   <div class="box" id="v-semconvite" hidden>
     <h2>Falta o convite</h2>
-    <p class="lead">Para entrar na Central, abra o <b>link de convite</b> que foi enviado no grupo do WhatsApp do Jaó. Não achou? Fale com o Gustavo.</p>
-    <button class="s bt-sair">Sair</button>
+    <p class="lead">Para entrar na Central, abra o <b>link de convite</b> que foi enviado no grupo do WhatsApp do Jaó, ou digite o código do convite:</p>
+    <input type="text" id="codigo" placeholder="Ex.: JAO-7K3P-X9" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <button class="p" id="bt-codigo">Entrar com o código</button>
+    <div class="msg" id="msg-codigo" role="status"></div>
+    <p class="mini" style="margin-top:16px">Não achou o convite? Fale com o Gustavo. · <button class="linkbtn bt-sair">sair</button></p>
   </div>
 
   <!-- 3. "Esse é você?" -->
@@ -139,7 +145,8 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
     <span class="selo ok" id="dentro-papel">Atleta</span>
     <div class="escolhido" id="dentro-quem"></div>
     <p class="lead">Você está dentro da Central da Pelada.</p>
-    <a class="btn o" href="./">Ir para a Central</a>
+    <a class="btn o" href="central.html" id="ir-central">Ir para a Central</a>
+    <p class="mini" style="margin-top:12px"><a href="config.html">⚙ Configurações</a></p>
     <p class="mini" style="margin-top:16px">Entrou com <span class="eu-email"></span> · <button class="linkbtn bt-sair">sair</button></p>
   </div>
 
@@ -169,11 +176,15 @@ const volta=location.origin+location.pathname;
 const $=id=>document.getElementById(id);
 const VISTAS=["v-carrega","v-login","v-semconvite","v-escolher","v-aguarda","v-dentro","v-mod","v-convite"];
 const PAPEL={dono:"Dono",moderador:"Moderador",atleta:"Atleta",visitante:"Visitante"};
+// Central FECHADA: central.html até o lançamento; no lançamento vira a página principal ("./")
+const CENTRAL=new URL("central.html",location.href).href;
+const aprovadosAgora=[];   // pedidos aprovados nesta visita (para avisar no WhatsApp)
 let eu=null, membro=null, livres=[];
 
 // Convite: vem no link (?c=…) e fica guardado para depois do login.
-const guarda={get(){try{return localStorage.getItem("cp_convite")}catch(e){return null}},
-              set(v){try{localStorage.setItem("cp_convite",v)}catch(e){}}};
+const guarda={get(k="cp_convite"){try{return localStorage.getItem(k)}catch(e){return null}},
+              set(v,k="cp_convite"){try{localStorage.setItem(k,v)}catch(e){}},
+              tira(k){try{localStorage.removeItem(k)}catch(e){}}};
 const cURL=new URLSearchParams(location.search).get("c");
 if(cURL){guarda.set(cURL);history.replaceState(null,"",volta+location.hash)}
 let convite=cURL||guarda.get();
@@ -207,6 +218,9 @@ async function carrega(){
   const{data:ms,error}=await sb.from("membros").select("id,grupo_id,atleta_id,papel,situacao,nome_informado").eq("user_id",eu.id);
   if(error){mostra("v-carrega");$("v-carrega").firstElementChild.textContent="Erro: "+error.message;return}
   membro=(ms||[])[0]||null;   // por enquanto só o Jaó
+  // veio da Central (ou das Configurações) sem login → volta para lá
+  const vol=guarda.get("cp_volta");
+  if(membro&&membro.situacao==="aprovado"&&vol){guarda.tira("cp_volta");location.replace(vol);return}
   if(membro&&membro.situacao==="aprovado")return dentro();
   if(membro&&membro.situacao==="bloqueado"){mostra("v-semconvite");return}
   if(!convite){mostra("v-semconvite");return}
@@ -235,6 +249,14 @@ function desenhaLista(){
     el("b",{text:a.nome}),a.apelido?el("span",{class:"apel",text:`"${a.apelido}"`}):null))));
 }
 $("busca").oninput=desenhaLista;
+$("bt-codigo").onclick=async()=>{
+  const c=$("codigo").value.trim().toUpperCase();
+  if(!c){$("msg-codigo").textContent="Digite o código.";return}
+  convite=c;
+  if(!(await carregaLivres())){$("msg-codigo").className="msg bad";$("msg-codigo").textContent="Não deu para conferir o código agora.";return}
+  if(!livres.length){convite=null;$("msg-codigo").className="msg bad";$("msg-codigo").textContent="Código não encontrado. Confira as letras e tente de novo.";return}
+  $("msg-codigo").textContent="";guarda.set(c);escolher();
+};
 $("bt-novo").onclick=()=>{$("novo").hidden=false;$("bt-novo").hidden=true;$("novo-nome").value=(eu.user_metadata.full_name||eu.user_metadata.name||"");$("novo-nome").focus()};
 $("bt-novo-envia").onclick=()=>{const n=$("novo-nome").value.trim();
   if(!n){$("msg-escolher").textContent="Escreva o seu nome.";return}
@@ -281,6 +303,7 @@ Os lances, cards e estatísticas da pelada agora ficam num lugar só, fechado pa
 2) Entre com sua conta Google (ou receba um link no e-mail)
 3) Ache o seu nome em "Esse é você?" — não achou? crie o seu card
 Um moderador confirma e pronto.
+(Se o link não abrir: entre em ${volta} e digite o código *${g.convite}*)
 
 Se não quiser foto ou apelido no seu card, tire no app ou fale com o Gustavo.`;
 }
@@ -294,8 +317,24 @@ async function carregaPedidos(){
   const box=$("pedidos"); box.replaceChildren();
   if(error){$("msg-mod").className="msg bad";$("msg-mod").textContent="Erro: "+error.message;return}
   $("mod-n").textContent=data.length?`(${data.length})`:"";
+  aprovadosAgora.forEach(a=>box.append(cartaoAprovado(a)));
   if(!data.length){box.append(el("p",{class:"mini",text:"Nenhum pedido esperando. 👍"}));return}
   data.forEach(p=>box.append(cartaoPedido(p)));
+}
+// Depois de aprovar: botão para avisar a pessoa (menu de compartilhar do celular / WhatsApp)
+function cartaoAprovado(a){
+  const txt=`✅ ${a.nome}, você foi aprovado na Central da Pelada!
+Entre aqui: ${CENTRAL}`;
+  const bW=el("button",{class:"wa",text:"Avisar no WhatsApp"});
+  bW.onclick=async()=>{
+    if(navigator.share){try{await navigator.share({text:txt});return}catch(e){if(e.name==="AbortError")return}}
+    window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");
+  };
+  const bX=el("button",{class:"s",text:"Fechar",onclick:()=>{aprovadosAgora.splice(aprovadosAgora.indexOf(a),1);carregaPedidos()}});
+  return el("div",{class:"ped feito"},
+    el("div",{},el("b",{text:"✓ Aprovado: "}),a.nome),
+    el("p",{class:"mini",text:a.conta+" já pode entrar. Avise a pessoa:"}),
+    el("div",{class:"row"},bX,bW));
 }
 function cartaoPedido(p){
   const nomeConta=p.conta_nome||p.conta_email;
@@ -317,6 +356,8 @@ function cartaoPedido(p){
     bA.disabled=bR.disabled=true; msg.className="msg"; msg.textContent="Aprovando…";
     const{error}=await sb.rpc("aprovar_entrada",{p_membro:p.membro_id,p_atleta:atleta,p_nome:nome});
     if(error){msg.className="msg bad";msg.textContent=erroAmigavel(error);bA.disabled=bR.disabled=false;return}
+    const escolhido=atleta?livres.find(x=>x.id===atleta):null;
+    aprovadosAgora.push({conta:nomeConta,nome:escolhido?escolhido.nome:nome||p.atleta_nome||p.nome_informado||nomeConta});
     carregaPedidos();
   };
   bR.onclick=async()=>{

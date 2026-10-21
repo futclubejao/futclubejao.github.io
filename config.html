@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Configurações · Central da Pelada</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2324307a'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f47b20'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Configurações (A1.5): minha conta, membros e papéis, regras do grupo, convite. Mesmo visual do entrar.html. */
+:root{
+  --bg:#f4f5f9; --surface:#ffffff; --fg:#141a33; --muted:#5a6180; --line:#d9dcea;
+  --navy:#24307a; --sun:#f47b20; --link:#24307a; --ok:#1f7a45; --warn:#a15c00; --bad:#b3261e;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; --bad:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; --bad:#ff8a80; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--body)}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.05}
+a{color:var(--link)}
+header{background:var(--navy);color:#fff;border-bottom:6px solid var(--sun);position:relative;overflow:hidden;
+  padding:20px max(16px,env(safe-area-inset-left,0px)) 22px}
+header::after{content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;background:var(--sun)}
+header a{color:#fff;font-weight:600;font-size:15px;text-decoration:none;position:relative;z-index:1}
+header h1{font-size:36px;font-weight:800;margin-top:10px;position:relative;z-index:1}
+main{max-width:560px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 48px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.box h2{font-size:26px;font-weight:800;margin-bottom:6px}
+.lead{color:var(--muted);margin:0 0 14px}
+button,.btn{font:600 16px/1.2 var(--body);border:0;border-radius:999px;padding:12px 18px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+button:disabled{opacity:.55;cursor:default}
+button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.p{background:var(--navy);color:#fff}
+.o{background:var(--sun);color:#fff}
+.s{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.acoes{display:flex;flex-wrap:wrap;gap:8px}
+.eu-nome{font-family:var(--display);font-size:30px;font-weight:800;margin:2px 0}
+.mini{font-size:14px;color:var(--muted)}
+.msg{font-size:14px;color:var(--muted);margin-top:10px;min-height:1em}
+.msg.bad{color:var(--bad)}
+.msg.ok{color:var(--ok)}
+.selo{display:inline-block;font:600 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:999px;border:1px solid currentColor;color:var(--muted)}
+.selo.dono{color:var(--sun)}
+.selo.moderador{color:var(--ok)}
+.membros{list-style:none;margin:8px 0 0;padding:0}
+.membros li{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.membros li:first-child{border-top:0}
+.av{width:40px;height:40px;border-radius:50%;flex:none;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600;font-size:15px;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.quem{flex:1;min-width:0}
+.quem b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quem small{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voce{font:600 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--sun);color:#fff;border-radius:999px;padding:3px 7px;margin-left:6px;vertical-align:2px}
+.membros select{flex:none;max-width:132px;font:500 14px var(--body);padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
+.opcao{display:flex;gap:12px;align-items:flex-start;padding:10px 0;cursor:pointer}
+.opcao+.opcao{border-top:1px solid var(--line)}
+.opcao input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:var(--sun)}
+.opcao span{display:block}
+.opcao small{display:block;color:var(--muted);font-size:14px}
+.opcao.trava{cursor:default;opacity:.7}
+.codigo{font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:.04em;margin:4px 0 2px;word-break:break-all}
+.link{font-size:14px;color:var(--muted);word-break:break-all;margin:0 0 12px}
+.pedidos{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--sun) 12%,transparent);
+  border:1px solid var(--sun);border-radius:12px;padding:12px 14px;margin-bottom:16px;text-decoration:none;color:var(--fg);font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <a href="central.html" id="voltar">← Voltar para a Central</a>
+  <h1>Configurações</h1>
+</header>
+<main>
+  <div class="box" id="v-carrega"><p class="lead">Carregando…</p></div>
+
+  <a class="pedidos" id="pedidos" href="entrar.html" hidden><span id="pedidos-txt"></span><span>Ver →</span></a>
+
+  <!-- Minha conta -->
+  <div class="box" id="v-conta" hidden>
+    <h2>Minha conta</h2>
+    <span class="selo" id="eu-papel"></span>
+    <div class="eu-nome" id="eu-nome"></div>
+    <p class="mini" id="eu-email"></p>
+    <div class="acoes" style="margin-top:12px">
+      <a class="btn o" id="bt-meucard" href="central.html#meu-card">Ver meu card</a>
+      <button class="s" id="bt-perfil" disabled title="Em breve">Editar meu perfil · em breve</button>
+      <button class="s" id="bt-sair">Sair</button>
+    </div>
+  </div>
+
+  <!-- Membros e papéis -->
+  <div class="box" id="v-membros" hidden>
+    <h2>Membros <span id="membros-n"></span></h2>
+    <p class="lead" id="membros-lead"></p>
+    <ul class="membros" id="membros"></ul>
+    <div class="msg" id="msg-membros" role="status"></div>
+  </div>
+
+  <!-- Regras do grupo -->
+  <div class="box" id="v-grupo" hidden>
+    <h2>Regras do grupo</h2>
+    <p class="lead" id="grupo-lead"></p>
+    <label class="opcao" id="op-votos"><input type="checkbox" id="votos-abertos">
+      <span><span>Votos abertos</span><small>Ligado: todos veem quem votou em quem. Desligado: o voto é secreto (só aparece a parcial e o total).</small></span></label>
+    <label class="opcao" id="op-modconf"><input type="checkbox" id="mod-configura">
+      <span><span>Moderadores também mudam as regras</span><small>Só o dono liga ou desliga isto.</small></span></label>
+    <div class="msg" id="msg-grupo" role="status"></div>
+  </div>
+
+  <!-- Convite (moderadores) -->
+  <div class="box" id="v-convite" hidden>
+    <h2>Convite do grupo</h2>
+    <p class="lead">Quem tiver o link (ou digitar o código na página de entrada) faz login e pede para entrar. Um moderador aprova.</p>
+    <div class="codigo" id="codigo"></div>
+    <p class="link" id="link"></p>
+    <div class="acoes">
+      <button class="p" id="bt-copiar">Copiar link</button>
+      <a class="btn s" href="entrar.html">Mensagem pronta p/ WhatsApp</a>
+      <button class="s" id="bt-novo" hidden>Gerar novo código</button>
+    </div>
+    <div class="msg" id="msg-convite" role="status"></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
+const GRUPO="jao";
+const ENTRADA=new URL("entrar.html",location.href).href;
+const $=id=>document.getElementById(id);
+const PAPEL={dono:"Dono",moderador:"Moderador",atleta:"Atleta",visitante:"Visitante"};
+let eu=null,grupo=null,membros=[];
+
+function el(tag,attrs={},...filhos){const e=document.createElement(tag);
+  for(const[k,v]of Object.entries(attrs))k==="text"?e.textContent=v:k.startsWith("on")?e[k]=v:e.setAttribute(k,v);
+  filhos.forEach(f=>f&&e.append(f));return e}
+function aviso(id,txt,tipo){$(id).className="msg"+(tipo?" "+tipo:"");$(id).textContent=txt}
+function erroAmigavel(e){return((e&&e.message)||String(e)).replace(/^.*?exception:?\s*/i,"")}
+const nomeCard=m=>m.atleta_nome?m.atleta_nome+(m.atleta_apelido?` "${m.atleta_apelido}"`:""):"Conta do grupo (sem card)";
+const iniciais=t=>{const w=(t||"?").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/^Dr\.?\s+/,"").split(/\s+/).filter(Boolean);
+  return(w.length>1?w[0][0]+w[1][0]:(w[0]||"?").slice(0,2)).toUpperCase()};
+
+async function carrega(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){try{localStorage.setItem("cp_volta",location.href)}catch(e){}location.replace("entrar.html");return}
+  const{data:gs,error}=await sb.from("grupos").select("id,nome,convite,votos_abertos,moderador_configura").eq("slug",GRUPO);
+  if(error){$("v-carrega").firstElementChild.textContent="Erro: "+error.message;return}
+  if(!gs.length){location.replace("entrar.html");return}
+  grupo=gs[0];
+  const{data:ms,error:em}=await sb.rpc("membros_do_grupo",{p_grupo:grupo.id});
+  if(em){$("v-carrega").firstElementChild.textContent="Erro: "+em.message;return}
+  membros=ms;eu=ms.find(m=>m.eu);
+  eu.email=session.user.email;
+  $("v-carrega").hidden=true;
+  conta();desenhaMembros();regras();
+  if(eu.papel==="dono"||eu.papel==="moderador"){convite();pedidos()}
+}
+
+// ---------- minha conta ----------
+function conta(){
+  $("eu-papel").textContent=PAPEL[eu.papel];$("eu-papel").className="selo "+eu.papel;
+  $("eu-nome").textContent=nomeCard(eu);
+  $("eu-email").textContent="Entrou com "+eu.email;
+  $("bt-meucard").hidden=!eu.atleta_id;
+  $("v-conta").hidden=false;
+}
+$("bt-sair").onclick=async()=>{await sb.auth.signOut();location.replace("entrar.html")};
+
+// ---------- membros e papéis ----------
+// Dono: dá/tira moderador, passa o posto, remove. Moderador: remove atletas. (O banco confere tudo de novo.)
+function acoesPara(m){
+  if(m.eu||m.papel==="dono")return[];
+  if(eu.papel==="dono"){
+    const L=[];
+    if(m.papel==="atleta")L.push(["mod","Tornar moderador"]);
+    if(m.papel==="moderador")L.push(["atleta","Tirar de moderador"]);
+    L.push(["dono","Passar o posto de dono"],["remover","Remover do grupo"]);
+    return L;
+  }
+  if(eu.papel==="moderador"&&m.papel==="atleta")return[["remover","Remover do grupo"]];
+  return[];
+}
+function desenhaMembros(){
+  $("membros-n").textContent=`(${membros.length})`;
+  $("membros-lead").textContent=eu.papel==="dono"?"Você é o dono: pode dar e tirar o papel de moderador, passar o posto de dono e remover membros."
+    :eu.papel==="moderador"?"Moderadores aprovam a entrada, cuidam do conteúdo e podem remover atletas. Papéis quem muda é o dono."
+    :"Quem está na Central do grupo. O dono e os moderadores cuidam da entrada e do conteúdo.";
+  const ul=$("membros");ul.replaceChildren();
+  membros.forEach(m=>{
+    const nome=nomeCard(m);
+    const av=el("span",{class:"av","aria-hidden":"true"}),ini=iniciais(m.atleta_nome||m.conta_nome||m.conta_email);
+    if(m.conta_foto)av.append(el("img",{src:m.conta_foto,alt:"",referrerpolicy:"no-referrer",onerror:()=>{av.textContent=ini}}));else av.textContent=ini;
+    const sub=[PAPEL[m.papel],m.conta_email].filter(Boolean).join(" · ");
+    const quem=el("div",{class:"quem"},el("b",{},nome,m.eu?el("span",{class:"voce",text:"você"}):null),el("small",{text:sub}));
+    const ac=acoesPara(m);let sel=null;
+    if(ac.length){
+      sel=el("select",{"aria-label":"Ações para "+nome});
+      sel.append(el("option",{value:"",text:"Ações…"}),...ac.map(([v,t])=>el("option",{value:v,text:t})));
+      sel.onchange=()=>{const v=sel.value;sel.value="";if(v)acao(m,v)};
+    }
+    ul.append(el("li",{},av,quem,sel));
+  });
+  $("v-membros").hidden=false;
+}
+async function acao(m,v){
+  const nome=nomeCard(m);let r;
+  if(v==="mod"){if(!confirm(`Tornar ${nome} moderador? Ele vai poder aprovar entradas, cuidar do conteúdo e remover atletas.`))return;
+    r=await sb.from("membros").update({papel:"moderador"}).eq("id",m.membro_id)}
+  else if(v==="atleta"){if(!confirm(`Tirar ${nome} de moderador? Ele continua no grupo como atleta.`))return;
+    r=await sb.from("membros").update({papel:"atleta"}).eq("id",m.membro_id)}
+  else if(v==="remover"){if(!confirm(`Remover ${nome} do grupo? Ele perde o acesso à Central (o card e os lances continuam). Pode pedir para entrar de novo pelo convite.`))return;
+    r=await sb.from("membros").delete().eq("id",m.membro_id)}
+  else if(v==="dono"){
+    if(!confirm(`Passar o posto de DONO para ${nome}?\n\nVocê vira moderador e só o novo dono poderá devolver o posto.`))return;
+    if(prompt(`Para confirmar, digite DONO`)?.trim().toUpperCase()!=="DONO"){aviso("msg-membros","Cancelado: o posto continua com você.");return}
+    r=await sb.rpc("transferir_dono",{p_grupo:grupo.id,p_novo_membro:m.membro_id});
+    if(!r.error){alert(`Pronto: ${nome} agora é o dono do grupo.`);location.reload();return}
+  }
+  if(r.error){aviso("msg-membros",erroAmigavel(r.error),"bad");return}
+  const{data}=await sb.rpc("membros_do_grupo",{p_grupo:grupo.id});
+  membros=data||membros;eu=Object.assign(membros.find(x=>x.eu)||eu,{email:eu.email});
+  desenhaMembros();aviso("msg-membros","Feito ✓","ok");
+}
+
+// ---------- regras do grupo ----------
+function regras(){
+  const dono=eu.papel==="dono",pode=dono||(eu.papel==="moderador"&&grupo.moderador_configura);
+  $("votos-abertos").checked=grupo.votos_abertos;$("mod-configura").checked=grupo.moderador_configura;
+  $("votos-abertos").disabled=!pode;$("mod-configura").disabled=!dono;
+  $("op-votos").classList.toggle("trava",!pode);$("op-modconf").classList.toggle("trava",!dono);
+  $("op-modconf").hidden=!(dono||eu.papel==="moderador");
+  $("grupo-lead").textContent=dono?"Quem decide é você (dono)."
+    :pode?"O dono deixou os moderadores mudarem as regras."
+    :"Só o dono (ou moderadores autorizados por ele) muda as regras.";
+  $("v-grupo").hidden=false;
+}
+async function salvaRegra(campo,caixa){
+  const valor=caixa.checked;caixa.disabled=true;
+  const{error}=await sb.from("grupos").update({[campo]:valor}).eq("id",grupo.id);
+  caixa.disabled=false;
+  if(error){caixa.checked=!valor;aviso("msg-grupo",erroAmigavel(error),"bad");return}
+  grupo[campo]=valor;aviso("msg-grupo","Salvo ✓","ok");
+}
+$("votos-abertos").onchange=e=>salvaRegra("votos_abertos",e.target);
+$("mod-configura").onchange=e=>salvaRegra("moderador_configura",e.target);
+
+// ---------- convite ----------
+function convite(){
+  $("codigo").textContent=grupo.convite;
+  $("link").textContent=`${ENTRADA}?c=${encodeURIComponent(grupo.convite)}`;
+  $("bt-novo").hidden=eu.papel!=="dono";
+  $("v-convite").hidden=false;
+}
+$("bt-copiar").onclick=async()=>{
+  try{await navigator.clipboard.writeText($("link").textContent);aviso("msg-convite","Link copiado!","ok")}
+  catch(e){aviso("msg-convite","Copie o link acima (toque e segure).")}
+};
+$("bt-novo").onclick=async()=>{
+  if(!confirm("Gerar um código novo?\n\nO link e o código antigos param de funcionar. Quem já entrou continua dentro; quem ainda não entrou vai precisar do link novo."))return;
+  $("bt-novo").disabled=true;
+  const{data,error}=await sb.rpc("gerar_convite",{p_grupo:grupo.id});
+  $("bt-novo").disabled=false;
+  if(error){aviso("msg-convite",erroAmigavel(error),"bad");return}
+  grupo.convite=data;convite();aviso("msg-convite","Código novo pronto. Mande o link novo no grupo do WhatsApp.","ok");
+};
+
+// ---------- pedidos de entrada (aviso) ----------
+async function pedidos(){
+  const{data}=await sb.rpc("pedidos_pendentes",{p_grupo:grupo.id});
+  const n=(data||[]).length;
+  $("pedidos").hidden=!n;$("pedidos-txt").textContent=n===1?"1 pedido de entrada esperando aprovação":`${n} pedidos de entrada esperando aprovação`;
+}
+
+carrega();
+</script>
+</body>
+</html>

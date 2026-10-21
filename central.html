@@ -1,0 +1,1455 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Lances da pelada do Jaó: gols, furadas e polêmicas, por atleta e por domingo.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2324307a'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f47b20'/%3E%3C/svg%3E">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Central da Pelada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: placar no topo, enquetes da semana, filtros fixos em "chips", grade de lances como cards de súmula */
+:root{
+  --bg:#f4f5f9; --surface:#ffffff; --fg:#141a33; --muted:#5a6180; --line:#d9dcea;
+  --navy:#24307a; --sun:#f47b20; --link:#24307a;
+  --grass:#1f6b3a; --grass-2:#2c8a4c; --chalk:#ffffff; --gold:#f47b20; --fun:#d4a106;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff;
+  --grass:#1c5a32; --grass-2:#3fa864; --chalk:#f4f8f5; --gold:#ff8a33; --fun:#f2c230; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff;
+  --grass:#1c5a32; --grass-2:#3fa864; --chalk:#f4f8f5; --gold:#ff8a33; --fun:#f2c230; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
+
+/* Topo: faixa de gramado com linhas de cal */
+.hero{background:var(--navy);color:#ffffff;position:relative;overflow:hidden;border-bottom:6px solid var(--sun)}
+.sun{position:absolute;right:-150px;top:50%;width:300px;height:300px;transform:translateY(-50%)}
+@media (max-width:560px){.sun{width:170px;height:170px;right:-95px}}
+.hero .wrap{padding-block:28px 26px;position:relative;z-index:1}
+.eyebrow{font-size:clamp(14px,2.2vw,18px);letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.95}
+.hero h1{font-size:clamp(40px,8vw,68px);font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+.hero p{margin:8px 0 0;font-size:clamp(17px,2.4vw,22px);line-height:1.4;opacity:.97}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;font-family:var(--display);font-size:20px;font-weight:600}
+.stats b{font-size:28px;font-variant-numeric:tabular-nums}
+.demo{display:inline-block;margin-top:14px;background:rgba(0,0,0,.28);border:1px dashed rgba(255,255,255,.6);padding:4px 10px;border-radius:4px;font-size:13px}
+
+section{margin-top:32px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sec-head h2{font-size:30px;font-weight:800;text-transform:uppercase}
+.sec-head span{color:var(--muted);font-size:14px}
+
+/* Enquetes */
+.polls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.poll{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.poll h3{font-size:24px;font-weight:800;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.poll[data-kind="gol"] h3 .dot{background:var(--gold)} .poll[data-kind="comico"] h3 .dot{background:var(--fun)}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.opt{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);font:inherit;text-align:left;cursor:pointer;position:relative;overflow:hidden}
+.opt:hover{border-color:var(--grass-2)}
+.opt:focus-visible{outline:2px solid var(--grass-2);outline-offset:2px}
+.opt .bar{position:absolute;inset:0 auto 0 0;background:var(--grass-2);opacity:.14;transition:width .4s}
+.opt .t{position:relative;min-width:0}.opt .t small{display:block;color:var(--muted)}
+.opt .n{position:relative;font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.opt.voted{border-color:var(--grass-2);border-width:2px}
+.opt-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:-4px}
+.opt-head span:last-child{color:var(--link)}
+.opt-row{display:grid;grid-template-columns:1fr auto;gap:6px}
+.watch{display:grid;place-items:center;width:44px;border:1px solid var(--line);border-radius:8px;color:var(--link);text-decoration:none;font-size:16px}
+.watch:hover{border-color:var(--sun);background:var(--sun);color:#ffffff}
+.watch:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.cp{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;margin-left:auto}
+.cp:hover{color:var(--link)}
+.poll .foot{font-size:13px;color:var(--muted)}
+
+/* Filtros */
+.filters{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.frow label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;width:64px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;cursor:pointer}
+.chip:hover{border-color:var(--grass-2)}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#ffffff}
+.chip.av-chip{display:inline-flex;align-items:center;gap:6px;padding-left:4px}
+.av{width:24px;height:24px;border-radius:50%;flex:none;display:inline-grid;place-items:center;font-size:11px;font-weight:600;color:#ffffff;background:var(--navy);border:2px solid var(--sun);overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:64px;height:64px;font-size:22px;font-family:var(--display);border-width:3px}
+/* Elenco */
+.squad{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px}
+.player{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;font:inherit;color:var(--fg)}
+.player:hover{border-color:var(--sun)}
+.player:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.player .pn{font-family:var(--display);font-size:22px;font-weight:800;margin-top:4px}
+.player .pp{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.player .ps{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.player .trophy{color:var(--sun);font-weight:600;font-size:13px}
+.chip:focus-visible{outline:2px solid var(--grass-2);outline-offset:2px}
+.selects{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 200px;min-width:0}
+.field label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.field select{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);width:100%}
+.field select:focus-visible,.clear:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.clear{font:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--link);cursor:pointer}
+.clear:hover{border-color:var(--sun)}
+.count{margin:12px 2px 0;color:var(--muted);font-size:14px}
+
+/* Cards de lance */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:16px;margin-top:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;max-width:100%;background:repeating-linear-gradient(90deg,var(--grass) 0 28px,var(--grass-2) 28px 56px);position:relative;display:grid;place-items:center;color:var(--chalk);text-decoration:none}
+.thumb::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.5)}
+.thumb::after{content:"";position:absolute;left:50%;top:50%;width:54px;height:54px;border:2px solid rgba(255,255,255,.5);border-radius:50%;transform:translate(-50%,-50%)}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb.has-img::before,.thumb.has-img::after{display:none}
+.thumb:hover .play{background:var(--sun)}
+.play{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.45);display:grid;place-items:center;position:relative;z-index:1}
+.play::before{content:"";border-left:14px solid var(--chalk);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.min{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.55);padding:1px 7px;border-radius:4px;font-size:12px;font-variant-numeric:tabular-nums;z-index:1}
+.tags{position:absolute;left:8px;top:8px;right:8px;display:flex;flex-wrap:wrap;gap:4px;z-index:1}
+.tag{padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;background:var(--chalk);color:#14231a}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.body .desc{font-weight:500}
+.names{display:flex;flex-wrap:wrap;gap:6px}
+.name{font-size:13px;color:var(--link);font-weight:600;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+.name .av{width:22px;height:22px;font-size:10px}
+.name:hover{text-decoration:underline}
+.meta{margin-top:auto;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.badge-win{color:var(--gold);font-weight:600}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px;margin-top:10px}
+
+/* Fotos */
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.foto{display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;max-width:100%}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto:hover{border-color:var(--sun)}
+
+/* Menu de seções fixo + voltar ao topo */
+.secnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);box-shadow:0 2px 0 var(--sun)}
+.secnav .in{max-width:1080px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.secnav .in::-webkit-scrollbar{display:none}
+.secnav a{flex:none;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.12)}
+.secnav a:hover,.secnav a.on{background:var(--sun)}
+.secnav a:focus-visible{outline:2px solid #ffffff;outline-offset:2px}
+.sec-head h2,#sec-fotos{scroll-margin-top:72px}
+.totop{position:fixed;z-index:20;right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:max(16px,calc(env(safe-area-inset-bottom,0px) + 12px));
+  font:inherit;font-weight:600;font-size:15px;padding:10px 16px;border-radius:999px;border:0;background:var(--navy);color:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+.totop:hover{background:var(--sun)}
+.mais{display:block;margin:16px auto 0;font:inherit;font-weight:600;font-size:15px;padding:12px 24px;border-radius:999px;border:2px solid var(--navy);background:transparent;color:var(--link);cursor:pointer}
+.mais:hover{background:var(--navy);color:#ffffff}
+
+/* Gráficos: paleta categórica validada (skill dataviz, 8 slots em ordem fixa) */
+/* paleta editorial (19/10) validada com validate_palette.js: claro vs #fff e escuro vs #161a33 */
+:root{--s1:#2f5d9e;--s2:#d0473c;--s3:#1f8a68;--s4:#e0812f;--s5:#8a44a6;--s6:#b8961c;--s7:#5a9be0;--s8:#c2185b;--s-out:#c4c4c4;--s-gray:#c4c4c4;--s-gray-t:#8f8f8f;--axis:#9b9a92}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--s1:#5b86d0;--s2:#e0574a;--s3:#1f9476;--s4:#d9772a;--s5:#a468cc;--s6:#b3911a;--s7:#4f97e0;--s8:#e04a86;--s-out:#474c6b;--s-gray:#474c6b;--s-gray-t:#80869f;--axis:#5a5f80}}
+:root[data-theme="dark"]{--s1:#5b86d0;--s2:#e0574a;--s3:#1f9476;--s4:#d9772a;--s5:#a468cc;--s6:#b3911a;--s7:#4f97e0;--s8:#e04a86;--s-out:#474c6b;--s-gray:#474c6b;--s-gray-t:#80869f;--axis:#5a5f80}
+.charts{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px}
+.ctl .field{flex:0 1 230px}
+.chart{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;min-width:0}
+.chart figcaption{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.chart figcaption b{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase}
+.chart figcaption span{color:var(--muted);font-size:13px}
+.plot{position:relative;width:100%}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.plot text{font-family:var(--body);font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .base{stroke:var(--axis);stroke-width:1}
+.plot .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.plot .hit{fill:transparent;cursor:crosshair}
+.plot .lbl{font-size:12px;font-weight:700;fill:var(--fg)}
+.plot .lbl-v{font-weight:800}
+.plot .lbl-g{font-size:11px;fill:var(--muted);opacity:.85}
+/* linhas estilo editorial */
+.plot .ln-g{fill:none;stroke:var(--s-gray);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+.plot .lbl-g{font-size:11.5px;fill:var(--s-gray-t);opacity:1}
+.plot .ytk{font-size:11.5px;fill:var(--muted)}
+/* Campeões: ranking de prêmios + destaques de cada rodada */
+.hall-tbl{margin-bottom:18px}
+.hall-tbl td:first-child,.hall-tbl th:first-child{text-align:center}
+.hall-rod{margin-top:6px}
+/* escolha da rodada na seção Cards */
+.rod-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+.rod-head .fig-tit{margin:0}
+.rod-head select{max-width:220px}
+/* Sugestões (19/10): chamada fixa abaixo do menu + seção com formulário */
+.sug-cta{display:block;text-align:center;background:color-mix(in srgb,var(--sun) 14%,var(--bg));color:var(--fg);text-decoration:none;font-size:14px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.sug-cta b{color:var(--sun)}
+.sug{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sun);border-radius:12px;padding:16px 18px}
+.sug-lead{font-size:16px;margin:0 0 6px}
+.sug-ex{color:var(--muted);font-size:14px;margin:0 0 14px}
+.sug form{display:grid;gap:10px;max-width:640px}
+.sug label{font-size:13px;font-weight:600;color:var(--muted)}
+.sug input,.sug textarea{width:100%;font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.sug textarea{min-height:110px;resize:vertical}
+.sug button{justify-self:start;font:inherit;font-weight:700;font-size:15px;color:#fff;background:var(--sun);border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+.sug button:disabled{opacity:.6;cursor:default}
+.sug-st{font-size:14px;margin:0;min-height:1.4em}
+.sug-st.ok{color:#1f8a68}.sug-st.erro{color:#c62828}
+.priv{color:var(--muted);font-size:12px;text-align:center;margin:18px 0 0}
+/* texto que cabe no card: nome encolhe conforme o tamanho; rótulo de baixo menor */
+.fig-nome{font-size:clamp(7.5cqw,calc(132cqw / var(--n,8)),12.5cqw)}
+.fig-tag{font-size:5.4cqw;letter-spacing:.05em}
+/* troféu do Craque da rodada (a coroa é só do MVP) */
+.fig-trofeu{position:absolute;top:-1cqw;left:50%;transform:translateX(-30%);width:22cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+/* cores dos prêmios nos gráficos (validadas: claro vs #fff, escuro vs #161a33) */
+:root{--pr-craque:#a3203f;--pr-gol:#2f9e5a;--pr-murcha:#2a6fc9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pr-craque:#dd6583;--pr-gol:#20804b;--pr-murcha:#4a8ee0}}
+:root[data-theme="dark"]{--pr-craque:#dd6583;--pr-gol:#20804b;--pr-murcha:#4a8ee0}
+/* linha do tempo no perfil: um quadrado por domingo */
+.tl{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 6px}
+.tl-c{width:38px;height:38px;border-radius:6px;background:color-mix(in srgb,var(--muted) 14%,transparent);display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px}
+.tl-c small{font-size:9.5px;line-height:1;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl-c.on small{color:#fff;font-weight:700;text-shadow:0 0 3px rgba(0,0,0,.45)}
+.tl-leg{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.tl-leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.tl-leg i.vz{background:color-mix(in srgb,var(--muted) 14%,transparent)}
+/* quadro de medalhas em Campeões */
+.md{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.md-row{display:grid;grid-template-columns:minmax(110px,190px) minmax(0,1fr) 30px;gap:10px;align-items:center}
+.md-bar{display:flex;gap:2px;height:24px}
+.md-seg{border-radius:4px;color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;min-width:20px}
+/* GOLAÇO DA RODADA = card ESMERALDA (19/10): verde de pedra preciosa, cor do gramado */
+.fig.esmeralda{--fundo:linear-gradient(160deg,#6fdca6,#17855a 35%,#4cc28a 52%,#0d5c3d 78%,#3fb57f);--t1:#ffffff;--t2:#d4f5e4;filter:drop-shadow(0 0 5px rgba(60,200,130,.5)) drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.fig.esmeralda .fig-card::after{box-shadow:inset 0 0 0 .9cqw rgba(220,255,236,.85)}
+.fig.esmeralda .fig-ap{border-bottom-color:rgba(220,255,236,.5)}
+.md-tot{font-family:var(--display);font-size:19px;text-align:right}
+.md .who-btn{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--fg);text-align:left;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fig.murcha .fig-tag{font-size:4.8cqw;letter-spacing:0}
+.md details{margin-top:6px}
+.hall details summary{cursor:pointer;color:var(--link);font-size:14px;margin:4px 0 10px}
+.rod-vazio{color:var(--muted);font-size:14px;padding:8px 2px}
+/* verso do card no perfil: atributos (19/10, números de EXEMPLO até ter votação) */
+.pf-flip.virado .pf-frente{display:none}
+.pf-flip:not(.virado) .pf-verso{display:none}
+.pf-verso{animation:virar .35s ease-out}
+@keyframes virar{from{transform:perspective(700px) rotateY(80deg);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pf-verso{animation:none}}
+.flip-btn{display:block;margin:10px auto 0;font:inherit;font-size:14px;font-weight:600;color:var(--link);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.fig.verso{--fundo:linear-gradient(160deg,#2c3a8f,#1b2463 55%,#24307a);--t1:#ffffff;--t2:#c9cff0;cursor:pointer}
+.vs-top{position:absolute;left:9cqw;right:9cqw;top:11cqw;display:flex;align-items:flex-end;gap:3cqw;color:var(--t1);z-index:2}
+.vs-top b{font-family:var(--display);font-weight:800;font-size:24cqw;line-height:.8}
+.vs-top span{display:flex;flex-direction:column;font-family:var(--display);font-weight:800;font-size:7cqw;line-height:1.05;text-transform:uppercase;min-width:0}
+.vs-top small{font-family:var(--body);font-weight:500;font-size:4.6cqw;color:var(--t2);text-transform:none;letter-spacing:.02em}
+.vs-bars{position:absolute;left:9cqw;right:9cqw;top:40cqw;display:flex;flex-direction:column;gap:1.3cqw;z-index:2}
+.vs-bar{display:grid;grid-template-columns:24cqw 1fr 9cqw;gap:2cqw;align-items:center;color:var(--t1);line-height:1.15}
+.vs-bar i{font-style:normal;font-size:4.6cqw;color:var(--t2);white-space:nowrap}
+.vs-bar u{position:relative;height:2.2cqw;border-radius:1.1cqw;background:rgba(255,255,255,.16)}
+.vs-bar u s{position:absolute;inset:0 auto 0 0;border-radius:1.1cqw;background:#f47b20}
+.vs-bar u em{position:absolute;top:-1cqw;bottom:-1cqw;width:.8cqw;border-radius:.4cqw;background:#ffffff}
+.vs-bar b{font-family:var(--display);font-weight:800;font-size:5.8cqw;text-align:right}
+.vs-leg{position:absolute;left:8cqw;right:8cqw;top:111cqw;text-align:center;font-size:4.2cqw;line-height:1.3;color:var(--t2);z-index:2}
+.vs-leg span{display:inline-block;width:3.2cqw;height:1.6cqw;border-radius:.8cqw;background:#f47b20;vertical-align:middle;margin:0 1cqw}
+.vs-leg em{display:inline-block;width:.8cqw;height:3cqw;background:#fff;vertical-align:middle;margin:0 1cqw}
+.legend .leg-g{color:var(--muted)}
+.tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.4;min-width:130px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.tip b{display:block;margin-bottom:2px}
+.tip .r{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.tip .r span:first-child{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.legend button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;color:var(--fg);background:none;border:0;padding:4px 2px;cursor:pointer}
+.legend button.off{opacity:.35}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.legend button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.empty-chart{color:var(--muted);font-size:14px;padding:24px 0;text-align:center}
+
+/* Card do atleta (perfil) */
+.pf-wrap{position:fixed;inset:0;z-index:40;background:rgba(5,6,13,.6);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.pf-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;align-items:start}
+.pf-card .fig{cursor:default}
+.pf-card .fig:hover{transform:none}
+.pf-card .fig.murcha:hover{transform:none}
+@media (max-width:700px){.pf-grid{grid-template-columns:minmax(0,1fr)}.pf-card{width:min(280px,82%);margin:4px auto 0}}
+.pf{background:var(--bg);color:var(--fg);width:min(860px,100%);max-height:100%;overflow-y:auto;border-radius:14px;padding:20px 18px 22px;position:relative;border-top:6px solid var(--sun)}
+.pf-x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:18px;cursor:pointer}
+.pf-head{display:flex;align-items:center;gap:14px;padding-right:44px}
+.pf-head h3{font-size:32px;font-weight:800;text-transform:uppercase}
+.pf-ap{color:var(--muted);font-size:14px}
+.pf-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.pf-tile{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}
+.pf-tile .v{font-family:var(--display);font-size:30px;font-weight:800;line-height:1}
+.pf-tile .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pf h4{font-family:var(--display);font-size:18px;text-transform:uppercase;margin:18px 0 8px}
+.pf-badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;background:var(--surface);font-size:13px}
+.badge .ic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--navy);font-size:14px}
+.badge.lock{opacity:.4;filter:grayscale(1)}
+.badge small{color:var(--muted)}
+.pf-best{color:var(--muted);font-size:14px;margin:8px 0 0}
+
+/* Figurinhas (estilo carta de jogador, desenho próprio) */
+.fig-tit{font-family:var(--display);font-size:20px;font-weight:800;text-transform:uppercase;margin:18px 0 10px}
+.fig-row{display:flex;gap:14px;overflow-x:auto;padding:6px 4px 12px;scroll-snap-type:x proximity}
+.fig-row .fig{flex:0 0 176px;scroll-snap-align:start}
+.fig{--t1:#0b1033;--t2:#5a6185;position:relative;display:block;width:100%;aspect-ratio:5/7.2;border:0;padding:0;background:none;cursor:pointer;font:inherit;
+  container-type:inline-size;filter:drop-shadow(0 3px 6px rgba(0,0,0,.28));transition:transform .15s}
+.fig:hover{transform:translateY(-4px)}
+.fig:focus-visible{outline:3px solid var(--sun);outline-offset:4px}
+.fig-card{position:absolute;inset:0;clip-path:url(#figshape);overflow:hidden;color:var(--t1);
+  background:
+    linear-gradient(125deg,transparent 38%,rgba(255,255,255,.55) 46%,transparent 53%),
+    repeating-linear-gradient(118deg,rgba(255,255,255,.14) 0 1.5px,transparent 1.5px 9cqw),
+    linear-gradient(200deg,rgba(255,255,255,.35),transparent 40%),
+    var(--fundo)}
+.fig-card::after{content:"";position:absolute;inset:3.2cqw;clip-path:url(#figshape);border:0;
+  box-shadow:inset 0 0 0 .8cqw rgba(255,255,255,.35);pointer-events:none}
+/* fundos por nível */
+.fig.normal{--fundo:linear-gradient(160deg,#2c3a8f,#1b2463 55%,#24307a);--t1:#ffffff;--t2:#c9cff0}
+.fig.ouro{--fundo:linear-gradient(160deg,#f8e49a,#d9ad3c 35%,#f6dc86 52%,#b98a22 78%,#efd27a)}
+.fig.prata{--fundo:linear-gradient(160deg,#f4f6f8,#b8bec6 35%,#eef1f4 52%,#8f969f 78%,#dfe3e8);--t1:#1e2329;--t2:#4b525b}
+.fig.bronze{--fundo:linear-gradient(160deg,#f0c08e,#b9773f 35%,#e8b07a 52%,#8a522a 78%,#d99a62);--t1:#2e1608;--t2:#5e3518}
+/* BOLA MURCHA = bola furada: azul-petróleo apagado, remendo em X, "psss…" (mesmo tamanho dos outros desde 19/10) */
+.fig.murcha{--fundo:linear-gradient(170deg,#6f8a91,#56717a 50%,#46606a);--t1:#eef4f5;--t2:#c3d3d6}
+.fig.murcha .fig-q{display:none}
+.fig.murcha .fig-tag{letter-spacing:.01em}
+.fig.murcha .fig-card{background:radial-gradient(ellipse 60% 20% at 50% 100%,rgba(0,0,0,.25),transparent),linear-gradient(200deg,rgba(255,255,255,.18),transparent 40%),var(--fundo)}
+.fig.murcha::after{content:"";position:absolute;z-index:4;left:56cqw;top:58cqw;width:30cqw;height:30cqw;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Cg%20opacity%3D%22.92%22%3E%3Crect%20x%3D%222%22%20y%3D%2215%22%20width%3D%2236%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23e8d9b5%22%20stroke%3D%22%238f8466%22%20stroke-width%3D%221%22%20transform%3D%22rotate%2835%2020%2020%29%22/%3E%3Crect%20x%3D%222%22%20y%3D%2215%22%20width%3D%2236%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23efe2c0%22%20stroke%3D%22%238f8466%22%20stroke-width%3D%221%22%20transform%3D%22rotate%28-35%2020%2020%29%22/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
+.fig.murcha::before{content:"psss…";position:absolute;z-index:4;right:7cqw;top:3cqw;font-family:var(--display);font-weight:800;font-size:8cqw;letter-spacing:.04em;color:#eef4f5;text-shadow:0 0 1.5cqw #2f454c;transform:rotate(8deg);pointer-events:none}
+.fig.murcha:hover{transform:translateY(-4px)}
+.fig.ouro .fig-card{--t2:#5b430c}
+/* coluna esquerda: posição, selo da categoria, escudos, DM */
+.fig-left{position:absolute;left:8.5cqw;top:11cqw;width:20cqw;display:flex;flex-direction:column;align-items:center;gap:2.2cqw;z-index:2}
+.fig-rk{font-family:var(--display);font-weight:800;font-size:15cqw;line-height:.9;color:var(--t1)}
+.fig-rk small{font-size:7cqw;display:block;text-align:center;letter-spacing:.05em;color:var(--t2)}
+.fig-dia{width:13cqw;height:13cqw;transform:rotate(45deg);border-radius:2.4cqw;background:var(--t1);display:grid;place-items:center;box-shadow:0 0 0 .7cqw rgba(255,255,255,.5)}
+.fig.normal .fig-dia{background:var(--sun)}
+.fig-dia svg{width:9.5cqw;height:9.5cqw;transform:rotate(-45deg)}
+.fig-esc svg{width:13cqw;height:15cqw;display:block;filter:drop-shadow(0 .4cqw .6cqw rgba(0,0,0,.35))}
+.fig-esc{display:flex;flex-direction:column;gap:1.6cqw}
+.fig-dm{display:flex;flex-direction:column;align-items:center;background:#ffffff;color:#c8102e;border:.7cqw solid #c8102e;border-radius:1.8cqw;padding:.6cqw 1.2cqw;font-size:5.6cqw;font-weight:800;line-height:1.05}
+.fig-dm svg{width:7cqw;height:7cqw}
+/* foto */
+.fig-foto{position:absolute;right:5cqw;top:6cqw;width:70cqw;height:84cqw;z-index:1;
+  -webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent);mask-image:linear-gradient(to bottom,#000 72%,transparent)}
+.fig-foto img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.fig.murcha .fig-foto img{filter:grayscale(1) brightness(.85) contrast(1.1)}
+.fig-foto svg.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:86%;height:auto}
+.fig.normal .fig-foto svg.sil circle,.fig.normal .fig-foto svg.sil path{fill:#05081f}
+.fig-q{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:46cqw;color:var(--t1);opacity:.35}
+/* nome, apelido e números */
+.fig-nome{position:absolute;left:6cqw;right:6cqw;top:88cqw;z-index:2;text-align:center;font-family:var(--display);font-weight:800;font-size:12.5cqw;line-height:1;
+  text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.fig-ap{position:absolute;left:8cqw;right:8cqw;top:101cqw;text-align:center;font-size:5.6cqw;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  border-bottom:.5cqw solid color-mix(in srgb,var(--t1) 25%,transparent);padding-bottom:1.5cqw}
+.fig-nums{position:absolute;left:10cqw;right:10cqw;top:111cqw;display:flex;justify-content:space-around;text-align:center;font-variant-numeric:tabular-nums}
+.fig-nums span{display:flex;flex-direction:column;align-items:center}
+.fig-nums small{font-size:5.4cqw;font-weight:700;letter-spacing:.06em;color:var(--t2)}
+.fig-nums b{font-family:var(--display);font-weight:800;font-size:11cqw;line-height:1;color:var(--t1)}
+.fig-tag{position:absolute;left:0;right:0;top:128cqw;text-align:center;font-family:var(--display);font-weight:800;font-size:6.2cqw;letter-spacing:.08em;text-transform:uppercase;color:var(--t2)}
+.squad{grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))!important;gap:16px!important}
+
+
+/* selos em círculo branco */
+.fig-dia{width:15cqw;height:15cqw;border-radius:50%;background:#ffffff;display:grid;place-items:center;transform:none;box-shadow:0 0 0 .7cqw rgba(0,0,0,.18),0 .6cqw 1.4cqw rgba(0,0,0,.35)}
+.fig-dia svg{width:12.5cqw;height:12.5cqw;transform:none}
+.fig.normal .fig-dia{background:#ffffff}
+.fig-left.duo{gap:1.4cqw}
+.fig-left.duo .fig-rk{font-size:10.5cqw}
+.fig-left.duo .fig-rk small{font-size:5.4cqw}
+.fig-left.duo .fig-dia{width:12.5cqw;height:12.5cqw}
+.fig-left.duo .fig-dia svg{width:10.5cqw;height:10.5cqw}
+/* BLACK: carbono com dourado */
+.fig.black{--fundo:linear-gradient(160deg,#3a3a3a,#0c0c0c 38%,#2b2b2b 54%,#050505 78%,#1d1d1d);--t1:#f3d27a;--t2:#c8ad6a;filter:drop-shadow(0 0 5px rgba(243,210,122,.55)) drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+.fig.black .fig-card{background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 1cqw,transparent 1cqw 2cqw),linear-gradient(125deg,transparent 40%,rgba(243,210,122,.28) 47%,transparent 53%),repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0 1cqw,transparent 1cqw 2cqw),var(--fundo)}
+.fig.black .fig-card::after{box-shadow:inset 0 0 0 .9cqw #d4af37}
+.fig.black .fig-ap{border-bottom-color:rgba(243,210,122,.45)}
+/* DIAMANTE: cristal azulado com reflexo (formato de pedra: ver abaixo) */
+.fig.diamante{--fundo:linear-gradient(160deg,#f4fdff,#a8e0f7 22%,#ffffff 38%,#7fc6ea 58%,#e3f7ff 76%,#9fc4ff);--t1:#06264a;--t2:#245a86;filter:drop-shadow(0 0 7px rgba(120,200,255,.8)) drop-shadow(0 3px 6px rgba(0,0,0,.3))}
+.fig.diamante .fig-card{background:conic-gradient(from 210deg at 70% 30%,rgba(255,255,255,.0),rgba(255,182,255,.25),rgba(160,255,240,.25),rgba(255,255,180,.25),rgba(255,255,255,0)),linear-gradient(125deg,transparent 38%,rgba(255,255,255,.8) 46%,transparent 53%),repeating-linear-gradient(118deg,rgba(255,255,255,.3) 0 1.5cqw,transparent 1.5cqw 9cqw),var(--fundo)}
+.fig.diamante .fig-card::after{box-shadow:inset 0 0 0 .9cqw rgba(255,255,255,.9)}
+.fig-coroa{position:absolute;top:1.5cqw;left:50%;transform:translateX(-30%);width:24cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+/* DIAMANTE em formato de cristal lapidado (19/10): contorno de pedra, facetas e diamante no topo */
+.fig.diamante .fig-card,.fig.diamante .fig-card::after{clip-path:url(#gemshape)}
+.fig.diamante .fig-card::after{inset:2.6cqw}
+.fig.diamante .fig-left{top:19cqw;left:7cqw}
+.fig.diamante .fig-foto{top:3cqw;-webkit-mask-image:linear-gradient(to bottom,#000 66%,transparent);mask-image:linear-gradient(to bottom,#000 66%,transparent)}
+.fig.diamante .fig-nums{left:15cqw;right:15cqw}
+.fig.diamante .fig-tag{top:129cqw}
+.fig-gema{position:absolute;top:.8cqw;left:50%;transform:translateX(-50%);width:20cqw;z-index:3;filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))}
+.fig-facetas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;fill:none;stroke:rgba(255,255,255,.75);mix-blend-mode:screen;opacity:.8}
+.fig-facetas *{vector-effect:non-scaling-stroke;stroke-width:1.2px}
+/* CRAQUE DA RODADA: vinho real com borda dourada e coroa (19/10) */
+.fig.craque{--fundo:linear-gradient(160deg,#8c1a3a,#4a0a1d 50%,#7a1230 70%,#3d0817);--t1:#ffe9a8;--t2:#f3cf7a;filter:drop-shadow(0 0 5px rgba(242,201,76,.55)) drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.fig.craque .fig-card::after{box-shadow:inset 0 0 0 .9cqw #e0ac1d}
+.fig.craque .fig-ap{border-bottom-color:rgba(243,210,122,.45)}
+.poll[data-kind="craque"] h3 .dot{background:#8c1a3a}
+.win[data-kind="craque"] .k{color:#8c1a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .win[data-kind="craque"] .k{color:#f3cf7a}}
+:root[data-theme="dark"] .win[data-kind="craque"] .k{color:#f3cf7a}
+/* histórico de cards no perfil */
+.pf-hsum{margin:0 0 6px;font-size:14px}
+.pf-hrow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px}
+.pf-hrow .ph{flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.pf-hrow .fig{width:96px;cursor:default}
+/* legenda: o que cada card significa */
+.cards-leg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.cl-item{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cl-item .fig{flex:0 0 78px;width:78px;cursor:default}
+.cl-item h4{margin:0;font-family:var(--display);font-size:18px;font-weight:800;text-transform:uppercase;line-height:1.1}
+.cl-item p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:var(--muted)}
+.cards-link{font-size:13px;color:var(--link)}
+@keyframes brilho{0%,100%{background-position:0 0,-60cqw 0,0 0,0 0}50%{background-position:0 0,60cqw 0,0 0,0 0}}
+@media (prefers-reduced-motion:no-preference){.fig.diamante .fig-card,.fig.black .fig-card{background-size:auto,220% 100%,auto,auto;animation:brilho 5s ease-in-out infinite}}
+
+
+.fig.black .fig-foto svg.sil circle,.fig.black .fig-foto svg.sil path{fill:#6b5d3a}
+.fig-left.duo .fig-rk{font-size:8.5cqw;line-height:1;margin-top:.6cqw}
+.fig-left.duo .fig-rk small{display:none}
+.fig-left.duo .fig-dia{width:13cqw;height:13cqw;order:0}
+.fig-left.duo .fig-esc svg{width:11cqw;height:12.5cqw}
+.fig-left.duo{gap:1cqw;top:9cqw}
+
+.fig-dm{position:absolute;right:7cqw;top:72cqw;z-index:3;flex-direction:row!important;gap:.8cqw;font-size:6cqw!important;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.3)}
+.fig-tag{font-weight:800!important;letter-spacing:.28em!important;color:var(--t1)!important;font-size:6.6cqw!important;top:129cqw!important}
+/* PADRÃO ÚNICO dos cards (20/10, opção B; medido pelo pior caso = Bola murcha e o nome THIAGO NEGRÃO) */
+.fig-nome{font-size:10cqw!important;top:89cqw!important}
+.fig-ap{top:100.5cqw!important;font-size:5.2cqw!important;border-bottom:0!important;padding-bottom:0!important}
+.fig-nums{top:110cqw!important;left:9cqw;right:9cqw}
+.fig-nums::before{content:"";position:absolute;left:4cqw;right:4cqw;top:-2.8cqw;height:.5cqw;background:color-mix(in srgb,var(--t1) 28%,transparent)}
+.fig-nums small{font-size:4.8cqw}
+.fig-nums b{font-size:10cqw}
+.fig-tag{top:128.6cqw!important;font-size:5cqw!important;letter-spacing:.14em!important;white-space:nowrap}
+.fig.murcha::before{top:9cqw;right:9cqw}
+/* Atleta com 2 cards */
+.fig-stack{position:relative;width:100%}
+.fig-stack .fig-front{position:relative;z-index:2}
+.fig-stack .fig-back{position:absolute;inset:0;z-index:1;transform:translate(9%,-5%) rotate(5deg);pointer-events:none}
+.fig-x2{position:absolute;z-index:3;top:-8px;left:-6px;background:var(--sun);color:#ffffff;font-family:var(--display);font-weight:800;font-size:15px;line-height:1;padding:5px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.fig-leque{position:relative;width:78%;cursor:pointer}
+.fig-leque .fl-0{position:relative;z-index:2;transform:rotate(-3deg);transition:transform .2s}
+.fig-leque .fl-1{position:absolute;z-index:1;top:0;left:28%;width:100%;transform:rotate(6deg);transition:transform .2s}
+.fig-leque.troca .fl-0{z-index:1}.fig-leque.troca .fl-1{z-index:2}
+.pf-card .fig-leque .fig{cursor:pointer}
+.pf-2cards{font-size:13px;color:var(--muted);margin:14px 0 0;text-align:center}
+.squad{padding-top:10px}
+/* Patrocinador */
+.patro-faixa{display:flex;align-items:center;justify-content:center;gap:14px;background:#ffffff;color:#24307a;text-decoration:none;
+  padding-block:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line)}
+.patro-faixa img{height:58px;width:auto;display:block}
+.patro-faixa .pf-lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#5a6185}
+.patro-faixa .pf-cta{font-size:13px;font-weight:700}
+.patro-faixa:hover .pf-cta{text-decoration:underline}
+@media (max-width:480px){.patro-faixa:not(.patro-vazio) .pf-cta{display:none}.patro-vazio .pf-lbl{display:none}}
+.patro-vazio .pf-cta{display:inline;color:#24307a}
+.patro-rodape .pr-vazio{border:2px dashed #aeb4d6;border-radius:12px;color:#5a6185;font-weight:700;font-size:20px;padding:28px 56px}
+.patro-mini{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:12px;margin:-4px 0 6px;background:#ffffff;border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 12px}
+.patro-mini img{height:34px;width:auto}
+.patro-player{display:inline-flex;align-items:center;gap:6px;margin-left:auto;margin-right:12px;text-decoration:none;color:#ffffff;font-size:11px;opacity:.9}
+.patro-player img{height:32px;width:auto;background:#ffffff;border-radius:6px;padding:1px 4px}
+.patro-rodape{background:#ffffff;border-top:4px solid var(--sun);margin-top:40px}
+.patro-rodape .pr-in{display:flex;flex-direction:column;align-items:center;gap:10px;padding-block:24px 30px;text-align:center}
+.patro-rodape .pr-lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#5a6185}
+.patro-rodape img{height:120px;width:auto;display:block}
+.patro-rodape .pr-btn{background:#24307a;color:#ffffff;text-decoration:none;font-weight:700;padding:10px 22px;border-radius:999px}
+.patro-rodape .pr-btn:hover{background:var(--sun)}
+/* Estatísticas */
+.field.year{flex:0 0 140px}
+.podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin-bottom:14px}
+.pod{background:var(--navy);color:#ffffff;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;border-bottom:4px solid var(--sun)}
+.pod .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.85}
+.pod .who{font-family:var(--display);font-size:22px;font-weight:800;line-height:1.1}
+.pod .v{font-family:var(--display);font-size:30px;font-weight:800;color:var(--sun);font-variant-numeric:tabular-nums;line-height:1}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.stats-tbl{width:100%;min-width:620px;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+.stats-tbl th,.stats-tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.stats-tbl th:nth-child(2),.stats-tbl td:nth-child(2){text-align:left}
+.stats-tbl tbody tr:last-child td{border-bottom:0}
+.stats-tbl th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stats-tbl th button{font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;background:none;border:0;padding:0;cursor:pointer}
+.stats-tbl th button:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.stats-tbl th.on{color:var(--fg)}
+.stats-tbl th.on button::after{content:" ▼";color:var(--sun)}
+.stats-tbl td.pos{color:var(--muted)}
+.stats-tbl td.lead{font-weight:700;color:var(--link)}
+.stats-tbl .who-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;font:inherit;color:var(--fg);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.stats-tbl .who-btn:hover{color:var(--link)}
+.stats-tbl .ap{color:var(--muted);font-size:13px}
+.note{color:var(--muted);font-size:13px;margin:8px 2px 0}
+
+/* Player (só no site do GitHub) */
+.modal{position:fixed;inset:0;z-index:50;background:#05060d;display:grid;place-items:center;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.m-box{width:min(960px,100%);display:flex;flex-direction:column;gap:10px;color:#ffffff}
+.m-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;opacity:.9}
+.m-frame{aspect-ratio:16/9;max-width:100%;max-height:70vh;background:#000;border-radius:10px;overflow:hidden;border-bottom:4px solid var(--sun)}
+.m-frame iframe,.m-frame video{width:100%;height:100%;border:0;display:block;background:#000}
+.m-full{align-self:center;font:inherit;font-size:18px;font-weight:600;padding:12px 26px;border-radius:999px;border:0;background:var(--sun);color:#ffffff;cursor:pointer}
+.m-full:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
+.m-info{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.m-txt{min-width:0;display:flex;flex-direction:column;gap:4px}
+.m-tags{display:flex;gap:4px;flex-wrap:wrap}
+#m-desc{font-weight:600;font-size:16px}
+.m-names{font-size:14px;opacity:.85}
+.m-btn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:#ffffff;font-size:22px;line-height:1;cursor:pointer}
+.m-btn:hover{background:var(--sun);border-color:var(--sun)}
+.m-btn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.m-btn:disabled{opacity:.3;cursor:default;background:transparent;border-color:rgba(255,255,255,.4)}
+/* Celular em pé: vídeo de ponta a ponta */
+@media (orientation:portrait) and (max-width:700px){
+  .modal{padding-left:0;padding-right:0}
+  .m-top,.m-info{padding:0 12px}
+  .m-frame{border-radius:0}
+}
+/* Celular deitado: vídeo na tela inteira, setas e fechar por cima */
+@media (orientation:landscape) and (max-height:540px){
+  .modal{padding:0}
+  .m-box{width:100%;height:100%;position:relative;gap:0;display:block}
+  .m-frame{height:100%;max-height:none;width:auto;margin:0 auto;border-radius:0;border-bottom:0}
+  .m-top{position:absolute;top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));z-index:2}
+  #m-pos{display:none}
+  .m-info{position:absolute;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);pointer-events:none;z-index:2}
+  .m-info .m-btn{pointer-events:auto;background:rgba(0,0,0,.45)}
+  .m-txt{visibility:hidden}
+  .m-full{display:none}
+}
+
+/* Campeões */
+.hall{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.win{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.win .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.win[data-kind="gol"] .k{color:var(--gold)} .win[data-kind="comico"] .k{color:var(--fun)}
+.win .who{font-family:var(--display);font-size:22px;font-weight:800}
+.win .d{color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){.opt .bar{transition:none}}
+</style>
+
+<style>
+/* ===== Central fechada (montar_central.py) ===== */
+body:not(.cp-pronto)>*:not(#cp-carrega){visibility:hidden}
+#cp-carrega{position:fixed;inset:0;z-index:100;display:grid;place-content:center;gap:10px;text-align:center;padding:24px 16px;
+  background:var(--navy);color:#fff;font:600 18px/1.4 var(--body)}
+#cp-carrega p{margin:0}
+#cp-carrega .cp-err{font-weight:400;font-size:14px;opacity:.85;max-width:40ch}
+#cp-carrega button{justify-self:center;font:600 16px var(--body);border:0;border-radius:999px;padding:12px 20px;background:var(--sun);color:#fff;cursor:pointer}
+.cp-barra{background:var(--surface);color:var(--fg);border-bottom:1px solid var(--line);font-size:14px}
+.cp-barra .in{max-width:1080px;margin:0 auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px}
+.cp-quem{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.cp-quem small{color:var(--muted);font-size:13px}
+.cp-acoes{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.cp-acoes a,.cp-acoes button{color:var(--link);font:600 14px var(--body);text-decoration:none;background:none;border:0;padding:4px 0;cursor:pointer}
+.cp-acoes a:hover,.cp-acoes button:hover{text-decoration:underline}
+#cp-ped{background:var(--sun);color:#fff;border-radius:999px;padding:4px 12px}
+.secnav a.cp-nav-eu{background:var(--sun)}
+.fig.cp-eu{filter:drop-shadow(0 0 1.2cqw var(--sun)) drop-shadow(0 0 .6cqw var(--sun)) drop-shadow(0 3px 6px rgba(0,0,0,.28))}
+.cp-voce{position:absolute;z-index:6;left:50%;top:-3.5cqw;transform:translateX(-50%);background:var(--sun);color:#fff;
+  font:800 6.4cqw/1 var(--display);letter-spacing:.08em;text-transform:uppercase;padding:1.4cqw 3.6cqw 1.2cqw;border-radius:999px;
+  box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:none}
+tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
+.name.cp-eu-nome{outline:2px solid var(--sun);outline-offset:1px}
+</style>
+</head>
+<body>
+<div id="cp-carrega" role="status"><p>Carregando a Central…</p></div>
+<header class="hero">
+  <svg class="sun" viewBox="-100 -100 200 200" aria-hidden="true">
+    <g fill="#f47b20" id="petals"></g>
+    <circle r="30" fill="#ffffff"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">Clube Jaó · Goiânia</div>
+    <h1>Central da Pelada</h1>
+    <p>Todos os lances da pelada, separados por atleta, dia e tipo. Toque no seu nome e veja tudo o que você aprontou.</p>
+    <div class="stats" id="stats"></div>
+    <div class="demo">Versão de testes · lances de 11/10 e 18/10</div>
+  </div>
+</header>
+
+<nav class="secnav" aria-label="Seções">
+  <div class="in" id="secnav">
+    <a href="#h-polls" data-alvo="h-polls">Enquetes</a>
+    <a href="#h-cards" data-alvo="h-cards">Cards</a>
+    <a href="#h-lances" data-alvo="h-lances">Lances</a>
+    <a href="#sec-fotos" data-alvo="sec-fotos" id="nav-fotos">Fotos</a>
+    <a href="#h-stats" data-alvo="h-stats">Estatísticas</a>
+    <a href="#h-squad" data-alvo="h-squad">Atletas</a>
+    <a href="#h-hall" data-alvo="h-hall">Campeões</a>
+    <a href="#h-sug" data-alvo="h-sug">Sugestões</a>
+  </div>
+</nav>
+<a class="sug-cta" href="#h-sug" id="sug-cta">💡 Tem ideia para a Central? <b>Dê sua sugestão</b>, as boas entram no site.</a>
+<a class="patro-faixa" id="patro-faixa" hidden target="_blank" rel="noopener sponsored">
+  <span class="pf-lbl">Oferecimento</span><img id="patro-faixa-img" alt=""><span class="pf-cta">Conheça a loja →</span>
+</a>
+<button class="totop" id="totop" type="button" hidden>↑ Topo</button>
+
+<div class="pf-wrap" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="pf-nome">
+  <div class="pf">
+    <button class="pf-x" id="pf-x" type="button" aria-label="Fechar">✕</button>
+    <div class="pf-grid">
+      <div class="pf-card" id="pf-card"></div>
+      <div class="pf-info">
+        <div class="pf-head"><div><h3 id="pf-nome"></h3><div class="pf-ap" id="pf-ap"></div></div></div>
+        <div class="pf-tiles" id="pf-tiles"></div>
+        <h4>Cards conquistados</h4><div id="pf-hist"></div>
+        <h4>Conquistas</h4><div class="pf-badges" id="pf-badges"></div>
+        <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
+        <p class="pf-best" id="pf-best"></p>
+        <button class="mais" id="pf-lances" type="button"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section aria-labelledby="h-polls">
+    <div class="sec-head"><h2 id="h-polls">Enquetes da semana</h2><span id="poll-date"></span></div>
+    <div class="polls" id="polls"></div>
+  </section>
+
+  <section aria-labelledby="h-cards">
+    <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
+    <a class="cards-link" href="#h-tipos">O que cada card significa ↓</a>
+    <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
+    <div class="rod-head"><h3 class="fig-tit">Destaques da rodada</h3>
+      <div class="field"><label for="f-rod">Rodada</label><select id="f-rod"></select></div></div>
+    <div class="fig-row" id="cards-rodada"></div>
+    <h3 class="fig-tit">Artilharia da temporada</h3>
+    <div class="fig-row" id="cards-art"></div>
+    <h3 class="fig-tit">Assistências da temporada</h3>
+    <div class="fig-row" id="cards-ass"></div>
+  </section>
+
+  <section aria-labelledby="h-lances">
+    <div class="sec-head"><h2 id="h-lances">Lances</h2></div>
+    <div class="filters">
+      <div class="selects">
+        <div class="field"><label for="f-atleta">Atleta</label><select id="f-atleta"></select></div>
+        <div class="field"><label for="f-dia">Dia</label><select id="f-dia"></select></div>
+        <button class="clear" id="f-clear" type="button">Limpar filtros</button>
+      </div>
+      <div class="frow" role="group" aria-label="Filtrar por tipo"><label>Tipo</label><div class="frow" id="f-tipo"></div></div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="grid"></div>
+    <button class="mais" id="mais" type="button" hidden></button>
+  </section>
+
+  <section aria-labelledby="h-fotos" id="sec-fotos">
+    <div class="sec-head"><h2 id="h-fotos">Fotos do dia</h2><span id="fotos-dia"></span></div>
+    <div class="fotos" id="fotos"></div>
+  </section>
+
+  <section aria-labelledby="h-stats">
+    <div class="sec-head"><h2 id="h-stats">Estatísticas</h2>
+      <div class="field year"><label for="f-ano">Temporada</label><select id="f-ano"></select></div></div>
+    <div class="podium" id="podium"></div>
+    <div class="tbl-wrap"><table class="stats-tbl" id="stats-tbl"></table></div>
+    <div class="charts">
+      <div class="ctl">
+        <div class="field"><label for="f-met">Números de</label>
+          <select id="f-met"><option value="gols">Gols</option><option value="assist">Assistências</option><option value="ga">Gols + assistências</option></select></div>
+        <div class="field"><label for="f-top">Destacar em cor</label>
+          <select id="f-top"><option value="5">Top 5</option><option value="8">Top 8</option><option value="3">Top 3</option><option value="0">Só o total da turma</option></select></div>
+      </div>
+      <figure class="chart">
+        <figcaption><b id="ch1-t">Gols por domingo</b><span>os destaques em cor, os demais em cinza; passe o dedo para ver os números</span></figcaption>
+        <div class="plot" id="ch-dom"></div>
+      </figure>
+      <figure class="chart">
+        <figcaption><b id="ch2-t">Gols acumulados no ano</b><span>a corrida da temporada; toque num nome da legenda para destacar</span></figcaption>
+        <div class="plot" id="ch-acc"></div>
+        <div class="legend" id="ch-leg"></div>
+      </figure>
+    </div>
+    <p class="note">Gols e assistências: lances filmados + os anotados no domingo sem vídeo. "Domingos" são os dias em que o atleta aparece em algum lance. Toque no título de uma coluna para ordenar.</p>
+  </section>
+
+  <section aria-labelledby="h-tipos">
+    <div class="sec-head"><h2 id="h-tipos">Os cards</h2><span>o que cada card significa e como se ganha</span></div>
+    <div class="cards-leg" id="cards-leg"></div>
+  </section>
+
+  <section aria-labelledby="h-squad">
+    <div class="sec-head"><h2 id="h-squad">Atletas</h2><span>toque no atleta para ver o card com números e conquistas</span></div>
+    <div class="squad" id="squad"></div>
+  </section>
+
+  <section aria-labelledby="h-hall">
+    <div class="sec-head"><h2 id="h-hall">Campeões</h2><span>ranking de prêmios das rodadas</span></div>
+    <div id="hall"></div>
+  </section>
+  <section aria-labelledby="h-sug" id="sec-sug">
+    <div class="sec-head"><h2 id="h-sug">Sugestões</h2><span>a Central é feita junto com a turma</span></div>
+    <div class="sug">
+      <p class="sug-lead"><b>Você pode e deve dar sugestões.</b> Ideia de card, prêmio, estatística, enquete, correção de lance, o que achar que melhora. As boas são incorporadas ao site.</p>
+      <p class="sug-ex">Exemplo: "e se a pelada tivesse um patrocinador?" Virou parte do projeto.</p>
+      <form id="sug-form">
+        <div><label for="sug-nome">Seu nome (opcional)</label><input id="sug-nome" maxlength="80" autocomplete="name"></div>
+        <div><label for="sug-txt">Sua sugestão</label><textarea id="sug-txt" required minlength="3" maxlength="2000" placeholder="Escreva aqui sua ideia, crítica ou correção"></textarea></div>
+        <button type="submit" id="sug-btn">Enviar sugestão</button>
+        <p class="sug-st" id="sug-st" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <p class="priv">O site conta visitas e cliques de forma anônima (sem nome e sem dados pessoais), só para saber o que a turma mais usa.</p>
+  </section>
+</main>
+<footer class="patro-rodape" id="patro-rodape" hidden>
+  <div class="wrap pr-in">
+    <span class="pr-lbl">Patrocinador oficial da Central da Pelada</span>
+    <a id="patro-rodape-link" target="_blank" rel="noopener sponsored"><img id="patro-rodape-img" alt=""></a>
+    <a class="pr-btn" id="patro-rodape-btn" target="_blank" rel="noopener sponsored">Visitar a loja virtual</a>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-desc">
+  <div class="m-box">
+    <div class="m-top"><span id="m-pos"></span><a class="patro-player" id="patro-player" hidden target="_blank" rel="noopener sponsored"><span>oferecimento</span><img alt=""></a><button class="m-btn" id="m-close" type="button" aria-label="Fechar">✕</button></div>
+    <div class="m-frame">
+      <video id="m-video" controls playsinline preload="metadata"></video>
+      <iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen hidden></iframe>
+    </div>
+    <button class="m-full" id="m-full" type="button">⛶ Ver em tela cheia</button>
+    <div class="m-info"><button class="m-btn" id="m-prev" type="button" aria-label="Lance anterior">‹</button>
+      <div class="m-txt"><div class="m-tags" id="m-tags"></div><div id="m-desc"></div><div class="m-names" id="m-names"></div></div>
+      <button class="m-btn" id="m-next" type="button" aria-label="Próximo lance">›</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="central-dados.js?v=1792585300"></script>
+<script type="text/plain" id="app-js">
+const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
+// Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
+// ⚠️ TESTE (19/10): vencedores e votos FICTÍCIOS escolhidos pelo Gustavo para ver os cards. Trocar pelos reais.
+const CAMPEOES=window.CAMPEOES_DB;
+const PREMIO={gol:"🌟 Golaço da rodada",comico:"🫠 Bola murcha",craque:"🏆 Craque da rodada"};
+// No protótipo o voto fica só no seu aparelho
+const VOTOS_BASE={};
+const TODOS="*";
+// Um lance pode ter até 2 tipos: tipo (principal) e tipo2 (opcional)
+const tiposDe=l=>[l.tipo,l.tipo2].filter(Boolean);
+const driveUrl=id=>id?`https://drive.google.com/file/d/${id}/view`:"#";
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function av(nome,cls=""){
+  const f=ATLETAS[nome]?.foto;
+  const w=nome.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/^Dr\.?\s+/,"").split(/\s+/).filter(Boolean);
+  const ini=nome.startsWith("❓")?"?":(w.length>1?w[0][0]+w[1][0]:w[0].slice(0,2)).toUpperCase();
+  return `<span class="av ${cls}" aria-hidden="true">${f?`<img src="${esc(f)}" alt="">`:ini}</span>`;
+}
+const apelido=a=>ATLETAS[a]?.apelido||"";
+// Sol do topo: 8 pétalas inspiradas no símbolo do clube
+document.getElementById("petals").innerHTML=[...Array(8)].map((_,i)=>
+  `<path transform="rotate(${i*45})" d="M-14,-34 C-30,-52 -18,-78 6,-92 C-2,-74 18,-62 24,-44 C14,-40 0,-38 -14,-34 Z"/>`).join("");
+
+const fmt=d=>`${d.slice(8,10)}/${d.slice(5,7)}`;
+const fmtAno=d=>`${fmt(d)}/${d.slice(0,4)}`;
+const byId=Object.fromEntries(LANCES.map(l=>[l.id,l]));
+// Quem leva o card do prêmio: craque = atleta votado; golaço = autor do gol; bola murcha = 1º atleta do lance
+function ganhador(c){
+  if(c.atleta)return c.atleta;const l=byId[c.id];if(!l)return null;
+  const ok=a=>a&&!a.startsWith("❓");
+  return c.kind==="gol"&&ok(l.gol)?l.gol:(l.atletas.find(ok)||l.atletas[0]);
+}
+const atletas=[...new Set(LANCES.flatMap(l=>l.atletas))].sort((a,b)=>a.localeCompare(b,"pt"));
+const dias=[...new Set(LANCES.map(l=>l.data))].sort().reverse();
+// Gols/assistências sem vídeo (anotados no domingo): contam nas estatísticas, não aparecem nos lances
+const STATS=LANCES.concat(typeof EXTRAS==="object"?EXTRAS:[]);
+const ultima=dias[0];
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const state={atleta:null,tipo:null,dia:ultima};
+const meusVotos=store.get("jao-votos",{});
+
+document.getElementById("stats").innerHTML=
+ `<span><b>${LANCES.length}</b> lances</span><span><b>${dias.length}</b> ${dias.length===1?"domingo":"domingos"}</span><span><b>${atletas.filter(a=>!a.startsWith("❓")).length}</b> atletas</span>`;
+
+// Filtros: tipo em botões; atleta e dia em listas. "Todos os dias" só com atleta escolhido.
+const tipoEl=document.getElementById("f-tipo");
+tipoEl.innerHTML=[`<button class="chip" data-v="">Todos</button>`,...Object.keys(TIPOS).map(v=>`<button class="chip" data-v="${v}">${TIPOS[v]}</button>`)].join("");
+tipoEl.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;state.tipo=b.dataset.v||null;render()};
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const selA=document.getElementById("f-atleta"),selD=document.getElementById("f-dia");
+selA.innerHTML=`<option value="">Todos os atletas</option>`+atletas.map(a=>{const n=LANCES.filter(l=>l.atletas.includes(a)).length;const ap=apelido(a);return `<option value="${esc(a)}">${esc(a)}${ap?` (${esc(ap)})`:""} · ${n} ${n===1?"lance":"lances"}</option>`}).join("");
+const porMes={};dias.forEach(d=>{const k=d.slice(0,7);(porMes[k]=porMes[k]||[]).push(d)});
+selD.innerHTML=`<option value="${TODOS}" id="opt-todos">Todos os dias (escolha um atleta)</option>`+Object.entries(porMes).map(([k,ds])=>`<optgroup label="${MESES[+k.slice(5)-1]} ${k.slice(0,4)}">${ds.map(d=>{const n=LANCES.filter(l=>l.data===d).length;return `<option value="${d}">${fmt(d)} · ${n} lances</option>`}).join("")}</optgroup>`).join("");
+selA.onchange=()=>{state.atleta=selA.value||null;render()};
+selD.onchange=()=>{state.dia=selD.value;render()};
+document.getElementById("f-clear").onclick=()=>{state.atleta=null;state.tipo=null;state.dia=ultima;render()};
+
+function syncFiltros(){
+  if(!state.atleta&&state.dia===TODOS)state.dia=ultima;
+  const ot=document.getElementById("opt-todos");
+  ot.disabled=!state.atleta;
+  ot.textContent=state.atleta?`Todos os dias · ${state.atleta}`:"Todos os dias (escolha um atleta)";
+  tipoEl.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.v||null)===state.tipo)));
+  selA.value=state.atleta||"";selD.value=state.dia;
+}
+
+const vencedores=new Set(CAMPEOES.map(c=>c.id));
+function card(l){
+  const info=[l.jogo?`Jogo ${l.jogo}`:"",l.s?`${l.s}s`:""].filter(Boolean).join(" · ");
+  return `<article class="card" data-id="${l.id}">
+    <a class="thumb has-img" href="${driveUrl(l.drive)}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(l.desc)}">
+      <img src="${MIDIA.thumb(l.id)}" alt="" loading="lazy">
+      <span class="tags">${tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("")}</span><span class="play"></span>${info?`<span class="min">${info}</span>`:""}</a>
+    <div class="body">
+      <div class="names">${l.atletas.map(a=>`<button class="name" data-a="${esc(a)}">${av(a)}${esc(a)}</button>`).join("")}</div>
+      <div class="desc">${esc(l.desc)}</div>
+      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}<button class="cp" type="button" data-id="${l.id}">🔗 Copiar link</button></div>
+    </div></article>`;
+}
+const PAG=12;let mostrar=PAG;
+function render(manter){
+  if(!manter)mostrar=PAG;
+  syncFiltros();
+  const list=LANCES.filter(l=>(!state.atleta||l.atletas.includes(state.atleta))&&(!state.tipo||tiposDe(l).includes(state.tipo))&&(state.dia===TODOS||l.data===state.dia))
+    .sort((a,b)=>b.data.localeCompare(a.data)||a.id.localeCompare(b.id));
+  const parts=[state.atleta,state.tipo&&TIPOS[state.tipo],state.dia===TODOS?"todos os dias":fmtAno(state.dia)].filter(Boolean);
+  document.getElementById("count").textContent=`${list.length} ${list.length===1?"lance":"lances"} · ${parts.join(" · ")}`;
+  const g=document.getElementById("grid");
+  listaAtual=list;
+  g.innerHTML=list.slice(0,mostrar).map(card).join("");
+  const mais=document.getElementById("mais"),resta=list.length-mostrar;
+  mais.hidden=resta<=0;
+  mais.textContent=`Mostrar mais ${Math.min(PAG,resta)} lances (faltam ${resta})`;
+  g.nextElementSibling?.classList.contains("empty")&&g.nextElementSibling.remove();
+  if(!list.length)g.insertAdjacentHTML("afterend",`<div class="empty">Nenhum lance com esse filtro. Toque em "Limpar filtros".</div>`);
+  renderFotos();
+}
+// Player: no site do GitHub o vídeo abre por cima da página; em outros lugares abre o Drive
+const EMBED=true;
+const SITE=location.origin+location.pathname;
+let listaAtual=[],mLista=[],idx=-1;
+const modal=document.getElementById("modal"),mFrame=document.getElementById("m-iframe"),mVideo=document.getElementById("m-video");
+// Vídeo tocado pelo player do próprio celular (tela cheia de verdade); se falhar, cai no player do Drive
+let mAtual=null;
+function videoFalhou(){if(!mAtual)return;
+  mVideo.hidden=true;mFrame.hidden=false;
+  mFrame.srcdoc=`<body style="margin:0;height:100vh;display:grid;place-items:center;background:#0b0e1f;color:#fff;font:17px/1.4 system-ui,sans-serif;text-align:center;padding:24px;box-sizing:border-box">Não deu para carregar este vídeo agora.<br>Feche e tente de novo.</body>`;
+  document.getElementById("m-full").hidden=true}
+mVideo.addEventListener("error",()=>{if(mVideo.getAttribute("src"))videoFalhou()});
+document.getElementById("m-full").onclick=()=>{
+  const v=mVideo;v.play().catch(()=>{});
+  if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();
+  else if(v.requestFullscreen)v.requestFullscreen().catch(()=>{});
+};
+function abrir(i){
+  idx=i;const l=mLista[i];mAtual=l;
+  mFrame.hidden=true;mFrame.src="about:blank";mVideo.hidden=false;document.getElementById("m-full").hidden=false;
+  mVideo.poster=MIDIA.thumb(l.id);
+  // Central fechada: link temporário do R2 (função "video" do Supabase confere se é membro)
+  mVideo.removeAttribute("src");
+  MIDIA.video(l.id).then(u=>{if(mAtual!==l)return;mVideo.src=u;mVideo.play().catch(()=>{})},()=>{if(mAtual===l)videoFalhou()});
+  document.getElementById("m-pos").textContent=`${fmtAno(l.data)}${l.jogo?` · Jogo ${l.jogo}`:""} · lance ${i+1} de ${mLista.length}`;
+  document.getElementById("m-tags").innerHTML=tiposDe(l).map(t=>`<span class="tag">${TIPOS[t]}</span>`).join("");
+  document.getElementById("m-desc").textContent=l.desc;
+  document.getElementById("m-names").textContent=l.atletas.join(" · ");
+  document.getElementById("m-prev").disabled=i===0;
+  document.getElementById("m-next").disabled=i===mLista.length-1;
+  try{history.replaceState(null,"","#"+l.id)}catch(e){}
+  if(modal.hidden){modal.hidden=false;document.body.style.overflow="hidden";document.getElementById("m-close").focus()}
+}
+function fechar(){modal.hidden=true;mFrame.src="about:blank";mAtual=null;mVideo.pause();mVideo.removeAttribute("src");mVideo.load();document.body.style.overflow="";try{history.replaceState(null,"",location.pathname)}catch(e){}}
+document.getElementById("m-close").onclick=fechar;
+document.getElementById("m-prev").onclick=()=>idx>0&&abrir(idx-1);
+document.getElementById("m-next").onclick=()=>idx<mLista.length-1&&abrir(idx+1);
+modal.addEventListener("click",e=>{if(e.target===modal)fechar()});
+document.addEventListener("keydown",e=>{if(modal.hidden)return;
+  if(e.key==="Escape")fechar();if(e.key==="ArrowLeft"&&idx>0)abrir(idx-1);if(e.key==="ArrowRight"&&idx<mLista.length-1)abrir(idx+1)});
+document.getElementById("grid").addEventListener("click",e=>{
+  const c=e.target.closest(".cp");
+  if(c){const url=SITE+"#"+c.dataset.id;
+    const ok=()=>{c.textContent="✓ Link copiado";setTimeout(()=>c.textContent="🔗 Copiar link",1800)};
+    try{navigator.clipboard.writeText(url).then(ok,()=>{c.textContent=url})}catch(err){c.textContent=url}
+    return}
+  const t=e.target.closest(".thumb");if(!t||!EMBED)return;
+  e.preventDefault();const id=t.closest(".card").dataset.id;mLista=listaAtual;abrir(listaAtual.findIndex(l=>l.id===id))});
+
+function filtrarAtleta(a){state.atleta=a;state.tipo=null;state.dia=TODOS;render();document.getElementById("h-lances").scrollIntoView({behavior:"smooth"})}
+document.getElementById("grid").addEventListener("click",e=>{const b=e.target.closest(".name");if(b)filtrarAtleta(b.dataset.a)});
+
+document.getElementById("mais").onclick=()=>{mostrar+=PAG;render(true)};
+
+// Menu de seções: rola até a seção sem mexer no endereço; botão Topo aparece ao descer
+document.getElementById("secnav").addEventListener("click",e=>{
+  const a=e.target.closest("a");if(!a)return;e.preventDefault();
+  document.getElementById(a.dataset.alvo)?.scrollIntoView({behavior:"smooth",block:"start"})});
+const totop=document.getElementById("totop");
+totop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+const navLinks=[...document.querySelectorAll("#secnav a")];
+function marcarSecao(){
+  totop.hidden=window.scrollY<500;
+  let atual=null;
+  for(const a of navLinks){const el=document.getElementById(a.dataset.alvo);if(!el||el.closest("[hidden]"))continue;
+    if(el.getBoundingClientRect().top<140)atual=a}
+  navLinks.forEach(a=>a.classList.toggle("on",a===atual));
+}
+window.addEventListener("scroll",marcarSecao,{passive:true});
+
+function renderFotos(){
+  const dia=state.dia===TODOS?ultima:state.dia;
+  const fs=FOTOS.filter(f=>f.data===dia);
+  document.getElementById("sec-fotos").hidden=!fs.length;
+  document.getElementById("nav-fotos").hidden=!fs.length;
+  document.getElementById("fotos-dia").textContent=fmtAno(dia);
+  document.getElementById("fotos").innerHTML=fs.map(f=>`<a class="foto" href="${esc(MIDIA.foto(f.arquivo))}" target="_blank" rel="noopener"><img src="${esc(MIDIA.foto(f.arquivo))}" alt="Foto do jogo de ${fmtAno(dia)}" loading="lazy"></a>`).join("");
+}
+
+// Enquete do Craque da Rodada: até 5 atletas do domingo, ordenados por gols + assistências
+function pollCraque(){
+  const doDia=STATS.filter(l=>l.data===ultima),pts={};
+  doDia.forEach(l=>l.atletas.forEach(a=>{if(a&&!a.startsWith("❓"))pts[a]=pts[a]||0}));
+  doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
+  const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
+  const meu=meusVotos.craque,votos=cand.map(a=>meu===a?1:0),total=votos.reduce((x,y)=>x+y,0)||1;
+  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada</h3>
+    <div class="opt-head"><span>Toque no atleta para votar</span><span></span></div>
+    ${cand.map((a,i)=>`<div class="opt-row"><button class="opt${meu===a?" voted":""}" data-kind="craque" data-id="${esc(a)}" aria-pressed="${meu===a}">
+      <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
+      <span class="t">${esc(a)}<small>${pts[a]} ${pts[a]===1?"gol/assistência":"gols + assistências"} no domingo</small></span>
+      <span class="n">${votos[i]}</span></button></div>`).join("")}
+    <div class="foot">${meu?"Seu voto foi registrado. Toque em outro atleta para trocar.":"Toque num atleta para votar. Um voto por pessoa."}</div></div>`;
+}
+function renderPolls(){
+  document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
+  // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
+  const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
+  const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","🫠 Bola murcha do domingo",["furada","polemica"],"murcha"]];
+  document.getElementById("polls").innerHTML=pollCraque()+polls.map(([kind,titulo,tipos,chave])=>{
+    const doDia=LANCES.filter(l=>l.data===ultima);
+    const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
+      :doDia.filter(l=>tiposDe(l).some(t=>tipos.includes(t)))).slice(0,5);
+    const meu=meusVotos[kind];
+    const votos=cand.map(l=>(VOTOS_BASE[l.id]||0)+(meu===l.id?1:0));
+    const total=votos.reduce((a,b)=>a+b,0)||1;
+    return `<div class="poll" data-kind="${kind}"><h3><span class="dot"></span>${titulo}</h3>
+      <div class="opt-head"><span>Toque no lance para votar</span><span>Veja o lance ▾</span></div>
+      ${(pollCands[kind]=cand,cand).map((l,i)=>`<div class="opt-row"><button class="opt${meu===l.id?" voted":""}" data-kind="${kind}" data-id="${l.id}" aria-pressed="${meu===l.id}">
+        <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
+        <span class="t">${esc(l.atletas.join(", "))}<small>${esc(l.desc)}</small></span>
+        <span class="n">${votos[i]}</span></button>
+        <a class="watch" href="${driveUrl(l.drive)}" target="_blank" rel="noopener" data-kind="${kind}" data-i="${i}" aria-label="Assistir: ${esc(l.desc)}">▶</a></div>`).join("")}
+      <div class="foot">${meu?"Seu voto foi registrado. Toque em outro lance para trocar.":"Toque num lance para votar. Um voto por pessoa."}</div></div>`;
+  }).join("");
+}
+const pollCands={};
+document.getElementById("polls").addEventListener("click",e=>{
+  const w=e.target.closest(".watch");
+  if(w){if(EMBED){e.preventDefault();mLista=pollCands[w.dataset.kind];abrir(+w.dataset.i)}return}
+  const b=e.target.closest(".opt");if(!b)return;meusVotos[b.dataset.kind]=b.dataset.id;store.set("jao-votos",meusVotos);renderPolls()});
+
+// (Campeões é desenhado em renderHall, chamado por renderCards)
+
+// Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
+const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
+// (o Elenco é desenhado como figurinhas em renderCards, mais abaixo)
+document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
+
+// Estatísticas por temporada
+const COLS=[["dom","Domingos"],["lances","Lances"],["gols","Gols"],["assist","Assist."],["golacos","Golaços"],["furadas","Furadas"],["premios","Prêmios"]];
+const anos=[...new Set(dias.map(d=>d.slice(0,4)))].sort().reverse();
+const selAno=document.getElementById("f-ano");
+selAno.innerHTML=anos.map(a=>`<option value="${a}">${a}</option>`).join("");
+let ordem="gols";
+function calcStats(ano){
+  const L=STATS.filter(l=>l.data.startsWith(ano));
+  const nomes=[...new Set(L.flatMap(l=>l.atletas))].filter(a=>!a.startsWith("❓"));
+  return nomes.map(a=>{
+    const meus=L.filter(l=>l.atletas.includes(a));
+    return {a,dom:new Set(meus.map(l=>l.data)).size,lances:meus.length,
+      gols:L.filter(l=>l.gol===a).length,assist:L.filter(l=>l.assist===a).length,
+      golacos:L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length,
+      furadas:meus.filter(l=>tiposDe(l).includes("furada")).length,
+      premios:CAMPEOES.filter(c=>c.semana.startsWith(ano)&&ganhador(c)===a).length};
+  });
+}
+function lider(S,k){const m=Math.max(0,...S.map(s=>s[k]));return m?{v:m,quem:S.filter(s=>s[k]===m).map(s=>s.a)}:null}
+function renderStats(){
+  const S=calcStats(selAno.value);
+  const pods=[["gols","Artilheiro","gols"],["assist","Garçom","assistências"],["furadas","Rei da resenha","furadas"],["dom","Mais presente","domingos"]];
+  document.getElementById("podium").innerHTML=pods.map(([k,t,u])=>{const l=lider(S,k);return l?`<div class="pod"><span class="k">${t}</span><span class="who">${esc(l.quem.join(", "))}</span><span class="v">${l.v} <small style="font-size:14px">${u}</small></span></div>`:""}).join("");
+  S.sort((x,y)=>y[ordem]-x[ordem]||y.gols-x.gols||y.lances-x.lances||x.a.localeCompare(y.a,"pt"));
+  const max=Math.max(0,...S.map(s=>s[ordem]));
+  document.getElementById("stats-tbl").innerHTML=
+    `<colgroup><col style="width:44px"><col style="width:200px">${COLS.map(()=>`<col style="width:76px">`).join("")}</colgroup>
+    <thead><tr><th>#</th><th>Atleta</th>${COLS.map(([k,t])=>`<th class="${k===ordem?"on":""}"><button data-k="${k}">${t}</button></th>`).join("")}</tr></thead>
+    <tbody>${S.map((s,i)=>`<tr><td class="pos">${i+1}</td>
+      <td><button class="who-btn" data-a="${esc(s.a)}">${av(s.a)}${esc(s.a)}${apelido(s.a)?` <span class="ap">${esc(apelido(s.a))}</span>`:""}</button></td>
+      ${COLS.map(([k])=>`<td class="${k===ordem&&s[k]===max&&max>0?"lead":""}">${s[k]}</td>`).join("")}</tr>`).join("")}</tbody>`;
+}
+document.getElementById("stats-tbl").addEventListener("click",e=>{
+  const h=e.target.closest("th button");if(h){ordem=h.dataset.k;renderStats();return}
+  const w=e.target.closest(".who-btn");if(w)abrirPerfil(w.dataset.a)});
+selAno.onchange=()=>{renderStats();renderCharts()};
+
+// ===== Gráficos (SVG feito à mão) =====
+const MET={gols:{t:"Gols",f:(l,a)=>l.gol===a?1:0},assist:{t:"Assistências",f:(l,a)=>l.assist===a?1:0},
+  ga:{t:"Gols + assistências",f:(l,a)=>(l.gol===a?1:0)+(l.assist===a?1:0)}};
+const real=a=>a&&!a.startsWith("❓");
+// Cor fixa por atleta: ordem do ranking de G+A da temporada (não muda com o filtro)
+function coresDaTemporada(ano){
+  const L=STATS.filter(l=>l.data.startsWith(ano)),pts={};
+  L.forEach(l=>{for(const a of [l.gol,l.assist])if(real(a))pts[a]=(pts[a]||0)+1});
+  const ord=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt"));
+  const m={};ord.forEach((a,i)=>m[a]=i<8?`var(--s${i+1})`:"var(--s-out)");return m;
+}
+function niceMax(v){if(v<=4)return Math.max(1,v);const s=Math.ceil(v/4);return Math.ceil(v/s)*s}
+function svgEl(w,h,inner){return `<svg viewBox="0 0 ${w} ${h}" role="img">${inner}</svg>`}
+function eixoY(max,x0,x1,y,H){let s="";const step=Math.max(1,Math.ceil(max/4));
+  for(let v=0;v<=max;v+=step){const yy=y(v);s+=`<line class="${v?"grid":"base"}" x1="${x0}" x2="${x1}" y1="${yy}" y2="${yy}"/><text x="${x0-6}" y="${yy+4}" text-anchor="end">${v}</text>`}return s}
+function eixoX(ds,xc,yb){const k=Math.ceil(ds.length/8);return ds.map((d,i)=>i%k===0||i===ds.length-1?`<text x="${xc(i)}" y="${yb+16}" text-anchor="middle">${fmt(d)}</text>`:"").join("")}
+function dica(plot,html,x,y){let t=plot.querySelector(".tip");if(!t){t=document.createElement("div");t.className="tip";plot.appendChild(t)}
+  t.innerHTML=html;t.hidden=false;const pw=plot.clientWidth,tw=t.offsetWidth;
+  t.style.left=Math.max(0,Math.min(pw-tw,x-tw/2))+"px";t.style.top=Math.max(0,y-t.offsetHeight-10)+"px"}
+function semDica(plot){const t=plot.querySelector(".tip");if(t)t.hidden=true}
+function ligarHover(plot,n,conteudo,cross){
+  const svg=plot.querySelector("svg");
+  svg.querySelectorAll(".hit").forEach(r=>{
+    const i=+r.dataset.i;
+    const mostrar=ev=>{const b=plot.getBoundingClientRect(),sb=svg.getBoundingClientRect(),esc=sb.width/svg.viewBox.baseVal.width;
+      if(cross){cross.setAttribute("x1",r.dataset.cx);cross.setAttribute("x2",r.dataset.cx);cross.style.display=""}
+      dica(plot,conteudo(i),(+r.dataset.cx)*esc+(sb.left-b.left),(+r.dataset.ty)*esc+(sb.top-b.top))};
+    r.addEventListener("pointerenter",mostrar);r.addEventListener("pointerdown",mostrar);
+  });
+  svg.addEventListener("pointerleave",()=>{semDica(plot);if(cross)cross.style.display="none"});
+}
+let destaque=null;
+// Estilo editorial: destaques coloridos e grossos, demais em cinza fino; nome de todos na ponta
+// (cinza para os demais, omitido só quando não cabe perto da própria linha); eixo leve com o número sobre a grade
+function desenharLinhas(el,ds,series,titTip,unid){
+  // desenha na largura real do gráfico (texto fica legível no celular)
+  const W=Math.round(Math.min(640,Math.max(330,el.clientWidth||640))),H=W<520?300:280,ml=4,mr=W<520?112:132,mt=22,mb=26,pw=W-ml-mr,ph=H-mt-mb,n=ds.length;
+  const max=niceMax(Math.max(1,...series.flatMap(x=>x.v))),y=v=>mt+ph-v/max*ph,xs=i=>n>1?ml+pw*i/(n-1):ml+pw/2;
+  const cor=series.filter(x=>x.cor),cinza=series.filter(x=>!x.cor);
+  let s="";const step=Math.max(1,Math.ceil(max/4));
+  for(let v=0;v<=max;v+=step){const yy=y(v);
+    s+=`<line class="${v?"grid":"base"}" x1="${ml}" x2="${W-mr+6}" y1="${yy}" y2="${yy}"/>`;
+    if(v)s+=`<text class="ytk" x="${ml}" y="${yy-5}">${v}${v+step>max?` ${unid}`:""}</text>`}
+  s+=`<line class="cross" y1="${mt}" y2="${mt+ph}" style="display:none"/>`;
+  const pts=x=>x.v.map((v,i)=>`${xs(i)},${y(v)}`).join(" ");
+  cinza.forEach(x=>{s+=`<polyline class="ln-g" points="${pts(x)}" opacity="${destaque?.4:1}"/>`});
+  cor.forEach(x=>{const f=destaque===x.a,op=!destaque||f?1:.22;
+    s+=`<g opacity="${op}"><polyline points="${pts(x)}" fill="none" stroke="var(--surface)" stroke-width="${f?7:6}" stroke-linejoin="round" stroke-linecap="round"/>`
+      +`<polyline points="${pts(x)}" fill="none" stroke="${x.cor}" stroke-width="${f?3.8:3}" stroke-linejoin="round" stroke-linecap="round"/>`
+      +`<circle cx="${xs(n-1)}" cy="${y(x.v[n-1])}" r="3.8" fill="${x.cor}" stroke="var(--surface)" stroke-width="1.5"/></g>`});
+  // rótulos: empilha sem encostar (13px); destaque nunca some, cinza que ficaria >14px longe da linha é omitido
+  const lab=[...cor.map(x=>({x,c:true})),...cinza.map(x=>({x,c:false}))].map(l=>({...l,t:y(l.x.v[n-1])+4})).sort((p,q)=>p.t-q.t||(q.c-p.c));
+  const ok=[];for(const l of lab){let yy=l.t;const u=ok.at(-1);if(u&&yy-u.y<13)yy=u.y+13;if(!l.c&&yy-l.t>14)continue;ok.push({...l,y:yy})}
+  const sobra=ok.length?ok.at(-1).y-(mt+ph-2):0;if(sobra>0)ok.forEach(l=>l.y-=sobra);
+  ok.forEach(l=>{const op=destaque&&destaque!==l.x.a?.35:1;
+    if(l.c)s+=`<line x1="${xs(n-1)+9}" x2="${xs(n-1)+19}" y1="${l.y-4}" y2="${l.y-4}" stroke="${l.x.cor}" stroke-width="3" stroke-linecap="round" opacity="${op}"/>`;
+    s+=`<text class="${l.c?"lbl":"lbl-g"}" x="${xs(n-1)+(l.c?24:10)}" y="${l.y}" opacity="${op}">${esc(l.x.a)} <tspan class="${l.c?"lbl-v":""}">${l.x.v[n-1]}</tspan></text>`});
+  ds.forEach((d,i)=>{const w=n>1?pw/(n-1):pw,x0=n>1?xs(i)-w/2:ml;
+    s+=`<rect class="hit" data-i="${i}" data-cx="${xs(i)}" data-ty="${y(Math.max(0,...cor.map(x=>x.v[i])))}" x="${Math.max(ml,x0)}" y="${mt}" width="${w}" height="${ph}"/>`});
+  s+=eixoX(ds,xs,mt+ph);
+  el.innerHTML=svgEl(W,H,s);
+  ligarHover(el,n,i=>{const lista=series.filter(x=>x.v[i]>0||x.cor).sort((p,q)=>q.v[i]-p.v[i]);
+    return `<b>${titTip(ds[i])}</b>${lista.slice(0,10).map(x=>`<div class="r"><span><i class="sw" style="background:${x.cor||"var(--s-gray)"}"></i>${esc(x.a)}</span><span>${x.v[i]}</span></div>`).join("")}${lista.length>10?`<div class="r"><span>+ ${lista.length-10} atletas</span></div>`:""}`},el.querySelector(".cross"));
+}
+
+// redesenha os gráficos quando a largura da tela muda
+let _rc;addEventListener("resize",()=>{clearTimeout(_rc);_rc=setTimeout(()=>{if(typeof renderCharts==="function")renderCharts()},250)});
+function renderCharts(){
+  const ano=selAno.value,met=document.getElementById("f-met").value,top=+document.getElementById("f-top").value,M=MET[met];
+  const ds=dias.filter(d=>d.startsWith(ano)).sort(),L=STATS.filter(l=>l.data.startsWith(ano));
+  document.getElementById("ch1-t").textContent=`${M.t} por domingo`;
+  document.getElementById("ch2-t").textContent=`${M.t} acumulados em ${ano}`;
+  const cor=coresDaTemporada(ano);
+  const nomes=[...new Set(L.flatMap(l=>[l.gol,l.assist]))].filter(real);
+  const porDia=a=>ds.map(d=>L.filter(l=>l.data===d).reduce((s,l)=>s+M.f(l,a),0));
+  const acum=v=>{let c=0;return v.map(x=>c+=x)};
+  const ser=nomes.map(a=>{const v=porDia(a);return {a,v,tot:v.reduce((x,y)=>x+y,0)}}).filter(s=>s.tot>0)
+    .sort((x,y)=>y.tot-x.tot||x.a.localeCompare(y.a,"pt"));
+  const el1=document.getElementById("ch-dom"),el2=document.getElementById("ch-acc"),leg=document.getElementById("ch-leg");
+  if(!ds.length||!ser.length){const msg=`<div class="empty-chart">Ainda não há ${M.t.toLowerCase()} registrados em ${ano}.</div>`;el1.innerHTML=msg;el2.innerHTML=msg;leg.innerHTML="";return}
+  let s1,s2;
+  if(top===0){const tot=ds.map((_,i)=>ser.reduce((s,x)=>s+x.v[i],0));
+    s1=[{a:"Total da turma",v:tot,cor:"var(--s1)"}];s2=[{a:"Total da turma",v:acum(tot),cor:"var(--s1)"}]}
+  else{s1=ser.map((x,i)=>({a:x.a,v:x.v,cor:i<top?cor[x.a]:null}));
+    s2=ser.map((x,i)=>({a:x.a,v:acum(x.v),cor:i<top?cor[x.a]:null}))}
+  desenharLinhas(el1,ds,s1,d=>`Domingo ${fmtAno(d)}`,M.t.toLowerCase());
+  desenharLinhas(el2,ds,s2,d=>`Até ${fmtAno(d)}`,M.t.toLowerCase());
+  const dest=s2.filter(x=>x.cor);
+  leg.innerHTML=dest.length>1?dest.map(x=>`<button type="button" data-a="${esc(x.a)}" class="${destaque&&destaque!==x.a?"off":""}" aria-pressed="${destaque===x.a}"><i class="sw" style="background:${x.cor}"></i>${esc(x.a)}</button>`).join("")
+    +(s2.length>dest.length?`<span class="leg-g"><i class="sw" style="background:var(--s-out)"></i>demais atletas</span>`:""):"";
+}
+document.getElementById("ch-leg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;destaque=destaque===b.dataset.a?null:b.dataset.a;renderCharts()});
+document.getElementById("f-met").onchange=renderCharts;
+document.getElementById("f-top").onchange=()=>{destaque=null;renderCharts()};
+
+// ===== Card do atleta =====
+function conquistas(a){
+  const ano=anos[0],L=STATS.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano)).sort();
+  const golsDia=ds.map(d=>L.filter(l=>l.data===d&&l.gol===a).length);
+  const gols=golsDia.reduce((x,y)=>x+y,0),assist=L.filter(l=>l.assist===a).length;
+  let seq=0,best=0;golsDia.forEach(g=>{seq=g?seq+1:0;best=Math.max(best,seq)});
+  const furadas=n=>L.filter(l=>l.atletas.includes(n)&&tiposDe(l).includes("furada")).length;
+  const reiResenha=atletas.filter(real).every(n=>furadas(n)<=furadas(a))&&furadas(a)>0;
+  const artDia=ds.filter((d,i)=>{const g=golsDia[i];if(!g)return false;
+    return atletas.filter(real).every(n=>L.filter(l=>l.data===d&&l.gol===n).length<=g)}).length;
+  const presente=ds.length>=3&&ds.every(d=>L.some(l=>l.data===d&&l.atletas.includes(a)));
+  return [
+    ["⚽","Primeiro gol","marcou na temporada",gols>=1],
+    ["🌟","Golaço","marcou um golaço",L.some(l=>l.gol===a&&tiposDe(l).includes("golaco"))],
+    ["🎩","Hat-trick","3 gols num domingo",golsDia.some(g=>g>=3)],
+    ["🔥","Pé quente","gols em 3 domingos seguidos",best>=3],
+    ["👑","Artilheiro do dia",artDia?`${artDia}× maior goleador do domingo`:"maior goleador de um domingo",artDia>0],
+    ["🎯","Garçom","3 assistências no ano",assist>=3],
+    ["🔟","Dezena","10 gols no ano",gols>=10],
+    ["😂","Rei da resenha","mais furadas do ano",reiResenha],
+    ["📅","Presença","em todos os domingos (mín. 3)",presente],
+  ];
+}
+function abrirPerfil(a){
+  const ano=anos[0],L=STATS.filter(l=>l.data.startsWith(ano)),meus=L.filter(l=>l.atletas.includes(a));
+  const ds=dias.filter(d=>d.startsWith(ano)).sort();
+  const g=L.filter(l=>l.gol===a).length,as=L.filter(l=>l.assist===a).length;
+  document.getElementById("pf-card").innerHTML=`<div class="pf-flip"><div class="pf-frente">${cardsDoPerfil(a)}</div><div class="pf-verso">${versoAtributos(a)}</div></div><button class="flip-btn" type="button">↻ Ver atributos</button>`;
+  document.getElementById("pf-nome").textContent=a;
+  document.getElementById("pf-ap").textContent=[apelido(a)&&`"${apelido(a)}"`,`Temporada ${ano}`].filter(Boolean).join(" · ");
+  const T=[["Gols",g],["Assist.",as],["Lances",meus.length],["Domingos",new Set(meus.map(l=>l.data)).size],
+    ["Golaços",L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length],["Furadas",meus.filter(l=>tiposDe(l).includes("furada")).length]];
+  document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
+  const meusP=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana)),qt=k=>meusP.filter(c=>c.kind===k).length;
+  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">🏆 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
+    +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,PREMIO_CARD[c.kind]).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
+  document.querySelector("#pf-hist .pf-hsum").insertAdjacentHTML("afterend",linhaDoTempo(a));
+  document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
+  // mini gráfico: gols (azul) e assistências (laranja) por domingo, empilhados
+  const W=480,H=150,ml=24,mr=6,mt=8,mb=24,pw=W-ml-mr,ph=H-mt-mb;
+  const gd=ds.map(d=>L.filter(l=>l.data===d&&l.gol===a).length),ad=ds.map(d=>L.filter(l=>l.data===d&&l.assist===a).length);
+  const mx=niceMax(Math.max(1,...gd.map((v,i)=>v+ad[i]))),y=v=>mt+ph-v/mx*ph,band=pw/Math.max(1,ds.length),bw=Math.min(40,band*0.6),xc=i=>ml+band*i+band/2;
+  let s=eixoY(mx,ml,W-mr,y,H);
+  ds.forEach((d,i)=>{const x=xc(i)-bw/2;
+    if(gd[i])s+=`<rect x="${x}" y="${y(gd[i])}" width="${bw}" height="${y(0)-y(gd[i])}" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>`;
+    if(ad[i])s+=`<rect x="${x}" y="${y(gd[i]+ad[i])}" width="${bw}" height="${y(gd[i])-y(gd[i]+ad[i])}" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>`;
+    s+=`<rect class="hit" data-i="${i}" data-cx="${xc(i)}" data-ty="${y(gd[i]+ad[i])}" x="${ml+band*i}" y="${mt}" width="${band}" height="${ph}"/>`});
+  s+=eixoX(ds,xc,mt+ph);
+  const pc=document.getElementById("pf-chart");
+  pc.innerHTML=svgEl(W,H,s)+`<div class="legend"><span><i class="sw" style="background:var(--s1)"></i> Gols</span><span><i class="sw" style="background:var(--s2)"></i> Assistências</span></div>`;
+  ligarHover(pc,ds.length,i=>`<b>${fmtAno(ds[i])}</b><div class="r"><span><i class="sw" style="background:var(--s1)"></i>Gols</span><span>${gd[i]}</span></div><div class="r"><span><i class="sw" style="background:var(--s2)"></i>Assist.</span><span>${ad[i]}</span></div>`);
+  const tot=gd.map((v,i)=>v+ad[i]),mb2=Math.max(...tot,0);
+  document.getElementById("pf-best").textContent=mb2?`Melhor domingo: ${fmtAno(ds[tot.indexOf(mb2)])}, com ${gd[tot.indexOf(mb2)]} gol(s) e ${ad[tot.indexOf(mb2)]} assistência(s).`:"Ainda sem gols ou assistências registrados nesta temporada.";
+  const bl=document.getElementById("pf-lances");bl.textContent=`▶ Ver os ${meus.length} lances de ${a}`;bl.hidden=!meus.length;bl.dataset.a=a;
+  const p=document.getElementById("perfil");p.hidden=false;document.body.style.overflow="hidden";document.getElementById("pf-x").focus();
+}
+function fecharPerfil(){document.getElementById("perfil").hidden=true;document.body.style.overflow=""}
+document.getElementById("pf-x").onclick=fecharPerfil;
+document.getElementById("pf-card").addEventListener("click",e=>{
+  const fb=e.target.closest(".flip-btn,.fig.verso");
+  if(fb){const f=document.querySelector("#pf-card .pf-flip"),v=f.classList.toggle("virado");document.querySelector("#pf-card .flip-btn").textContent=v?"↻ Ver números":"↻ Ver atributos";return}
+  const lq=e.target.closest(".fig-leque");if(lq)lq.classList.toggle("troca")});
+document.getElementById("perfil").addEventListener("click",e=>{if(e.target.id==="perfil")fecharPerfil()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.getElementById("perfil").hidden)fecharPerfil()});
+document.getElementById("pf-lances").onclick=e=>{fecharPerfil();filtrarAtleta(e.currentTarget.dataset.a)};
+
+// ===== Patrocinador =====
+// Para ligar: preencher {nome, logo, url}. null = site sem patrocinador.
+// Sherife (desligado 20/10 p/ o teaser): {nome:"Sherife",logo:"patrocinio/sherife.png",url:"https://www.sherifelojas.com/?utm_source=centraldapelada&utm_medium=site&utm_campaign=pelada-jao"}
+const PATROCINIO=null;
+function aplicarPatrocinio(){
+  const p=PATROCINIO;
+  if(!p){ // sem patrocinador: mostra o espaço reservado
+    const f=document.getElementById("patro-faixa"),r=document.getElementById("patro-rodape");
+    f.hidden=false;f.classList.add("patro-vazio");f.removeAttribute("rel");f.removeAttribute("target");
+    f.innerHTML='<span class="pf-lbl">Espaço para patrocinador</span><span class="pf-cta">Seu logo aqui · Anuncie na Central da Pelada</span>';
+    r.hidden=false;r.querySelector(".pr-in").innerHTML='<span class="pr-lbl">Espaço para patrocinador</span><div class="pr-vazio">Seu logo aqui</div><span class="pr-lbl">Anuncie na Central da Pelada</span>';
+    return}
+  const liga=(id,comImg)=>{const el=document.getElementById(id);if(!el)return;el.hidden=false;el.href=p.url;el.title=p.nome;
+    const im=comImg?document.getElementById(comImg):el.querySelector("img");if(im){im.src=p.logo;im.alt=p.nome}};
+  liga("patro-faixa","patro-faixa-img");liga("patro-cards");liga("patro-player");
+  document.getElementById("patro-rodape").hidden=false;
+  liga("patro-rodape-link","patro-rodape-img");liga("patro-rodape-btn");
+}
+aplicarPatrocinio();
+
+// ===== Figurinhas =====
+// Times do coração: cores + sigla (escudo estilizado, não o oficial). Campo "times" no atletas.json, máx. 2.
+const TIMES={FLU:["Fluminense","#7a1e3a","#00613c","#ffffff"],VNO:["Vila Nova","#c8102e","#ffffff","#c8102e"],
+  GOI:["Goiás","#00703c","#ffffff","#00703c"],ACG:["Atlético-GO","#c8102e","#111111","#c8102e"],
+  FLA:["Flamengo","#c8102e","#111111","#c8102e"],COR:["Corinthians","#111111","#ffffff","#111111"],
+  PAL:["Palmeiras","#006437","#ffffff","#006437"],SAO:["São Paulo","#c8102e","#ffffff","#111111"],
+  VAS:["Vasco","#111111","#ffffff","#111111"],BOT:["Botafogo","#111111","#ffffff","#111111"],
+  SAN:["Santos","#ffffff","#111111","#ffffff"],GRE:["Grêmio","#0d80bf","#111111","#ffffff"],
+  INT:["Internacional","#c8102e","#ffffff","#c8102e"],CAM:["Atlético-MG","#111111","#ffffff","#111111"],
+  CRU:["Cruzeiro","#003da5","#ffffff","#003da5"],BAH:["Bahia","#0d47a1","#c8102e","#ffffff"],
+  FOR:["Fortaleza","#0d47a1","#c8102e","#ffffff"],CAP:["Athletico-PR","#c8102e","#111111","#c8102e"]};
+function escudo(sig){const t=TIMES[sig];if(!t)return"";const[nome,c1,c2,c3]=t,id="e"+sig;
+  return `<svg viewBox="0 0 28 32" role="img" aria-label="${esc(nome)}"><title>${esc(nome)}</title>
+  <defs><clipPath id="${id}"><path d="M2 2h24v14c0 8-6 12.5-12 14C8 28.5 2 24 2 16z"/></clipPath></defs>
+  <g clip-path="url(#${id})"><rect width="28" height="32" fill="${c1}"/><rect x="9.33" width="9.34" height="32" fill="${c2}"/><rect x="18.67" width="9.33" height="32" fill="${c3}"/></g>
+  <path d="M2 2h24v14c0 8-6 12.5-12 14C8 28.5 2 24 2 16z" fill="none" stroke="#ffffff" stroke-width="1.6"/>
+  <text x="14" y="17.5" text-anchor="middle" font-size="7.5" font-weight="800" fill="#ffffff" stroke="#000000" stroke-width="1.6" paint-order="stroke" font-family="Arial,sans-serif">${sig}</text></svg>`}
+// Formato do card (escudo com cantos recortados e ponta embaixo), uma vez na página
+document.body.insertAdjacentHTML("afterbegin",`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><clipPath id="figshape" clipPathUnits="objectBoundingBox">
+  <path d="M0.03,0.06 Q0.10,0.06 0.12,0.012 L0.88,0.012 Q0.90,0.06 0.97,0.06 L0.97,0.86 Q0.97,0.912 0.80,0.938 Q0.62,0.962 0.5,0.988 Q0.38,0.962 0.2,0.938 Q0.03,0.912 0.03,0.86 Z"/></clipPath><clipPath id="gemshape" clipPathUnits="objectBoundingBox"><path d="M0.25,0 L0.75,0 L1,0.16 L1,0.80 L0.5,1 L0,0.80 L0,0.16 Z"/></clipPath></svg>`);
+// Selos coloridos dentro de um círculo branco
+const ICO={
+  // bola de futebol clássica: pentágono central + gomos pretos na borda
+  bola:`<svg viewBox="0 0 64 64"><defs><clipPath id="cpBola"><circle cx="32" cy="32" r="28"/></clipPath></defs>
+    <circle cx="32" cy="32" r="28" fill="#fff"/>
+    <g clip-path="url(#cpBola)" fill="#111">
+      <path d="M32 21.5l10 7.3-3.8 11.7H25.8L22 28.8z"/>
+      <path d="M32 4.5l7.6 5.5-2.9 8.9h-9.4l-2.9-8.9z"/>
+      <path d="M58.9 23.4l-2.9 8.9-9.4 0-2.9-8.9 7.6-5.5z" transform="rotate(4 52 25)"/>
+      <path d="M48.6 55.4l-9.4 0-2.9-8.9 7.6-5.5 7.6 5.5z"/>
+      <path d="M15.4 55.4l-2.9-8.9 7.6-5.5 7.6 5.5-2.9 8.9z"/>
+      <path d="M5.1 23.4l7.6-5.5 7.6 5.5-2.9 8.9-9.4 0z" transform="rotate(-4 12 25)"/>
+    </g>
+    <g stroke="#111" stroke-width="1.6" fill="none"><path d="M32 21.5V18.9M42 28.8l4.7-1.6M38.2 40.5l2.9 3.9M25.8 40.5l-2.9 3.9M22 28.8l-4.7-1.6"/></g>
+    <circle cx="32" cy="32" r="28" fill="none" stroke="#111" stroke-width="2.4"/></svg>`,
+  // chuteira de lado: cano, cadarço, solado e travas
+  chuteira:`<svg viewBox="0 0 64 64"><path d="M8 44C6 38 5 31 8 25c1-3 4-4 7-3l7 2c3 1 5 0 7-1 7 4 17 8 25 10 5 1.5 7 5 5.5 9-.5 1.5-2 2-3.5 2z" fill="#111"/><path d="M6 44h55v2.5c0 1.4-1.1 2.5-2.5 2.5h-50C7.1 49 6 47.9 6 46.5z" fill="#f47b20"/><g fill="#111"><rect x="9" y="48" width="4" height="6" rx="1.2"/><rect x="17" y="48" width="4" height="6" rx="1.2"/><rect x="35" y="48" width="4" height="6" rx="1.2"/><rect x="44" y="48" width="4" height="6" rx="1.2"/><rect x="53" y="48" width="4" height="6" rx="1.2"/></g><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M30.5 27.5l2-3.6M35.5 30l2-3.6M40.5 32.2l2-3.6"/></g><path d="M13 37c9 2.5 22 2.5 35-1" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`,
+  estrela:`<svg viewBox="0 0 64 64"><path d="M32 6l7.6 16.2 17.6 2.1-13 12.1 3.5 17.5L32 45.2l-15.7 8.7 3.5-17.5-13-12.1 17.6-2.1z" fill="#f2b705" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
+  murcha:`<svg viewBox="0 0 64 64"><path d="M6 46c1.6-10 9.2-15.6 26-16.4 16.8.8 24.4 6.4 26 16.4-7.6 4.8-44.4 4.8-52 0z" fill="#fff" stroke="#111" stroke-width="2.4"/><path d="M24 32l6 6.5 8-5.6M15 44l6-5M49 44l-6-5" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 20c3-3 5 .5 8-2.5M44 18c3-3 5 .5 8-2.5" stroke="#898781" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`,
+  coroa:`<svg viewBox="0 0 64 64"><path d="M8 46L5 20l13 10L32 12l14 18 13-10-3 26z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><rect x="8" y="45" width="48" height="7" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><circle cx="32" cy="34" r="3.5" fill="#4fc3f7"/></svg>`,
+  trofeu:`<svg viewBox="0 0 64 64"><path d="M20 10h24v10c0 9-5 15-12 16-7-1-12-7-12-16z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 14h-7c0 8 4 12 9 13M44 14h7c0 8-4 12-9 13" fill="none" stroke="#7a5600" stroke-width="2.4" stroke-linecap="round"/><path d="M29 36h6v8h-6z" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><rect x="21" y="44" width="22" height="8" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><path d="M26 14v8" stroke="#fff6cf" stroke-width="2.4" stroke-linecap="round"/></svg>`};
+const COROA=`<svg class="fig-coroa" viewBox="0 0 64 40" aria-hidden="true"><path d="M6 34L3 10l15 11L32 4l14 17 15-11-3 24z" fill="#f2c94c" stroke="#7a5600" stroke-width="2" stroke-linejoin="round"/><rect x="6" y="33" width="52" height="6" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><circle cx="32" cy="22" r="3.5" fill="#4fc3f7"/><circle cx="18" cy="26" r="2.6" fill="#e53935"/><circle cx="46" cy="26" r="2.6" fill="#e53935"/></svg>`;
+const TROFEU=`<svg class="fig-trofeu" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 10h24v10c0 9-5 15-12 16-7-1-12-7-12-16z" fill="#f2c94c" stroke="#7a5600" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 14h-7c0 8 4 12 9 13M44 14h7c0 8-4 12-9 13" fill="none" stroke="#7a5600" stroke-width="2.4" stroke-linecap="round"/><path d="M29 36h6v8h-6z" fill="#e0ac1d" stroke="#7a5600" stroke-width="2"/><rect x="21" y="44" width="22" height="8" rx="2" fill="#e0ac1d" stroke="#7a5600" stroke-width="2.2"/><path d="M26 14v8" stroke="#fff6cf" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+const GEMA=`<svg class="fig-gema" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="ggema" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"/><stop offset=".5" stop-color="#7fd3f5"/><stop offset="1" stop-color="#3a8fd8"/></linearGradient></defs><path d="M14 3h36l12 15L32 50 2 18z" fill="url(#ggema)" stroke="#0b3a66" stroke-width="2" stroke-linejoin="round"/><path d="M2 18h60M14 3l8 15 10-15 10 15 8-15M22 18l10 32 10-32" fill="none" stroke="#0b3a66" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 7l3 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
+const FACETAS=`<svg class="fig-facetas" viewBox="0 0 100 144" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,23 25,0 37.5,23 50,0 62.5,23 75,0 100,23"/><line x1="0" y1="23" x2="100" y2="23"/><line x1="0" y1="115" x2="100" y2="115"/><polyline points="0,115 25,23 50,115 75,23 100,115"/><polyline points="0,115 25,130 50,115 75,130 100,115"/><line x1="25" y1="130" x2="50" y2="144"/><line x1="75" y1="130" x2="50" y2="144"/><line x1="50" y1="115" x2="50" y2="144"/></svg>`;
+const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="34" r="20" fill="#111"/><path d="M6 110c2-31 19-46 44-46s42 15 44 46z" fill="#111"/></svg>`;
+const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
+// Números do atleta na temporada: gols, assistências, jogos (domingos com lance / domingos da temporada)
+function numsAtleta(a,ano){
+  const L=STATS.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano));
+  return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
+    jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
+}
+const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA",craque:"CRAQUE",esmeralda:"GOLAÇO"};
+// o: {tier, selos:[{ico,rank,txt}], coroa, tag}
+function figurinha(a,o={}){
+  const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,anos[0]),selos=o.selos||[];
+  const foto=d.foto?`<img src="${esc(d.foto)}" alt="" loading="lazy">`:SIL;
+  const nivel={ouro:"Ouro",prata:"Prata",bronze:"Bronze",black:"Black",diamante:"Diamante"}[o.tier];
+  const rotulo=o.tag||ROTULO[o.tier]||"";
+  return `<button type="button" class="fig ${o.tier||"normal"}" data-a="${esc(a)}" aria-label="${esc(a)}${nivel?`, card ${nivel}`:""}: ${n.g} gols, ${n.as} assistências, ${n.jog} de ${n.tot} domingos${o.tag?` – ${esc(o.tag)}`:""}">
+    <span class="fig-card">
+      <span class="fig-foto">${foto}</span>
+      ${o.coroa?COROA:""}${o.trofeu?TROFEU:""}${o.tier==="diamante"?GEMA+FACETAS:""}
+      <span class="fig-left${selos.length>1?" duo":""}">
+        ${selos.map(s=>`<span class="fig-rk">${s.rank}<small>${esc(s.txt)}</small></span><span class="fig-dia">${ICO[s.ico]}</span>`).join("")}
+        <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
+      </span>
+      ${d.dm?DM:""}
+      <span class="fig-nome" style="--n:${a.length}">${esc(a)}</span>
+      <span class="fig-ap">${ap?`"${esc(ap)}"`:"&nbsp;"}</span>
+      <span class="fig-nums"><span><small>GOL</small><b>${n.g}</b></span><span><small>AST</small><b>${n.as}</b></span><span><small>JOG</small><b>${n.jog}/${n.tot}</b></span></span>
+      ${rotulo?`<span class="fig-tag">${esc(rotulo)}</span>`:""}
+    </span></button>`;
+}
+function figVazio(titulo,ico,txt,tier){
+  return `<div class="fig ${tier}" role="note" aria-label="${esc(titulo)}: ${esc(txt)}"><span class="fig-card">${tier==="craque"?TROFEU:""}${tier==="black"?COROA:""}${tier==="diamante"?GEMA+FACETAS:""}
+    <span class="fig-foto"><span class="fig-q">?</span></span>
+    <span class="fig-left"><span class="fig-dia">${ICO[ico]}</span></span>
+    <span class="fig-nome">${esc(titulo)}</span><span class="fig-ap">${esc(txt)}</span><span class="fig-tag">${ROTULO[tier]||""}</span></span></div>`;
+}
+// Pódio com empate (decisão do Gustavo, 19/10): empatados levam o MESMO card e a posição seguinte é pulada
+// (ex.: dois empatados em 1º = dois GOLD, ninguém SILVER, o próximo é BRONZE). _pos = posição real (1, 2 ou 3).
+function top3(S,k){
+  const L=S.filter(s=>s[k]>0).sort((x,y)=>y[k]-x[k]||x.a.localeCompare(y.a,"pt"));
+  return L.map(s=>({...s,_pos:1+L.filter(o=>o[k]>s[k]).length})).filter(s=>s._pos<=3);
+}
+const posPodio=(S,k,a)=>{const p=top3(S,k).find(s=>s.a===a);return p?p._pos-1:-1};
+// Status atual do atleta: o mesmo card em todo o site (Elenco, rankings e perfil)
+// top 3 em gols OU assist. = ouro/prata/bronze · top 3 nos DOIS = BLACK · 1º nos DOIS = DIAMANTE (cristal lapidado; coroa fica p/ Craque da Rodada)
+const DOMINGOS_P_ESPECIAIS=5;
+function statusCard(a){
+  const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
+  const ia=posPodio(S,"gols",a),ib=posPodio(S,"assist",a);
+  const sg={ico:"bola",rank:`${ia+1}º`,txt:"ARTIL."},sa={ico:"chuteira",rank:`${ib+1}º`,txt:"ASSIST."};
+  // BLACK e DIAMOND só valem a partir do 5º domingo da temporada (decisão do Gustavo, 19/10/2026)
+  const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
+  if(especiais&&ia===0&&ib===0)return {tier:"diamante",selos:[sg,sa]};
+  if(ia>=0&&(ib<0||ia<=ib))return {tier:T[ia],selos:[sg]};
+  if(ib>=0)return {tier:T[ib],selos:[sa]};
+  return {};
+}
+// Todos os cards que o atleta tem hoje: antes do 5º domingo, quem está no pódio de gols E de assistências tem 2 cards
+function cardsDoAtleta(a){
+  const S=calcStats(anos[0]),T=["ouro","prata","bronze"];
+  const especiais=dias.filter(d=>d.startsWith(anos[0])).length>=DOMINGOS_P_ESPECIAIS;
+  const ia=posPodio(S,"gols",a),ib=posPodio(S,"assist",a);
+  if(especiais&&ia===0&&ib===0)return [statusCard(a)];
+  const L=[];
+  if(ia>=0)L.push({tier:T[ia],selos:[{ico:"bola",rank:(ia+1)+"º",txt:"ARTIL."}],_r:ia});
+  if(ib>=0)L.push({tier:T[ib],selos:[{ico:"chuteira",rank:(ib+1)+"º",txt:"ASSIST."}],_r:ib});
+  return L.length?L.sort((x,y)=>x._r-y._r):[{}];
+}
+// Card do ranking de uma categoria (o card daquela posição; BLACK/DIAMOND quando liberados)
+function cardDaCategoria(a,cat){
+  const cs=cardsDoAtleta(a);
+  if(cs.length===1&&(cs[0].tier==="black"||cs[0].tier==="diamante"))return figurinha(a,cs[0]);
+  return figurinha(a,cs.find(c=>c.selos&&c.selos[0].ico===(cat==="gols"?"bola":"chuteira"))||{});
+}
+// No Elenco: se tiver 2 cards, mostra empilhados (o melhor na frente, o outro aparecendo atrás) + marcador ×2
+function cardDoAtleta(a){
+  const cs=cardsDoAtleta(a);
+  if(cs.length<2)return figurinha(a,cs[0]);
+  return '<div class="fig-stack"><div class="fig-back">'+figurinha(a,cs[1])+'</div><div class="fig-front">'+figurinha(a,cs[0])+'</div><span class="fig-x2" title="Tem 2 cards">×2</span></div>';
+}
+// No perfil: os cards em leque; tocar troca qual fica na frente
+// ===== Verso do card: atributos 0–100 =====
+// ⚠️ EXEMPLO (19/10): números fictícios gerados a partir do nome, só para ver o visual. Valerão os votos da turma
+// (mediana dos colegas) quando houver servidor; o traço branco é a autoavaliação do atleta.
+const ATRIB=[["Velocidade","VEL"],["Chute","CHU"],["Passe","PAS"],["Habilidade","HAB"],["Cabeceio","CAB"],["Defesa","DEF"],["Força","FOR"],["Resistência","RES"]];
+function atributosExemplo(a){
+  let h=0;for(const ch of a)h=(h*31+ch.charCodeAt(0))>>>0;
+  const r=()=>{h=(h*1103515245+12345)>>>0;return (h>>>8)/16777216};
+  return ATRIB.map(([n])=>{const v=Math.round(48+r()*42);return {n,v,eu:Math.max(30,Math.min(99,Math.round(v-4+r()*14)))}});
+}
+function versoAtributos(a){
+  const at=atributosExemplo(a),geral=Math.round(at.reduce((s,x)=>s+x.v,0)/at.length);
+  return `<div class="fig verso" role="img" aria-label="Atributos de ${esc(a)} (exemplo): nota geral ${geral}"><span class="fig-card">
+    <span class="vs-top"><b>${geral}</b><span>${esc(a)}<small>nota geral · exemplo</small></span></span>
+    <span class="vs-bars">${at.map(x=>`<span class="vs-bar"><i>${x.n}</i><u><s style="width:${x.v}%"></s><em style="left:calc(${x.eu}% - .4cqw)"></em></u><b>${x.v}</b></span>`).join("")}</span>
+    <span class="vs-leg"><span></span>nota da turma <em></em>autoavaliação<br>números de exemplo</span></span></div>`;
+}
+function cardsDoPerfil(a){
+  const cs=cardsDoAtleta(a);
+  if(cs.length<2)return figurinha(a,cs[0]);
+  return '<div class="fig-leque">'+cs.map((c,i)=>'<div class="fl-'+i+'">'+figurinha(a,c)+'</div>').join("")+'</div>'
+    +'<p class="pf-2cards">'+esc(a)+' tem <b>2 cards</b> nesta rodada. Toque nos cards para trocar o da frente.</p>';
+}
+// Card de cada prêmio de rodada (usado nos destaques e no histórico do perfil)
+const PREMIO_CARD={
+  craque:{tier:"craque",selos:[{ico:"trofeu",rank:"",txt:""}],trofeu:true,tag:"Craque"},
+  gol:{tier:"esmeralda",selos:[{ico:"estrela",rank:"",txt:""}],tag:"Golaço"},
+  comico:{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha"}};
+function destaques(sem,vazio){
+  const VAZIO={craque:["Craque","trofeu","craque"],gol:["Golaço","estrela","esmeralda"],comico:["Bola murcha","murcha","murcha"]};
+  return ["craque","gol","comico"].map(k=>{const c=CAMPEOES.find(x=>x.kind===k&&x.semana===sem);
+    if(c)return figurinha(ganhador(c),PREMIO_CARD[k]);
+    return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
+}
+// Legenda: o que cada card significa
+const LEGENDA=[
+  ["normal","Atleta","bola","Card de todo atleta: gols, assistências e jogos da temporada."],
+  ["bronze","Bronze","bola","3º lugar na artilharia ou nas assistências da temporada."],
+  ["prata","Silver","bola","2º lugar na artilharia ou nas assistências da temporada."],
+  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards. Empate: todos levam o mesmo card e a posição seguinte é pulada."],
+  ["black","MVP do ano","bola","Black com coroa: o craque do ano. Os que mais vezes foram Craque da rodada vão para a votação final. Fica no histórico com o ano (em breve)."],
+  ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
+  ["craque","Craque da rodada","trofeu","Votado pela turma: o melhor do domingo. Leva o troféu dourado."],
+  ["esmeralda","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo. Card esmeralda."],
+  ["murcha","Bola murcha","murcha","Votado pela turma: a maior furada do domingo. Card de zoeira."]];
+document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
+  `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
+// ===== Campeões: ranking de prêmios + destaques de cada rodada (histórico) =====
+function renderHall(){
+  const el=document.getElementById("hall"),sems=[...new Set(CAMPEOES.map(c=>c.semana))].sort().reverse();
+  if(!sems.length){el.innerHTML=`<div class="empty">A primeira enquete é a do jogo de ${fmt(ultima)}. Os vencedores aparecem aqui.</div>`;return}
+  const R={};CAMPEOES.forEach(c=>{const a=ganhador(c);if(!a)return;(R[a]=R[a]||{a,craque:0,gol:0,comico:0})[c.kind]++});
+  const lin=Object.values(R).map(r=>({...r,tot:r.craque+r.gol+r.comico}))
+    .sort((x,y)=>y.tot-x.tot||y.craque-x.craque||y.gol-x.gol||x.a.localeCompare(y.a,"pt"));
+  const maxT=Math.max(...lin.map(r=>r.tot)),K=[["craque","pr-craque"],["gol","pr-gol"],["comico","pr-murcha"]];
+  // quadro de medalhas: barra empilhada por atleta (cor = prêmio, número dentro), ordenado pelo total
+  el.innerHTML=`<h3 class="fig-tit">Quadro de prêmios</h3>
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>🏆 Craque da rodada</span><span><i style="background:var(--pr-gol)"></i>🌟 Golaço</span><span><i style="background:var(--pr-murcha)"></i>🫠 Bola murcha</span></div>
+    <div class="md">${lin.map(r=>`<div class="md-row"><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button>
+      <div class="md-bar">${K.filter(([k])=>r[k]).map(([k,v])=>`<span class="md-seg ${k}" style="flex:${r[k]};background:var(--${v})" title="${esc(PREMIO[k])}: ${r[k]}">${r[k]}</span>`).join("")}${maxT>r.tot?`<span style="flex:${maxT-r.tot}"></span>`:""}</div>
+      <b class="md-tot">${r.tot}</b></div>`).join("")}</div>
+    <details><summary>Ver em tabela</summary>
+    <div class="tbl-wrap hall-tbl"><table class="stats-tbl"><colgroup><col style="width:44px"><col style="width:200px"><col style="width:96px"><col style="width:96px"><col style="width:116px"><col style="width:70px"></colgroup>
+    <thead><tr><th>#</th><th>Atleta</th><th>🏆 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
+    <tbody>${lin.map((r,i)=>`<tr><td class="pos">${i+1}</td><td><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button></td>
+      <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div></details>
+    <p class="note">Os cards de cada rodada ficam na seção Cards: escolha a rodada na lista.</p>`;
+}
+// Linha do tempo do perfil: um quadrado por domingo da temporada, colorido pelo(s) prêmio(s) do atleta naquele dia
+function linhaDoTempo(a){
+  const ds=dias.filter(d=>d.startsWith(anos[0])).sort(),V={craque:"var(--pr-craque)",gol:"var(--pr-gol)",comico:"var(--pr-murcha)"};
+  const cel=ds.map(d=>{const ks=["craque","gol","comico"].filter(k=>CAMPEOES.some(c=>c.kind===k&&c.semana===d&&ganhador(c)===a));
+    const fundo=ks.length?`background:linear-gradient(to bottom,${ks.map((k,i)=>`${V[k]} ${i*100/ks.length}% ${(i+1)*100/ks.length}%`).join(",")})`:"";
+    const t=`${fmtAno(d)}: ${ks.length?ks.map(k=>PREMIO[k]).join(" + "):"sem prêmio"}`;
+    return `<span class="tl-c${ks.length?" on":""}" style="${fundo}" title="${esc(t)}" role="listitem" aria-label="${esc(t)}"><small>${fmt(d)}</small></span>`}).join("");
+  return `<div class="tl" role="list" aria-label="Prêmios por domingo">${cel}</div>
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>Craque</span><span><i style="background:var(--pr-gol)"></i>Golaço</span><span><i style="background:var(--pr-murcha)"></i>Bola murcha</span><span><i class="vz"></i>sem prêmio</span></div>`;
+}
+document.getElementById("hall").addEventListener("click",e=>{const b=e.target.closest(".who-btn,.fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
+// Destaques de uma rodada escolhida na lista (a última mostra também o que ainda está em votação)
+function renderRodada(){
+  const sem=document.getElementById("f-rod").value||ultima,h=destaques(sem,sem===ultima);
+  document.getElementById("cards-rodada").innerHTML=h||`<p class="rod-vazio">Sem destaques registrados na rodada de ${fmtAno(sem)}.</p>`;
+}
+function renderCards(){
+  const ano=anos[0],S=calcStats(ano);
+  document.getElementById("cards-sub").textContent=`Rodada de ${fmtAno(ultima)} · temporada ${ano}`;
+  const selR=document.getElementById("f-rod");
+  if(!selR.options.length){selR.innerHTML=dias.map(d=>`<option value="${d}">${fmtAno(d)}${d===ultima?" · última":""}</option>`).join("");selR.onchange=renderRodada}
+  renderRodada();
+  renderHall();
+  document.getElementById("cards-art").innerHTML=top3(S,"gols").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
+  document.getElementById("cards-ass").innerHTML=top3(S,"assist").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
+  // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
+  document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
+}
+["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
+
+renderPolls();render();renderStats();renderCharts();renderCards();
+
+// Link direto para um lance: futclubejao.github.io/#2026-10-18_24 abre o vídeo
+(()=>{const h=location.hash.slice(1),l=byId[h];if(!l)return;
+  state.dia=l.data;render();
+  if(EMBED){mLista=listaAtual;abrir(listaAtual.findIndex(x=>x.id===h))}
+  else document.querySelector(`.card[data-id="${h}"]`)?.scrollIntoView({block:"center"});})();
+
+// ===== Supabase (19/10): sugestões + métricas anônimas de uso =====
+// Chave PÚBLICA (publishable): o banco só aceita GRAVAR em sugestoes/eventos (RLS); ninguém lê pelo site.
+const SB={url:"https://fvxecqjiyjstyacqrumr.supabase.co/rest/v1",key:"sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS"};
+function sbGravar(tabela,dados){
+  return fetch(`${SB.url}/${tabela}`,{method:"POST",keepalive:true,
+    headers:{apikey:SB.key,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(dados)});
+}
+// Métricas: só no site publicado (não conta testes locais); sessão = código aleatório do navegador, sem dado pessoal
+const METRICAS=location.hostname.endsWith("github.io");
+const sessao=(()=>{let s=null;try{s=localStorage.getItem("jao-sessao")}catch(e){}
+  if(!s){s=Math.random().toString(36).slice(2,12)+Date.now().toString(36);try{localStorage.setItem("jao-sessao",s)}catch(e){}}return s.slice(0,40)})();
+const dispositivo=/iPad|Tablet/i.test(navigator.userAgent)?"tablet":(matchMedia("(max-width:700px)").matches||/Mobi/i.test(navigator.userAgent)?"celular":"computador");
+const origem=(()=>{const u=new URLSearchParams(location.search).get("utm_source");if(u)return u.slice(0,200);
+  try{const r=document.referrer&&new URL(document.referrer).hostname;return r&&r!==location.hostname?r.slice(0,200):"direto"}catch(e){return "direto"}})();
+function track(tipo,alvo){
+  if(!METRICAS)return;
+  try{sbGravar("eventos",{tipo,alvo:alvo==null?null:String(alvo).slice(0,200),sessao,origem,dispositivo}).catch(()=>{})}catch(e){}
+}
+track("visita",location.hash?location.hash.slice(1):"inicio");
+// seções vistas (uma vez por visita)
+if("IntersectionObserver" in window){const vistas=new Set();
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const id=e.target.getAttribute("aria-labelledby");
+    if(e.isIntersecting&&!vistas.has(id)){vistas.add(id);track("secao",id)}}),{threshold:.35});
+  document.querySelectorAll("main > section[aria-labelledby]").forEach(s=>io.observe(s))}
+// cliques: lance aberto, perfil, voto, link copiado, verso do card, patrocinador
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const sp=t.closest("a[rel~=sponsored]");if(sp){track("patrocinador",sp.id||sp.href);return}
+  const th=t.closest(".thumb,.watch");if(th){track("lance",th.closest("[data-id]")?.dataset.id||th.dataset.i);return}
+  const op=t.closest(".opt[data-kind]");if(op){track("voto",`${op.dataset.kind}:${op.dataset.id}`);return}
+  const cp=t.closest(".cp");if(cp){track("compartilhar",cp.dataset.id);return}
+  const fb=t.closest(".flip-btn");if(fb){track("card","verso-atributos");return}
+  const ab=t.closest(".fig[data-a],.who-btn,.name");if(ab){track("perfil",ab.dataset.a);return}
+  const sc=t.closest("#sug-cta");if(sc)track("secao","cta-sugestao");
+},true);
+// formulário de sugestões
+document.getElementById("sug-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=document.getElementById("sug-btn"),st=document.getElementById("sug-st"),txt=document.getElementById("sug-txt");
+  const texto=txt.value.trim(),nome=document.getElementById("sug-nome").value.trim();
+  if(texto.length<3){st.className="sug-st erro";st.textContent="Escreva um pouco mais antes de enviar.";return}
+  btn.disabled=true;st.className="sug-st";st.textContent="Enviando…";
+  try{const r=await sbGravar("sugestoes",{texto:texto.slice(0,2000),nome:nome?nome.slice(0,80):null,pagina:location.hostname||"local"});
+    if(!r.ok)throw new Error(r.status);
+    st.className="sug-st ok";st.textContent="Valeu! Sua sugestão chegou. As boas entram no site.";txt.value="";track("sugestao","enviada");
+  }catch(err){st.className="sug-st erro";st.textContent="Não deu para enviar agora. Tente de novo em instantes."}
+  btn.disabled=false;
+});
+</script>
+
+</body>
+</html>
