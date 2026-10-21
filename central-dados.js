@@ -209,11 +209,19 @@ function desenhaEnquetes(){
         const ver=l?`<a class="watch" href="#" data-kind="${e.kind}" data-i="${li++}" aria-label="Assistir: ${esc(l.desc)}">▶</a>`:"";
         return `<div class="opt-row"><button class="opt${e.meu===o.id?" voted":""}" data-kind="${e.kind}" data-id="${o.id}" data-enq="${e.id}" aria-pressed="${e.meu===o.id}"${ab?"":" disabled"}>
           <span class="bar" style="width:${tot?Math.round(v/tot*100):0}%"></span>
-          <span class="t">${ganhou?"🏆 ":""}${txt}${e.quem&&e.quem[o.id]?`<small>Votaram: ${esc(e.quem[o.id].sort().join(", "))}</small>`:""}</span><span class="n">${v}</span></button>${ver}</div>`}).join("")}
-      <div class="foot">${tot} ${tot===1?"voto":"votos"} · ${ab?(e.meu?"Seu voto foi registrado. Toque em outro para trocar.":"Um voto por pessoa; dá para trocar até fechar."):"Votação encerrada."}</div></div>`;
+          <span class="t">${ganhou?"🏆 ":""}${txt}${e.quem&&e.quem[o.id]?votantes(e.quem[o.id]):""}</span><span class="n">${v}</span></button>${ver}</div>`}).join("")}
+      <div class="foot">${tot} ${tot===1?"voto":"votos"} · ${ab?(e.meu?"Seu voto foi registrado. Toque em outro para trocar.":"Um voto por pessoa; dá para trocar até fechar."):"Votação encerrada."}${VOT.abertos&&tot?` · <button type="button" class="cp-vbt">Ver quem votou</button>`:""}</div></div>`;
   }).join("");
 }
+// Votos abertos: rodinhas (foto/iniciais) de até 5 votantes + "+N"; "Ver quem votou" mostra os nomes
+function votantes(nomes){
+  const L=nomes.slice().sort((a,b)=>a.localeCompare(b,"pt"));
+  return `<span class="cp-vots" aria-label="Votaram: ${esc(L.join(", "))}">${L.slice(0,5).map(n=>av(n,"cp-vav")).join("")}${L.length>5?`<span class="cp-vmais">+${L.length-5}</span>`:""}</span>`
+    +`<small class="cp-vnomes">${esc(L.join(", "))}</small>`;
+}
 async function votar(ev){
+  const vb=ev.target.closest(".cp-vbt");
+  if(vb){ev.stopPropagation();const p=vb.closest(".poll");p.classList.toggle("cp-vver");vb.textContent=p.classList.contains("cp-vver")?"Esconder nomes":"Ver quem votou";return}
   const b=ev.target.closest(".opt[data-enq]");if(!b)return;   // ▶ "Veja o lance" segue com o código do site
   ev.stopPropagation();ev.preventDefault();
   if(b.disabled)return;

@@ -327,7 +327,8 @@ section{margin-top:32px}
 /* coluna esquerda: posição, selo da categoria, escudos, DM */
 .fig-left{position:absolute;left:8.5cqw;top:11cqw;width:20cqw;display:flex;flex-direction:column;align-items:center;gap:2.2cqw;z-index:2}
 .fig-rk{font-family:var(--display);font-weight:800;font-size:15cqw;line-height:.9;color:var(--t1)}
-.fig-rk small{font-size:7cqw;display:block;text-align:center;letter-spacing:.05em;color:var(--t2)}
+/* rótulo menor (21/10): ASSIST. invadia a foto */
+.fig-rk small{font-size:5.6cqw;display:block;text-align:center;letter-spacing:.01em;color:var(--t2)}
 .fig-dia{width:13cqw;height:13cqw;transform:rotate(45deg);border-radius:2.4cqw;background:var(--t1);display:grid;place-items:center;box-shadow:0 0 0 .7cqw rgba(255,255,255,.5)}
 .fig.normal .fig-dia{background:var(--sun)}
 .fig-dia svg{width:9.5cqw;height:9.5cqw;transform:rotate(-45deg)}
@@ -411,7 +412,7 @@ section{margin-top:32px}
 
 .fig.black .fig-foto svg.sil circle,.fig.black .fig-foto svg.sil path{fill:#6b5d3a}
 .fig-left.duo .fig-rk{font-size:8.5cqw;line-height:1;margin-top:.6cqw}
-.fig-left.duo .fig-rk small{display:none}
+.fig-left.duo .fig-rk small{display:block;font-size:4.6cqw}
 .fig-left.duo .fig-dia{width:13cqw;height:13cqw;order:0}
 .fig-left.duo .fig-esc svg{width:11cqw;height:12.5cqw}
 .fig-left.duo{gap:1cqw;top:9cqw}
@@ -697,7 +698,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792610851"></script>
+<script src="lances.js?v=1792611530"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1216,7 +1217,7 @@ function figurinha(a,o={}){
       <span class="fig-foto">${foto}</span>
       ${o.coroa?COROA:""}${o.trofeu?TROFEU:""}${o.tier==="diamante"?GEMA+FACETAS:""}
       <span class="fig-left${selos.length>1?" duo":""}">
-        ${selos.map(s=>`<span class="fig-rk">${s.rank}<small>${esc(s.txt)}</small></span><span class="fig-dia">${ICO[s.ico]}</span>`).join("")}
+        ${selos.filter(s=>s.rank).map(s=>`<span class="fig-rk">${s.rank}<small>${esc(s.txt)}</small></span>`).join("")}
         <span class="fig-esc">${(d.times||[]).slice(0,2).map(escudo).join("")}</span>
       </span>
       ${d.dm?DM:""}
