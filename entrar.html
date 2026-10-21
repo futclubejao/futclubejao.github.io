@@ -260,7 +260,7 @@ $("bt-reconfere").onclick=async()=>{$("msg-aguarda").textContent="Conferindo…"
 // ---------- dentro ----------
 async function dentro(){
   const{data:a}=await sb.from("atletas").select("nome,apelido").eq("id",membro.atleta_id).maybeSingle();
-  $("dentro-quem").textContent=a?nomeCard(a):(membro.nome_informado||eu.email);
+  $("dentro-quem").textContent=a?nomeCard(a):"Conta do grupo (sem card de atleta)";
   $("dentro-papel").textContent=PAPEL[membro.papel]||membro.papel;
   const mod=membro.papel==="dono"||membro.papel==="moderador";
   mostra("v-dentro",...(mod?["v-mod","v-convite"]:[]));
