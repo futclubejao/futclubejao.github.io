@@ -567,7 +567,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
     <h1>Central da Pelada</h1>
     <p>Todos os lances da pelada, separados por atleta, dia e tipo. Toque no seu nome e veja tudo o que você aprontou.</p>
     <div class="stats" id="stats"></div>
-    <div class="demo">Versão de testes · lances de 11/10 e 18/10</div>
+    <div class="demo" id="demo"></div>
   </div>
 </header>
 
@@ -723,7 +723,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792585300"></script>
+<script src="central-dados.js?v=1792605562"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -768,7 +768,9 @@ const state={atleta:null,tipo:null,dia:ultima};
 const meusVotos=store.get("jao-votos",{});
 
 document.getElementById("stats").innerHTML=
- `<span><b>${LANCES.length}</b> lances</span><span><b>${dias.length}</b> ${dias.length===1?"domingo":"domingos"}</span><span><b>${atletas.filter(a=>!a.startsWith("❓")).length}</b> atletas</span>`;
+ `<span><b>${LANCES.length}</b> lances</span><span><b>${dias.length}</b> ${dias.length===1?"domingo":"domingos"}</span><span><b>${new Set([...atletas,...Object.keys(ATLETAS)].filter(a=>!a.startsWith("❓"))).size}</b> atletas</span>`;
+// selo do topo: atualiza sozinho com o 1º e o último domingo publicados
+document.getElementById("demo").textContent=`Versão de testes · ${dias.length===1?`lances de ${fmt(ultima)}`:`lances de ${fmt(dias[dias.length-1])} a ${fmt(ultima)}`}`;
 
 // Filtros: tipo em botões; atleta e dia em listas. "Todos os dias" só com atleta escolhido.
 const tipoEl=document.getElementById("f-tipo");
@@ -1119,7 +1121,7 @@ function abrirPerfil(a){
   document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
   const meusP=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana)),qt=k=>meusP.filter(c=>c.kind===k).length;
   document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">🏆 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
-    +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,PREMIO_CARD[c.kind]).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
+    +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,{...PREMIO_CARD[c.kind],ate:c.semana}).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
   document.querySelector("#pf-hist .pf-hsum").insertAdjacentHTML("afterend",linhaDoTempo(a));
   document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
   // mini gráfico: gols (azul) e assistências (laranja) por domingo, empilhados
@@ -1218,15 +1220,16 @@ const FACETAS=`<svg class="fig-facetas" viewBox="0 0 100 144" preserveAspectRati
 const SIL=`<svg class="sil" viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="34" r="20" fill="#111"/><path d="M6 110c2-31 19-46 44-46s42 15 44 46z" fill="#111"/></svg>`;
 const DM=`<span class="fig-dm" title="Departamento médico"><svg viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#c8102e"/><path d="M7 3v8M3 7h8" stroke="#fff" stroke-width="2.4"/></svg>DM</span>`;
 // Números do atleta na temporada: gols, assistências, jogos (domingos com lance / domingos da temporada)
-function numsAtleta(a,ano){
-  const L=STATS.filter(l=>l.data.startsWith(ano)),ds=dias.filter(d=>d.startsWith(ano));
+// ate = "AAAA-MM-DD": números como estavam naquele domingo (cards conquistados guardam o momento)
+function numsAtleta(a,ano,ate){
+  const L=STATS.filter(l=>l.data.startsWith(ano)&&(!ate||l.data<=ate)),ds=dias.filter(d=>d.startsWith(ano)&&(!ate||d<=ate));
   return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
     jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
 }
 const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA",craque:"CRAQUE",esmeralda:"GOLAÇO"};
 // o: {tier, selos:[{ico,rank,txt}], coroa, tag}
 function figurinha(a,o={}){
-  const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,anos[0]),selos=o.selos||[];
+  const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,o.ate?o.ate.slice(0,4):anos[0],o.ate),selos=o.selos||[];
   const foto=d.foto?`<img src="${esc(d.foto)}" alt="" loading="lazy">`:SIL;
   const nivel={ouro:"Ouro",prata:"Prata",bronze:"Bronze",black:"Black",diamante:"Diamante"}[o.tier];
   const rotulo=o.tag||ROTULO[o.tier]||"";
@@ -1326,7 +1329,7 @@ const PREMIO_CARD={
 function destaques(sem,vazio){
   const VAZIO={craque:["Craque","trofeu","craque"],gol:["Golaço","estrela","esmeralda"],comico:["Bola murcha","murcha","murcha"]};
   return ["craque","gol","comico"].map(k=>{const c=CAMPEOES.find(x=>x.kind===k&&x.semana===sem);
-    if(c)return figurinha(ganhador(c),PREMIO_CARD[k]);
+    if(c)return figurinha(ganhador(c),{...PREMIO_CARD[k],ate:sem});
     return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
 }
 // Legenda: o que cada card significa
