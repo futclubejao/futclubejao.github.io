@@ -92,7 +92,7 @@ button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible
     <p class="mini" id="eu-email"></p>
     <div class="acoes" style="margin-top:12px">
       <a class="btn o" id="bt-meucard" href="central.html#meu-card">Ver meu card</a>
-      <button class="s" id="bt-perfil" disabled title="Em breve">Editar meu perfil · em breve</button>
+      <a class="btn s" id="bt-perfil" href="perfil.html">✏️ Editar meu perfil</a>
       <button class="s" id="bt-sair">Sair</button>
     </div>
   </div>
@@ -170,7 +170,7 @@ function conta(){
   $("eu-papel").textContent=PAPEL[eu.papel];$("eu-papel").className="selo "+eu.papel;
   $("eu-nome").textContent=nomeCard(eu);
   $("eu-email").textContent="Entrou com "+eu.email;
-  $("bt-meucard").hidden=!eu.atleta_id;
+  $("bt-meucard").hidden=!eu.atleta_id;$("bt-perfil").hidden=!eu.atleta_id;
   $("v-conta").hidden=false;
 }
 $("bt-sair").onclick=async()=>{await sb.auth.signOut();location.replace("entrar.html")};

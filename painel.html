@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel · Central da Pelada</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2324307a'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f47b20'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Painel do Teste 1 (dono/moderador): só TOTAIS — ninguém é identificado. Dados: painel_metricas() no Supabase. */
+:root{
+  --bg:#f4f5f9; --surface:#ffffff; --fg:#141a33; --muted:#5a6180; --line:#d9dcea;
+  --navy:#24307a; --sun:#f47b20; --link:#24307a; --ok:#1f7a45; --warn:#a15c00;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--body)}
+h1,h2{font-family:var(--display);margin:0;line-height:1.05}
+a{color:var(--link)}
+header{background:var(--navy);color:#fff;border-bottom:6px solid var(--sun);position:relative;overflow:hidden;padding:20px max(16px,env(safe-area-inset-left,0px)) 22px}
+header::after{content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;background:var(--sun)}
+header a{color:#fff;font-weight:600;font-size:15px;text-decoration:none;position:relative;z-index:1}
+header h1{font-size:36px;font-weight:800;margin-top:10px;position:relative;z-index:1}
+main{max-width:760px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 48px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.box h2{font-size:24px;font-weight:800;margin-bottom:6px}
+.lead{color:var(--muted);margin:0 0 12px;font-size:15px}
+.metas{display:grid;gap:10px}
+.meta{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.meta .st{font-size:22px;flex:none}
+.meta b{display:block}
+.meta small{color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile .v{font:800 34px/1 var(--display)}
+.tile .k{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:15px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;white-space:normal;vertical-align:bottom;line-height:1.25}
+th:first-child,td:first-child,#enquetes th:nth-child(2),#enquetes td:nth-child(2){text-align:left}
+td.desc{white-space:normal}
+.vazio{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <a href="central.html">← Voltar para a Central</a>
+  <h1>Painel do Teste 1</h1>
+</header>
+<main>
+  <div class="box" id="v-carrega"><p class="lead">Carregando…</p></div>
+  <div id="conteudo" hidden>
+    <div class="box">
+      <h2>Metas do Teste 1</h2>
+      <p class="lead">Lançamento 15/11 → leitura em 13/12 (4 domingos). Só totais: ninguém é identificado.</p>
+      <div class="metas" id="metas"></div>
+    </div>
+    <div class="box">
+      <h2>A turma</h2>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="box">
+      <h2>Semana a semana</h2>
+      <div class="tbl"><table id="semanas"><colgroup><col style="width:34%"><col style="width:22%"><col style="width:22%"><col style="width:22%"></colgroup>
+        <thead><tr><th>Semana de</th><th>Entraram</th><th>Vídeos vistos</th><th>Compartilh.</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="box">
+      <h2>Compartilhamentos por rede</h2>
+      <div class="tbl"><table id="redes"><colgroup><col style="width:70%"><col style="width:30%"></colgroup>
+        <thead><tr><th>Para onde</th><th>Vezes</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="box">
+      <h2>Lances que mais rodaram</h2>
+      <div class="tbl"><table id="tops"><colgroup><col style="width:56%"><col style="width:22%"><col style="width:22%"></colgroup>
+        <thead><tr><th>Lance</th><th>Vistos</th><th>Compartilh.</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="box">
+      <h2>Enquetes</h2>
+      <div class="tbl"><table id="enquetes"><colgroup><col style="width:28%"><col style="width:46%"><col style="width:26%"></colgroup>
+        <thead><tr><th>Rodada</th><th>Enquete</th><th>Votos</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dm=d=>`${d.slice(8,10)}/${d.slice(5,7)}`;
+const REDE={whatsapp:"💬 WhatsApp (link)",instagram:"📸 Instagram",tiktok:"🎵 TikTok",baixar:"⬇️ Baixou o vídeo",link:"🔗 Copiou o link"};
+const ENQ={golaco:"⚽ Golaço",murcha:"😂 Resenha",craque:"🏆 Craque"};
+const linhas=(id,rows,vazio,cols)=>{$(id).querySelector("tbody").innerHTML=rows.length?rows.join(""):`<tr><td class="vazio" colspan="${cols}">${vazio}</td></tr>`};
+
+async function carrega(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){try{localStorage.setItem("cp_volta",location.href)}catch(e){}location.replace("entrar.html");return}
+  const{data:gs}=await sb.from("grupos").select("id").eq("slug","jao");
+  if(!gs||!gs.length){location.replace("entrar.html");return}
+  const{data:p,error}=await sb.rpc("painel_metricas",{p_grupo:gs[0].id});
+  if(error){$("v-carrega").firstElementChild.textContent=/dono|moderador/.test(error.message)?"O painel é só para o dono e os moderadores.":"Erro: "+error.message;return}
+
+  // metas
+  const pct=p.atletas?Math.round(p.entraram_alguma_vez/p.atletas*100):0;
+  const ult=(p.enquetes[0]||{}).data,votosUlt=p.enquetes.filter(e=>e.data===ult).reduce((s,e)=>s+e.votos,0);
+  const comp=Object.values(p.por_rede).reduce((a,b)=>a+b,0);
+  const metas=[[pct>=50,`${p.entraram_alguma_vez} de ${p.atletas} atletas entraram ao menos 1 vez (${pct}%)`,"meta: metade da turma"],
+               [p.voltaram_2_semanas>=10,`${p.voltaram_2_semanas} voltaram em 2 semanas ou mais`,"meta: uns 10 voltando toda semana"],
+               [votosUlt>0,`${votosUlt} votos nas enquetes de ${ult?dm(ult):"—"}`,"meta: enquetes com votos de verdade"],
+               [comp>0,`${comp} compartilhamentos`,"meta: alguém compartilhando sem ser pedido"]];
+  $("metas").innerHTML=metas.map(([ok,t,s])=>`<div class="meta"><span class="st" aria-label="${ok?"atingida":"ainda não"}">${ok?"✅":"⏳"}</span><span><b>${t}</b><small>${s}</small></span></div>`).join("");
+  $("tiles").innerHTML=[[p.membros_aprovados,"membros aprovados"],[p.pedidos_pendentes,"pedidos esperando"],
+    [`${p.cards_com_dono}/${p.atletas}`,"cards com dono"],[p.perfis_editados,"editaram o perfil"]]
+    .map(([v,k])=>`<div class="tile"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+  linhas("semanas",p.semanas.slice().reverse().map(s=>`<tr><td>${dm(s.semana)}</td><td>${s.membros}</td><td>${s.videos}</td><td>${s.compartilhamentos}</td></tr>`),"Ainda sem movimento.",4);
+  linhas("redes",Object.entries(p.por_rede).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<tr><td>${REDE[r]||esc(r)}</td><td>${n}</td></tr>`),"Ninguém compartilhou ainda.",2);
+  // lances: junta vistos + compartilhados e busca a descrição
+  const cod=[...new Set([...p.lances_mais_vistos,...p.lances_mais_compartilhados].map(x=>x.lance))];
+  const{data:ls}=cod.length?await sb.from("lances").select("codigo,descricao").in("codigo",cod):{data:[]};
+  const desc=Object.fromEntries((ls||[]).map(l=>[l.codigo,l.descricao]));
+  const v=Object.fromEntries(p.lances_mais_vistos.map(x=>[x.lance,x.vezes])),c=Object.fromEntries(p.lances_mais_compartilhados.map(x=>[x.lance,x.vezes]));
+  linhas("tops",cod.sort((a,b)=>((c[b]||0)*3+(v[b]||0))-((c[a]||0)*3+(v[a]||0))).map(k=>
+    `<tr><td class="desc"><a href="central.html#${encodeURIComponent(k)}">${dm(k)} · ${esc(desc[k]||k)}</a></td><td>${v[k]||0}</td><td>${c[k]||0}</td></tr>`),"Ainda sem vídeos vistos.",3);
+  linhas("enquetes",p.enquetes.map(e=>`<tr><td>${dm(e.data)}</td><td>${ENQ[e.tipo]||esc(e.tipo)}</td><td>${e.votos}</td></tr>`),"Nenhuma enquete ainda.",3);
+  $("v-carrega").hidden=true;$("conteudo").hidden=false;
+}
+carrega();
+</script>
+</body>
+</html>

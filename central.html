@@ -553,6 +553,26 @@ body:not(.cp-pronto)>*:not(#cp-carrega){visibility:hidden}
   box-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:none}
 tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 .name.cp-eu-nome{outline:2px solid var(--sun);outline-offset:1px}
+/* compartilhar */
+#cp-sheet{position:fixed;inset:0;z-index:90;background:rgba(5,8,25,.6);display:flex;align-items:flex-end;justify-content:center}
+#cp-sheet[hidden]{display:none}
+.cp-sh-box{background:var(--surface);color:var(--fg);width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:8px}
+.cp-sh-box h3{font:800 24px/1 var(--display);margin:0}
+#cp-sh-desc{margin:0 0 4px;color:var(--muted);font-size:14px}
+.cp-sh-box button{font:600 16px var(--body);text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:12px 14px;cursor:pointer}
+.cp-sh-box button small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.cp-sh-box button:disabled{opacity:.6}
+.cp-sh-box .cp-sh-x{text-align:center;background:transparent}
+.cp-sh-msg{margin:0;min-height:1.2em;font-size:14px;color:var(--muted)}
+.m-full.cp-share{margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.5)}
+/* ficha do atleta no perfil */
+#cp-ficha{margin:12px 0 4px;font-size:15px}
+#cp-ficha p{margin:0 0 8px}
+.cp-f-itens span{color:var(--muted);margin:0 6px}
+.cp-f-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cp-f-chips span{background:color-mix(in srgb,var(--sun) 16%,transparent);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600}
+.cp-f-sobre{color:var(--muted);white-space:pre-line}
+.cp-f-editar{display:inline-block;margin-top:2px;font-weight:600;color:var(--link)}
 </style>
 </head>
 <body>
@@ -716,6 +736,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
       <iframe id="m-iframe" title="Vídeo do lance" allow="autoplay; fullscreen" allowfullscreen hidden></iframe>
     </div>
     <button class="m-full" id="m-full" type="button">⛶ Ver em tela cheia</button>
+    <button class="m-full cp-share" type="button">📤 Compartilhar este lance</button>
     <div class="m-info"><button class="m-btn" id="m-prev" type="button" aria-label="Lance anterior">‹</button>
       <div class="m-txt"><div class="m-tags" id="m-tags"></div><div id="m-desc"></div><div class="m-names" id="m-names"></div></div>
       <button class="m-btn" id="m-next" type="button" aria-label="Próximo lance">›</button></div>
@@ -723,7 +744,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792608850"></script>
+<script src="central-dados.js?v=1792610107"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -804,7 +825,7 @@ function card(l){
     <div class="body">
       <div class="names">${l.atletas.map(a=>`<button class="name" data-a="${esc(a)}">${av(a)}${esc(a)}</button>`).join("")}</div>
       <div class="desc">${esc(l.desc)}</div>
-      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}<button class="cp" type="button" data-id="${l.id}">🔗 Copiar link</button></div>
+      <div class="meta"><span>${fmtAno(l.data)}${l.time?` · time ${esc(l.time)}`:""}</span>${vencedores.has(l.id)?`<span class="badge-win">★ Vencedor da enquete</span>`:""}<button class="cp cp-share" type="button" data-id="${l.id}">📤 Compartilhar</button></div>
     </div></article>`;
 }
 const PAG=12;let mostrar=PAG;

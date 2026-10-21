@@ -101,7 +101,7 @@ async function iniciar(){
 
   const[atletas,perfis,rodadas,lances,lance_atletas,gols,fotos,premios]=await Promise.all([
     todos("atletas","id,nome,apelido,variacoes,dm,convidado",g),
-    todos("perfis_visiveis","atleta_id,times,foto_path",g),
+    todos("perfis_visiveis","atleta_id,times,foto_path,posicao,pe,camisa,caracteristicas,sobre,redes,altura_cm,peso_kg,aniversario_dia,aniversario_mes",g),
     todos("rodadas","id,data,campeonato_id",g),
     todos("lances","id,rodada_id,codigo,n,jogo,tipo,tipo2,time,descricao,gol_atleta_id,assist_atleta_id,gol_desconhecido,assist_desconhecido,desconhecidos,thumb_path,duracao_s",g),
     todos("lance_atletas","lance_id,atleta_id,ordem",g),
@@ -124,6 +124,8 @@ async function iniciar(){
   const meu=atletas.find(a=>a.id===eu.atleta_id);
   const mod=eu.papel==="dono"||eu.papel==="moderador";
   barra(session.user.email,meu?meu.nome:null,eu.papel);
+  CP.g=g;CP.eu=meu?meu.nome:null;CP.ficha=Object.fromEntries(perfis.map(p=>[(atletas.find(a=>a.id===p.atleta_id)||{}).nome,p]));
+  registra("visita");
 
   // liga o site (mesmo código do index.html)
   const s=document.createElement("script");
@@ -132,7 +134,9 @@ async function iniciar(){
   document.body.classList.add("cp-pronto");
   $("cp-carrega").remove();
 
+  ficha();compartilhar();
   if(meu)voce(meu.nome);
+
   if(mod)pedidos(g);
   const ult=rodadas.filter(r=>!r.campeonato_id).sort((x,y)=>y.data.localeCompare(x.data))[0];
   if(ult)enquetes(g,eu.id,ult,gs[0].votos_abertos,Object.fromEntries(atletas.map(a=>[a.id,a.nome])));
@@ -227,6 +231,82 @@ async function votar(ev){
   desenhaEnquetes();
 }
 
+// ---------- atividade do membro (painel do Teste 1 mostra só totais) ----------
+const CP={};
+function registra(tipo,alvo,rede){try{sb.rpc("registrar",{p_grupo:CP.g,p_tipo:tipo,p_alvo:alvo||null,p_rede:rede||null}).then(()=>{},()=>{})}catch(e){}}
+
+// ---------- ficha do atleta no perfil (o que ele preencheu em "Editar meu perfil") ----------
+const POS_PE={direito:"Pé direito",esquerdo:"Pé esquerdo",ambos:"Os dois pés"};
+function ficha(){
+  const orig=window.abrirPerfil;
+  window.abrirPerfil=a=>{orig(a);
+    const f=CP.ficha[a]||{},box=document.getElementById("pf-tiles");
+    document.getElementById("cp-ficha")?.remove();
+    const itens=[f.posicao&&`⚽ ${esc(f.posicao)}`,f.pe&&`🦶 ${POS_PE[f.pe]||esc(f.pe)}`,f.camisa!=null&&`👕 ${f.camisa}`,
+      f.altura_cm&&`📏 ${(f.altura_cm/100).toFixed(2).replace(".",",")} m`,f.peso_kg&&`⚖️ ${String(f.peso_kg).replace(".",",")} kg`,
+      f.aniversario_dia&&f.aniversario_mes&&`🎂 ${String(f.aniversario_dia).padStart(2,"0")}/${String(f.aniversario_mes).padStart(2,"0")}`].filter(Boolean);
+    const r=f.redes||{},links=[r.instagram&&`<a href="https://instagram.com/${encodeURIComponent(r.instagram.replace(/^@/,""))}" target="_blank" rel="noopener">Instagram @${esc(r.instagram.replace(/^@/,""))}</a>`,
+      r.tiktok&&`<a href="https://www.tiktok.com/@${encodeURIComponent(r.tiktok.replace(/^@/,""))}" target="_blank" rel="noopener">TikTok @${esc(r.tiktok.replace(/^@/,""))}</a>`].filter(Boolean);
+    const eu=a===CP.eu;
+    if(!itens.length&&!(f.caracteristicas||[]).length&&!f.sobre&&!links.length&&!eu)return;
+    box.insertAdjacentHTML("afterend",`<div id="cp-ficha">
+      ${itens.length?`<p class="cp-f-itens">${itens.join("<span>·</span>")}</p>`:""}
+      ${(f.caracteristicas||[]).length?`<p class="cp-f-chips">${f.caracteristicas.map(c=>`<span>${esc(c)}</span>`).join("")}</p>`:""}
+      ${f.sobre?`<p class="cp-f-sobre">${esc(f.sobre)}</p>`:""}
+      ${links.length?`<p class="cp-f-redes">${links.join(" · ")}</p>`:""}
+      ${eu?`<a class="cp-f-editar" href="perfil.html">✏️ Editar meu perfil</a>`:""}</div>`);
+  };
+}
+
+// ---------- compartilhar: WhatsApp (link), Instagram/TikTok (o vídeo), baixar, copiar link ----------
+function compartilhar(){
+  const abr=window.abrir;
+  window.abrir=i=>{abr(i);const l=mLista[i];if(l)registra("video",l.id)};
+  const m=document.createElement("div");m.id="cp-sheet";m.hidden=true;
+  m.innerHTML=`<div class="cp-sh-box" role="dialog" aria-modal="true" aria-labelledby="cp-sh-t">
+    <h3 id="cp-sh-t">Compartilhar o lance</h3><p id="cp-sh-desc"></p>
+    <button data-r="whatsapp">💬 WhatsApp <small>manda o link (só a turma abre)</small></button>
+    <button data-r="instagram">📸 Instagram <small>manda o vídeo</small></button>
+    <button data-r="tiktok">🎵 TikTok <small>manda o vídeo</small></button>
+    <button data-r="baixar">⬇️ Baixar o vídeo</button>
+    <button data-r="link">🔗 Copiar o link</button>
+    <p class="cp-sh-msg" role="status"></p>
+    <button class="cp-sh-x" data-r="fechar">Fechar</button></div>`;
+  document.body.appendChild(m);
+  let atual=null;
+  const msg=t=>m.querySelector(".cp-sh-msg").textContent=t;
+  document.addEventListener("click",e=>{const b=e.target.closest(".cp-share");if(!b)return;e.preventDefault();e.stopPropagation();
+    atual=byIdCP[b.dataset.id||(mAtual&&mAtual.id)];if(!atual)return;
+    document.getElementById("cp-sh-desc").textContent=`${atual.atletas.join(", ")} — ${atual.desc}`;msg("");m.hidden=false},true);
+  m.addEventListener("click",async e=>{
+    if(e.target===m){m.hidden=true;return}
+    const b=e.target.closest("button[data-r]");if(!b)return;const r=b.dataset.r;
+    if(r==="fechar"){m.hidden=true;return}
+    const l=atual,link=`${location.origin}${location.pathname}#${l.id}`,txt=`⚽ ${l.desc} (${l.atletas.join(", ")})
+Veja na Central da Pelada: ${link}`;
+    if(r==="whatsapp"){registra("compartilhar",l.id,r);window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");return}
+    if(r==="link"){registra("compartilhar",l.id,r);try{await navigator.clipboard.writeText(link);msg("Link copiado!")}catch(err){msg(link)}return}
+    msg("Preparando o vídeo…");b.disabled=true;
+    try{
+      const{data:{session}}=await sb.auth.getSession();
+      const resp=await fetch("https://fvxecqjiyjstyacqrumr.supabase.co/functions/v1/video",{method:"POST",
+        headers:{"Content-Type":"application/json",apikey:"sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS",Authorization:"Bearer "+session.access_token},
+        body:JSON.stringify({codigo:l.id,arquivo:true})});
+      if(!resp.ok)throw new Error("sem acesso");
+      const arq=new File([await resp.blob()],`lance-${l.id}.mp4`,{type:"video/mp4"});
+      registra("compartilhar",l.id,r);
+      if(r!=="baixar"&&navigator.canShare&&navigator.canShare({files:[arq]})){
+        await navigator.share({files:[arq],text:`⚽ ${l.desc}`});msg(`Escolha o ${r==="instagram"?"Instagram":"TikTok"} na lista.`);
+      }else{
+        const u=URL.createObjectURL(arq),a=document.createElement("a");a.href=u;a.download=arq.name;document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(u),60000);
+        msg(r==="baixar"?"Vídeo baixado.":`Vídeo baixado. Abra o ${r==="instagram"?"Instagram":"TikTok"} e poste da galeria.`);
+      }
+    }catch(err){if(err.name!=="AbortError")msg("Não deu para preparar o vídeo agora. Tente de novo.")}
+    b.disabled=false;
+  });
+}
+
 // ---------- barra "Logado como…" ----------
 const PAPEL={dono:"dono",moderador:"moderador",atleta:"atleta",visitante:"visitante"};
 function barra(email,nome,papel){
@@ -234,7 +314,7 @@ function barra(email,nome,papel){
   b.className="cp-barra";
   b.innerHTML=`<div class="in">
     <span class="cp-quem">Logado como <b>${esc(nome||"Conta do grupo")}</b><small> · ${esc(email)}${papel!=="atleta"?` · ${PAPEL[papel]}`:""}</small></span>
-    <span class="cp-acoes">${nome?`<a href="#meu-card" id="cp-meu">Meu card</a>`:""}<a href="entrar.html" id="cp-ped" hidden></a><a href="config.html">⚙ Configurações</a><button type="button" id="cp-sair">Sair</button></span></div>`;
+    <span class="cp-acoes">${nome?`<a href="#meu-card" id="cp-meu">Meu card</a>`:""}<a href="entrar.html" id="cp-ped" hidden></a>${papel==="dono"||papel==="moderador"?`<a href="painel.html">📊 Painel</a>`:""}<a href="config.html">⚙ Configurações</a><button type="button" id="cp-sair">Sair</button></span></div>`;
   document.body.prepend(b);
   $("cp-sair").onclick=async()=>{await sb.auth.signOut();location.replace("entrar.html")};
 }
