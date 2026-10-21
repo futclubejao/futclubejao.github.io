@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Entrar · Central da Pelada</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2324307a'/%3E%3Ccircle cx='50' cy='50' r='22' fill='%23f47b20'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Entrada na Central: login → "Esse é você?" → aguardando o moderador. Moderador aprova aqui mesmo. */
+:root{
+  --bg:#f4f5f9; --surface:#ffffff; --fg:#141a33; --muted:#5a6180; --line:#d9dcea;
+  --navy:#24307a; --sun:#f47b20; --link:#24307a; --ok:#1f7a45; --warn:#a15c00; --bad:#b3261e;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; --bad:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1022; --surface:#161a33; --fg:#e8eaf5; --muted:#a0a6c4; --line:#2a2f52;
+  --navy:#2a3794; --sun:#ff8a33; --link:#9fb0ff; --ok:#4cc27e; --warn:#f2b04a; --bad:#ff8a80; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--body)}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.05}
+a{color:var(--link)}
+header{background:var(--navy);color:#fff;border-bottom:6px solid var(--sun);position:relative;overflow:hidden;
+  padding:28px max(16px,env(safe-area-inset-left,0px)) 24px}
+header::after{content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;background:var(--sun)}
+header .eyebrow{font:600 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+header h1{font-size:40px;font-weight:800;margin-top:6px;position:relative;z-index:1;max-width:12ch}
+main{max-width:520px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 48px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.box h2{font-size:26px;font-weight:800;margin-bottom:6px}
+.lead{color:var(--muted);margin:0 0 16px}
+button,.btn{font:600 16px/1.2 var(--body);border:0;border-radius:999px;padding:13px 18px;cursor:pointer;width:100%;
+  display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+button:disabled{opacity:.55;cursor:default}
+button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.g{background:#fff;color:#1f1f1f;border:1px solid #dadce0}
+.p{background:var(--navy);color:#fff}
+.o{background:var(--sun);color:#fff}
+.s{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+input,select{font:inherit;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--bg);color:var(--fg)}
+.or{text-align:center;color:var(--muted);margin:14px 0;font-size:14px}
+.msg{font-size:14px;color:var(--muted);margin-top:10px;min-height:1em}
+.msg.bad{color:var(--bad)}
+.lista{list-style:none;margin:8px 0 0;padding:0;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.lista li+li{border-top:1px solid var(--line)}
+.lista button{border-radius:0;justify-content:flex-start;text-align:left;background:transparent;color:var(--fg);padding:12px 14px;font-weight:500}
+.lista button:hover{background:var(--bg)}
+.lista b{font-weight:600}
+.lista small,.apel{color:var(--muted);font-size:14px}
+.vazio{padding:14px;color:var(--muted);font-size:14px}
+.escolhido{font-family:var(--display);font-size:30px;font-weight:800;margin:4px 0}
+.selo{display:inline-block;font:600 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.selo.ok{color:var(--ok);border-color:currentColor}
+.selo.warn{color:var(--warn);border-color:currentColor}
+.ped{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+.ped .quem{display:flex;gap:12px;align-items:center}
+.ped img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none;background:var(--bg)}
+.ped .ini{width:44px;height:44px;border-radius:50%;flex:none;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600}
+.ped .conta{min-width:0}
+.ped .conta b{display:block}
+.ped .conta small{color:var(--muted);word-break:break-all}
+.ped .diz{margin:10px 0}
+.ped .alerta{color:var(--warn);font-size:14px;margin:6px 0}
+.ped .troca{font-size:14px;margin:4px 0 8px}
+.linkbtn{background:none;border:0;padding:0;width:auto;display:inline;color:var(--link);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+.mini{font-size:14px;color:var(--muted)}
+textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);margin:8px 0}
+.gsvg{width:18px;height:18px;flex:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Clube Jaó · Goiânia</div>
+  <h1>Central da Pelada</h1>
+</header>
+<main>
+  <!-- carregando -->
+  <div class="box" id="v-carrega"><p class="lead">Carregando…</p></div>
+
+  <!-- 1. login -->
+  <div class="box" id="v-login" hidden>
+    <h2>Entrar</h2>
+    <p class="lead">A Central é fechada para os atletas do Jaó. Entre com sua conta Google ou receba um link no e-mail.</p>
+    <button class="g" id="bt-google"><svg class="gsvg" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg>Entrar com Google</button>
+    <div class="or">ou receba um link por e-mail</div>
+    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" inputmode="email">
+    <button class="p" id="bt-email">Enviar link de acesso</button>
+    <div class="msg" id="msg-login" role="status"></div>
+  </div>
+
+  <!-- 2. sem convite -->
+  <div class="box" id="v-semconvite" hidden>
+    <h2>Falta o convite</h2>
+    <p class="lead">Para entrar na Central, abra o <b>link de convite</b> que foi enviado no grupo do WhatsApp do Jaó. Não achou? Fale com o Gustavo.</p>
+    <button class="s bt-sair">Sair</button>
+  </div>
+
+  <!-- 3. "Esse é você?" -->
+  <div class="box" id="v-escolher" hidden>
+    <h2>Esse é você?</h2>
+    <p class="lead">Ache o seu nome na lista e toque nele. Um moderador confirma e você entra.</p>
+    <input type="search" id="busca" placeholder="Buscar nome ou apelido" autocomplete="off">
+    <ul class="lista" id="lista-atletas"></ul>
+    <div class="or">não está na lista?</div>
+    <button class="s" id="bt-novo">Criar o meu card</button>
+    <div id="novo" hidden>
+      <input type="text" id="novo-nome" maxlength="60" placeholder="Seu nome (como a turma te conhece)" autocomplete="name">
+      <button class="o" id="bt-novo-envia">Pedir meu card</button>
+    </div>
+    <div class="msg" id="msg-escolher" role="status"></div>
+    <p class="mini" style="margin-top:16px">Entrou com <span class="eu-email"></span> · <button class="linkbtn bt-sair">sair</button></p>
+  </div>
+
+  <!-- 4. aguardando -->
+  <div class="box" id="v-aguarda" hidden>
+    <span class="selo warn">Aguardando aprovação</span>
+    <p class="lead" style="margin-top:12px">Você disse que é:</p>
+    <div class="escolhido" id="aguarda-quem"></div>
+    <p class="lead">Um moderador vai confirmar em breve. Quando ele aprovar, é só voltar nesta página.</p>
+    <div class="row">
+      <button class="s" id="bt-trocar">Trocar escolha</button>
+      <button class="p" id="bt-reconfere">Já fui aprovado?</button>
+    </div>
+    <div class="msg" id="msg-aguarda" role="status"></div>
+    <p class="mini" style="margin-top:16px">Entrou com <span class="eu-email"></span> · <button class="linkbtn bt-sair">sair</button></p>
+  </div>
+
+  <!-- 5. dentro -->
+  <div class="box" id="v-dentro" hidden>
+    <span class="selo ok" id="dentro-papel">Atleta</span>
+    <div class="escolhido" id="dentro-quem"></div>
+    <p class="lead">Você está dentro da Central da Pelada.</p>
+    <a class="btn o" href="./">Ir para a Central</a>
+    <p class="mini" style="margin-top:16px">Entrou com <span class="eu-email"></span> · <button class="linkbtn bt-sair">sair</button></p>
+  </div>
+
+  <!-- 6. moderador: pedidos -->
+  <div class="box" id="v-mod" hidden>
+    <h2>Pedidos de entrada <span id="mod-n"></span></h2>
+    <p class="lead">Confira se a pessoa é mesmo quem diz ser e aprove com um toque.</p>
+    <button class="s" id="bt-atualiza">Atualizar</button>
+    <div id="pedidos"></div>
+    <div class="msg" id="msg-mod" role="status"></div>
+  </div>
+
+  <!-- 7. moderador: convite -->
+  <div class="box" id="v-convite" hidden>
+    <h2>Convite do grupo</h2>
+    <p class="lead">Mande este texto no grupo do WhatsApp. Quem tocar no link faz login e diz quem é.</p>
+    <textarea id="convite-txt" readonly></textarea>
+    <button class="p" id="bt-copiar">Copiar mensagem</button>
+    <div class="msg" id="msg-convite" role="status"></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
+const volta=location.origin+location.pathname;
+const $=id=>document.getElementById(id);
+const VISTAS=["v-carrega","v-login","v-semconvite","v-escolher","v-aguarda","v-dentro","v-mod","v-convite"];
+const PAPEL={dono:"Dono",moderador:"Moderador",atleta:"Atleta",visitante:"Visitante"};
+let eu=null, membro=null, livres=[];
+
+// Convite: vem no link (?c=…) e fica guardado para depois do login.
+const guarda={get(){try{return localStorage.getItem("cp_convite")}catch(e){return null}},
+              set(v){try{localStorage.setItem("cp_convite",v)}catch(e){}}};
+const cURL=new URLSearchParams(location.search).get("c");
+if(cURL){guarda.set(cURL);history.replaceState(null,"",volta+location.hash)}
+let convite=cURL||guarda.get();
+
+function mostra(...ids){VISTAS.forEach(v=>$(v).hidden=!ids.includes(v))}
+function el(tag,attrs={},...filhos){const e=document.createElement(tag);
+  for(const[k,v]of Object.entries(attrs))k==="text"?e.textContent=v:k.startsWith("on")?e[k]=v:e.setAttribute(k,v);
+  filhos.forEach(f=>f&&e.append(f));return e}
+function nomeCard(a){return a?a.nome+(a.apelido?` "${a.apelido}"`:""):""}
+function erroAmigavel(e){const m=(e&&e.message)||String(e);
+  if(/duplicate|membros_um_por_atleta/.test(m))return"Esse card já tem dono.";
+  return m.replace(/^.*?exception:?\s*/i,"")}
+
+// ---------- login ----------
+$("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:volta}});
+$("bt-email").onclick=async()=>{
+  const e=$("email").value.trim(); if(!e){$("msg-login").textContent="Digite seu e-mail.";return}
+  $("bt-email").disabled=true; $("msg-login").textContent="Enviando…";
+  const{error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:volta}});
+  $("bt-email").disabled=false;
+  $("msg-login").textContent=error?"Não deu certo: "+error.message:"Pronto! Abra seu e-mail e toque no link (olhe também no spam).";
+};
+document.querySelectorAll(".bt-sair").forEach(b=>b.onclick=async()=>{await sb.auth.signOut();location.reload()});
+
+// ---------- quem sou eu ----------
+async function carrega(){
+  const{data:{session}}=await sb.auth.getSession();
+  eu=session&&session.user;
+  if(!eu){mostra("v-login");return}
+  document.querySelectorAll(".eu-email").forEach(s=>s.textContent=eu.email);
+  const{data:ms,error}=await sb.from("membros").select("id,grupo_id,atleta_id,papel,situacao,nome_informado").eq("user_id",eu.id);
+  if(error){mostra("v-carrega");$("v-carrega").firstElementChild.textContent="Erro: "+error.message;return}
+  membro=(ms||[])[0]||null;   // por enquanto só o Jaó
+  if(membro&&membro.situacao==="aprovado")return dentro();
+  if(membro&&membro.situacao==="bloqueado"){mostra("v-semconvite");return}
+  if(!convite){mostra("v-semconvite");return}
+  await carregaLivres();
+  if(membro&&membro.situacao==="pendente")return aguarda();
+  escolher();
+}
+async function carregaLivres(){
+  const{data,error}=await sb.rpc("atletas_para_escolher",{p_convite:convite});
+  livres=error?[]:data||[];
+  return !error;
+}
+
+// ---------- "Esse é você?" ----------
+function escolher(){
+  mostra("v-escolher"); $("msg-escolher").textContent="";
+  desenhaLista(); $("busca").focus();
+}
+function semAcento(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
+function desenhaLista(){
+  const q=semAcento($("busca").value.trim()), ul=$("lista-atletas"); ul.replaceChildren();
+  const vis=livres.filter(a=>!q||semAcento(a.nome+" "+a.apelido).includes(q));
+  if(!livres.length&&convite)ul.append(el("li",{class:"vazio",text:"Convite inválido ou todos os cards já têm dono. Crie o seu card abaixo."}));
+  else if(!vis.length)ul.append(el("li",{class:"vazio",text:"Ninguém com esse nome. Crie o seu card abaixo."}));
+  vis.forEach(a=>ul.append(el("li",{},el("button",{onclick:()=>pede(a.id,null,nomeCard(a))},
+    el("b",{text:a.nome}),a.apelido?el("span",{class:"apel",text:`"${a.apelido}"`}):null))));
+}
+$("busca").oninput=desenhaLista;
+$("bt-novo").onclick=()=>{$("novo").hidden=false;$("bt-novo").hidden=true;$("novo-nome").value=(eu.user_metadata.full_name||eu.user_metadata.name||"");$("novo-nome").focus()};
+$("bt-novo-envia").onclick=()=>{const n=$("novo-nome").value.trim();
+  if(!n){$("msg-escolher").textContent="Escreva o seu nome.";return}
+  pede(null,n,n+" (card novo)")};
+async function pede(atletaId,nome,rotulo){
+  if(!confirm(`Confirmar: você é ${rotulo}?`))return;
+  $("msg-escolher").className="msg";$("msg-escolher").textContent="Enviando…";
+  const{error}=await sb.rpc("pedir_entrada",{p_convite:convite,p_atleta_id:atletaId,p_nome:nome});
+  if(error){$("msg-escolher").className="msg bad";$("msg-escolher").textContent=erroAmigavel(error);return}
+  carrega();
+}
+
+// ---------- aguardando ----------
+function aguarda(){
+  const a=livres.find(x=>x.id===membro.atleta_id);
+  $("aguarda-quem").textContent=a?nomeCard(a):(membro.nome_informado||"")+(membro.atleta_id?"":" (card novo)");
+  $("msg-aguarda").textContent=""; mostra("v-aguarda");
+}
+$("bt-trocar").onclick=()=>{$("novo").hidden=true;$("bt-novo").hidden=false;escolher()};
+$("bt-reconfere").onclick=async()=>{$("msg-aguarda").textContent="Conferindo…";await carrega();
+  if(!$("v-aguarda").hidden)$("msg-aguarda").textContent="Ainda aguardando o moderador."};
+
+// ---------- dentro ----------
+async function dentro(){
+  const{data:a}=await sb.from("atletas").select("nome,apelido").eq("id",membro.atleta_id).maybeSingle();
+  $("dentro-quem").textContent=a?nomeCard(a):(membro.nome_informado||eu.email);
+  $("dentro-papel").textContent=PAPEL[membro.papel]||membro.papel;
+  const mod=membro.papel==="dono"||membro.papel==="moderador";
+  mostra("v-dentro",...(mod?["v-mod","v-convite"]:[]));
+  if(mod){await carregaConvite();carregaPedidos()}
+}
+
+// ---------- moderador ----------
+async function carregaConvite(){
+  const{data:g}=await sb.from("grupos").select("nome,convite").eq("id",membro.grupo_id).single();
+  if(!g)return;
+  convite=g.convite;
+  const link=`${volta}?c=${encodeURIComponent(g.convite)}`;
+  $("convite-txt").value=
+`⚽ *Central da Pelada — ${g.nome}*
+Os lances, cards e estatísticas da pelada agora ficam num lugar só, fechado para a turma.
+
+1) Toque no link: ${link}
+2) Entre com sua conta Google (ou receba um link no e-mail)
+3) Ache o seu nome em "Esse é você?" — não achou? crie o seu card
+Um moderador confirma e pronto.
+
+Se não quiser foto ou apelido no seu card, tire no app ou fale com o Gustavo.`;
+}
+$("bt-copiar").onclick=async()=>{
+  try{await navigator.clipboard.writeText($("convite-txt").value);$("msg-convite").textContent="Copiado! Cole no grupo do WhatsApp."}
+  catch(e){$("convite-txt").select();$("msg-convite").textContent="Selecionado — copie com Ctrl+C / Copiar."}
+};
+async function carregaPedidos(){
+  $("msg-mod").className="msg";$("msg-mod").textContent="";
+  const[{data,error}]=await Promise.all([sb.rpc("pedidos_pendentes",{p_grupo:membro.grupo_id}),convite?carregaLivres():null]);
+  const box=$("pedidos"); box.replaceChildren();
+  if(error){$("msg-mod").className="msg bad";$("msg-mod").textContent="Erro: "+error.message;return}
+  $("mod-n").textContent=data.length?`(${data.length})`:"";
+  if(!data.length){box.append(el("p",{class:"mini",text:"Nenhum pedido esperando. 👍"}));return}
+  data.forEach(p=>box.append(cartaoPedido(p)));
+}
+function cartaoPedido(p){
+  const nomeConta=p.conta_nome||p.conta_email;
+  const foto=p.conta_foto?el("img",{src:p.conta_foto,alt:"",referrerpolicy:"no-referrer"})
+                        :el("div",{class:"ini",text:(nomeConta||"?").trim()[0].toUpperCase()});
+  const diz=p.atleta_id?el("div",{class:"diz"},"Diz que é ",el("b",{text:nomeCard({nome:p.atleta_nome,apelido:p.atleta_apelido})}))
+                       :el("div",{class:"diz"},"Pede um ",el("b",{text:"card novo"}),": ",el("b",{text:p.nome_informado||"—"}));
+  // Trocar o card antes de aprovar (ex.: pediu card novo, mas já existia).
+  const sel=el("select",{"aria-label":"Card que será vinculado"});
+  sel.append(el("option",{value:"",text:p.atleta_id?`${nomeCard({nome:p.atleta_nome,apelido:p.atleta_apelido})} (o que ele escolheu)`:`Card novo: ${p.nome_informado||""}`}));
+  if(p.atleta_id)sel.append(el("option",{value:"novo",text:`Card novo: ${p.nome_informado||nomeConta}`}));
+  livres.filter(a=>a.id!==p.atleta_id).forEach(a=>sel.append(el("option",{value:a.id,text:nomeCard(a)})));
+  const troca=el("div",{class:"troca",hidden:""},sel);
+  const msg=el("div",{class:"msg",role:"status"});
+  const bA=el("button",{class:"o",text:"Aprovar"}), bR=el("button",{class:"s",text:"Recusar"});
+  bA.onclick=async()=>{
+    let atleta=null,nome=null;
+    if(sel.value==="novo")nome=p.nome_informado||nomeConta; else if(sel.value)atleta=sel.value;
+    bA.disabled=bR.disabled=true; msg.className="msg"; msg.textContent="Aprovando…";
+    const{error}=await sb.rpc("aprovar_entrada",{p_membro:p.membro_id,p_atleta:atleta,p_nome:nome});
+    if(error){msg.className="msg bad";msg.textContent=erroAmigavel(error);bA.disabled=bR.disabled=false;return}
+    carregaPedidos();
+  };
+  bR.onclick=async()=>{
+    if(!confirm(`Recusar o pedido de ${nomeConta}? A pessoa poderá pedir de novo.`))return;
+    bA.disabled=bR.disabled=true;
+    const{error}=await sb.from("membros").delete().eq("id",p.membro_id);
+    if(error){msg.className="msg bad";msg.textContent=erroAmigavel(error);bA.disabled=bR.disabled=false;return}
+    carregaPedidos();
+  };
+  return el("div",{class:"ped"},
+    el("div",{class:"quem"},foto,el("div",{class:"conta"},el("b",{text:nomeConta}),el("small",{text:p.conta_email}))),
+    diz,
+    p.disputado?el("div",{class:"alerta",text:"⚠️ Outra pessoa também disse ser esse atleta. Confira antes de aprovar."}):null,
+    el("button",{class:"linkbtn",text:"trocar o card antes de aprovar",onclick:e=>{troca.hidden=false;e.target.remove()}}),
+    troca,
+    el("div",{class:"row",style:"margin-top:10px"},bR,bA),
+    msg);
+}
+$("bt-atualiza").onclick=carregaPedidos;
+
+// Volta para a aba (ex.: depois de abrir o e-mail) → confere de novo.
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&eu)carrega()});
+sb.auth.onAuthStateChange((evento)=>{if(evento==="SIGNED_IN"||evento==="SIGNED_OUT")carrega()});
+carrega();
+</script>
+</body>
+</html>
