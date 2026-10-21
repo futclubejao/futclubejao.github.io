@@ -418,7 +418,7 @@ section{margin-top:32px}
 
 .fig-dm{position:absolute;right:7cqw;top:72cqw;z-index:3;flex-direction:row!important;gap:.8cqw;font-size:6cqw!important;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.3)}
 .fig-tag{font-weight:800!important;letter-spacing:.28em!important;color:var(--t1)!important;font-size:6.6cqw!important;top:129cqw!important}
-/* PADRÃO ÚNICO dos cards (20/10, opção B; medido pelo pior caso = Bola murcha e o nome THIAGO NEGRÃO) */
+/* PADRÃO ÚNICO dos cards (20/10, opção B; medido pelo pior caso = Resenha e o nome THIAGO NEGRÃO) */
 .fig-nome{font-size:10cqw!important;top:89cqw!important}
 .fig-ap{top:100.5cqw!important;font-size:5.2cqw!important;border-bottom:0!important;padding-bottom:0!important}
 .fig-nums{top:110cqw!important;left:9cqw;right:9cqw}
@@ -723,13 +723,13 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792605562"></script>
+<script src="central-dados.js?v=1792606270"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
 // ⚠️ TESTE (19/10): vencedores e votos FICTÍCIOS escolhidos pelo Gustavo para ver os cards. Trocar pelos reais.
 const CAMPEOES=window.CAMPEOES_DB;
-const PREMIO={gol:"🌟 Golaço da rodada",comico:"🫠 Bola murcha",craque:"🏆 Craque da rodada"};
+const PREMIO={gol:"🌟 Golaço da rodada",comico:"😂 Resenha",craque:"🏆 Craque da rodada"};
 // No protótipo o voto fica só no seu aparelho
 const VOTOS_BASE={};
 const TODOS="*";
@@ -923,7 +923,7 @@ function renderPolls(){
   document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
   // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
   const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
-  const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","🫠 Bola murcha do domingo",["furada","polemica"],"murcha"]];
+  const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","😂 Lance da Resenha do domingo",["furada","polemica"],"murcha"]];
   document.getElementById("polls").innerHTML=pollCraque()+polls.map(([kind,titulo,tipos,chave])=>{
     const doDia=LANCES.filter(l=>l.data===ultima);
     const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
@@ -1120,7 +1120,7 @@ function abrirPerfil(a){
     ["Golaços",L.filter(l=>l.gol===a&&tiposDe(l).includes("golaco")).length],["Furadas",meus.filter(l=>tiposDe(l).includes("furada")).length]];
   document.getElementById("pf-tiles").innerHTML=T.map(([k,v])=>`<div class="pf-tile"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("");
   const meusP=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana)),qt=k=>meusP.filter(c=>c.kind===k).length;
-  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">🏆 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 🫠 Bola murcha <b>${qt("comico")}×</b></p>`
+  document.getElementById("pf-hist").innerHTML=`<p class="pf-hsum">🏆 Craque da rodada <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 😂 Resenha <b>${qt("comico")}×</b></p>`
     +(meusP.length?`<div class="pf-hrow">${meusP.map(c=>`<div class="ph">${figurinha(a,{...PREMIO_CARD[c.kind],ate:c.semana}).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>")}<span>${fmt(c.semana)}</span></div>`).join("")}</div>`:"");
   document.querySelector("#pf-hist .pf-hsum").insertAdjacentHTML("afterend",linhaDoTempo(a));
   document.getElementById("pf-badges").innerHTML=conquistas(a).map(([ic,t,d,ok])=>`<div class="badge${ok?"":" lock"}" title="${esc(d)}"><span class="ic">${ic}</span><span>${t}<br><small>${esc(d)}</small></span></div>`).join("");
@@ -1226,7 +1226,7 @@ function numsAtleta(a,ano,ate){
   return {g:L.filter(l=>l.gol===a).length,as:L.filter(l=>l.assist===a).length,
     jog:new Set(L.filter(l=>l.atletas.includes(a)).map(l=>l.data)).size,tot:ds.length};
 }
-const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"BOLA MURCHA",craque:"CRAQUE",esmeralda:"GOLAÇO"};
+const ROTULO={ouro:"GOLD",prata:"SILVER",bronze:"BRONZE",black:"BLACK",diamante:"DIAMOND",murcha:"RESENHA",craque:"CRAQUE",esmeralda:"GOLAÇO"};
 // o: {tier, selos:[{ico,rank,txt}], coroa, tag}
 function figurinha(a,o={}){
   const d=ATLETAS[a]||{},ap=apelido(a),n=numsAtleta(a,o.ate?o.ate.slice(0,4):anos[0],o.ate),selos=o.selos||[];
@@ -1325,9 +1325,9 @@ function cardsDoPerfil(a){
 const PREMIO_CARD={
   craque:{tier:"craque",selos:[{ico:"trofeu",rank:"",txt:""}],trofeu:true,tag:"Craque"},
   gol:{tier:"esmeralda",selos:[{ico:"estrela",rank:"",txt:""}],tag:"Golaço"},
-  comico:{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Bola murcha"}};
+  comico:{tier:"murcha",selos:[{ico:"murcha",rank:"",txt:""}],tag:"Resenha"}};
 function destaques(sem,vazio){
-  const VAZIO={craque:["Craque","trofeu","craque"],gol:["Golaço","estrela","esmeralda"],comico:["Bola murcha","murcha","murcha"]};
+  const VAZIO={craque:["Craque","trofeu","craque"],gol:["Golaço","estrela","esmeralda"],comico:["Resenha","murcha","murcha"]};
   return ["craque","gol","comico"].map(k=>{const c=CAMPEOES.find(x=>x.kind===k&&x.semana===sem);
     if(c)return figurinha(ganhador(c),{...PREMIO_CARD[k],ate:sem});
     return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
@@ -1342,7 +1342,7 @@ const LEGENDA=[
   ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
   ["craque","Craque da rodada","trofeu","Votado pela turma: o melhor do domingo. Leva o troféu dourado."],
   ["esmeralda","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo. Card esmeralda."],
-  ["murcha","Bola murcha","murcha","Votado pela turma: a maior furada do domingo. Card de zoeira."]];
+  ["murcha","Lance da Resenha","murcha","Votado pela turma: o lance mais engraçado do domingo (furada, tombo, polêmica). Card de zoeira, na amizade."]];
 document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
   `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
 // ===== Campeões: ranking de prêmios + destaques de cada rodada (histórico) =====
@@ -1355,13 +1355,13 @@ function renderHall(){
   const maxT=Math.max(...lin.map(r=>r.tot)),K=[["craque","pr-craque"],["gol","pr-gol"],["comico","pr-murcha"]];
   // quadro de medalhas: barra empilhada por atleta (cor = prêmio, número dentro), ordenado pelo total
   el.innerHTML=`<h3 class="fig-tit">Quadro de prêmios</h3>
-    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>🏆 Craque da rodada</span><span><i style="background:var(--pr-gol)"></i>🌟 Golaço</span><span><i style="background:var(--pr-murcha)"></i>🫠 Bola murcha</span></div>
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>🏆 Craque da rodada</span><span><i style="background:var(--pr-gol)"></i>🌟 Golaço</span><span><i style="background:var(--pr-murcha)"></i>😂 Resenha</span></div>
     <div class="md">${lin.map(r=>`<div class="md-row"><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button>
       <div class="md-bar">${K.filter(([k])=>r[k]).map(([k,v])=>`<span class="md-seg ${k}" style="flex:${r[k]};background:var(--${v})" title="${esc(PREMIO[k])}: ${r[k]}">${r[k]}</span>`).join("")}${maxT>r.tot?`<span style="flex:${maxT-r.tot}"></span>`:""}</div>
       <b class="md-tot">${r.tot}</b></div>`).join("")}</div>
     <details><summary>Ver em tabela</summary>
     <div class="tbl-wrap hall-tbl"><table class="stats-tbl"><colgroup><col style="width:44px"><col style="width:200px"><col style="width:96px"><col style="width:96px"><col style="width:116px"><col style="width:70px"></colgroup>
-    <thead><tr><th>#</th><th>Atleta</th><th>🏆 Craque</th><th>🌟 Golaço</th><th>🫠 Bola murcha</th><th>Total</th></tr></thead>
+    <thead><tr><th>#</th><th>Atleta</th><th>🏆 Craque</th><th>🌟 Golaço</th><th>😂 Resenha</th><th>Total</th></tr></thead>
     <tbody>${lin.map((r,i)=>`<tr><td class="pos">${i+1}</td><td><button class="who-btn" data-a="${esc(r.a)}">${av(r.a)}${esc(r.a)}</button></td>
       <td>${r.craque}</td><td>${r.gol}</td><td>${r.comico}</td><td class="lead">${r.tot}</td></tr>`).join("")}</tbody></table></div></details>
     <p class="note">Os cards de cada rodada ficam na seção Cards: escolha a rodada na lista.</p>`;
@@ -1374,7 +1374,7 @@ function linhaDoTempo(a){
     const t=`${fmtAno(d)}: ${ks.length?ks.map(k=>PREMIO[k]).join(" + "):"sem prêmio"}`;
     return `<span class="tl-c${ks.length?" on":""}" style="${fundo}" title="${esc(t)}" role="listitem" aria-label="${esc(t)}"><small>${fmt(d)}</small></span>`}).join("");
   return `<div class="tl" role="list" aria-label="Prêmios por domingo">${cel}</div>
-    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>Craque</span><span><i style="background:var(--pr-gol)"></i>Golaço</span><span><i style="background:var(--pr-murcha)"></i>Bola murcha</span><span><i class="vz"></i>sem prêmio</span></div>`;
+    <div class="tl-leg"><span><i style="background:var(--pr-craque)"></i>Craque</span><span><i style="background:var(--pr-gol)"></i>Golaço</span><span><i style="background:var(--pr-murcha)"></i>Resenha</span><span><i class="vz"></i>sem prêmio</span></div>`;
 }
 document.getElementById("hall").addEventListener("click",e=>{const b=e.target.closest(".who-btn,.fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
 // Destaques de uma rodada escolhida na lista (a última mostra também o que ainda está em votação)

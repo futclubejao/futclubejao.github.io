@@ -97,6 +97,7 @@ async function iniciar(){
   const g=gs[0].id;
   const{data:eu}=await sb.from("membros").select("id,atleta_id,papel").eq("grupo_id",g).eq("user_id",session.user.id).eq("situacao","aprovado").maybeSingle();
   if(!eu)return paraEntrar();
+  await sb.rpc("apurar_enquetes",{p_grupo:g});   // enquete que fechou vira prêmio (não duplica)
 
   const[atletas,perfis,rodadas,lances,lance_atletas,gols,fotos,premios]=await Promise.all([
     todos("atletas","id,nome,apelido,variacoes,dm,convidado",g),
@@ -133,6 +134,86 @@ async function iniciar(){
 
   if(meu)voce(meu.nome);
   if(mod)pedidos(g);
+  const ult=rodadas.filter(r=>!r.campeonato_id).sort((x,y)=>y.data.localeCompare(x.data))[0];
+  if(ult)enquetes(g,eu.id,ult);
+}
+
+// ---------- Enquetes de verdade (1 voto por pessoa, troca até fechar; parcial e total ao vivo) ----------
+// Substitui as enquetes "de mentirinha" do index.html (voto só no aparelho). Mesmo visual.
+const KIND={craque:"craque",golaco:"gol",murcha:"comico"};
+let ENQ=[],VOT={g:null,membro:null};
+async function enquetes(g,membro,rod){
+  VOT={g,membro,rod};
+  const{data:es}=await sb.from("enquetes").select("id,tipo,titulo,fecha_em").eq("rodada_id",rod.id);
+  const ids=(es||[]).map(e=>e.id);
+  const[ops,meus,...res]=ids.length?await Promise.all([
+    sb.from("enquete_opcoes").select("id,enquete_id,lance_id,atleta_id,ordem").in("enquete_id",ids),
+    sb.from("votos").select("enquete_id,opcao_id").eq("membro_id",membro).in("enquete_id",ids),
+    ...ids.map(id=>sb.rpc("resultado_enquete",{p_enquete:id}))]):[{data:[]},{data:[]}];
+  ENQ=(es||[]).map((e,i)=>{
+    const r=(res[i]&&res[i].data)||[];
+    return{...e,kind:KIND[e.tipo],
+      opcoes:(ops.data||[]).filter(o=>o.enquete_id===e.id).sort((x,y)=>x.ordem-y.ordem),
+      votos:Object.fromEntries(r.map(x=>[x.opcao_id,+x.votos])),total:r.length?+r[0].total:0,
+      meu:((meus.data||[]).find(v=>v.enquete_id===e.id)||{}).opcao_id||null};
+  });
+  await nomesDasOpcoes();
+  window.renderPolls=desenhaEnquetes;
+  desenhaEnquetes();
+  $("polls").addEventListener("click",votar,true);
+}
+// opção → lance (pelo código) ou atleta (pelo nome)
+const OPC={lance:{},atleta:{}};
+async function nomesDasOpcoes(){
+  const lids=[...new Set(ENQ.flatMap(e=>e.opcoes.map(o=>o.lance_id)).filter(Boolean))];
+  const aids=[...new Set(ENQ.flatMap(e=>e.opcoes.map(o=>o.atleta_id)).filter(Boolean))];
+  const[l,a]=await Promise.all([lids.length?sb.from("lances").select("id,codigo").in("id",lids):{data:[]},
+                                aids.length?sb.from("atletas").select("id,nome").in("id",aids):{data:[]}]);
+  (l.data||[]).forEach(x=>OPC.lance[x.id]=x.codigo);
+  (a.data||[]).forEach(x=>OPC.atleta[x.id]=x.nome);
+}
+const quando=d=>{const x=new Date(d);return x.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"})+" às "+x.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})};
+function desenhaEnquetes(){
+  const box=$("polls"),aberta=e=>new Date(e.fecha_em)>new Date();
+  const ordem=["craque","gol","comico"];
+  const L=ENQ.slice().sort((x,y)=>ordem.indexOf(x.kind)-ordem.indexOf(y.kind));
+  const prazo=L.find(aberta);
+  $("poll-date").textContent=`Jogo de ${fmtAno(VOT.rod.data)} · `+(prazo?`votação até ${quando(prazo.fecha_em)}`:L.length?"votação encerrada":"enquetes ainda não abertas");
+  if(!L.length){box.innerHTML=`<div class="empty">As enquetes desta rodada ainda não foram abertas.</div>`;return}
+  const pts={};STATS.filter(l=>l.data===VOT.rod.data).forEach(l=>{for(const a of[l.gol,l.assist])if(a)pts[a]=(pts[a]||0)+1});
+  box.innerHTML=L.map(e=>{
+    const ab=aberta(e),tot=e.total||0,max=Math.max(0,...Object.values(e.votos));
+    const cand=e.opcoes.map(o=>o.lance_id?byId[OPC.lance[o.lance_id]]:null);
+    if(e.kind!=="craque")pollCands[e.kind]=cand.filter(Boolean);
+    let li=0;
+    return `<div class="poll" data-kind="${e.kind}"><h3><span class="dot"></span>${esc(e.titulo)}</h3>
+      <div class="opt-head"><span>${ab?(e.kind==="craque"?"Toque no atleta para votar":"Toque no lance para votar"):"Resultado final"}</span><span>${e.kind==="craque"?"":"Veja o lance ▾"}</span></div>
+      ${e.opcoes.map((o,i)=>{const v=e.votos[o.id]||0,l=cand[i],nome=o.atleta_id?OPC.atleta[o.atleta_id]:null;
+        const ganhou=!ab&&v>0&&v===max;
+        const txt=nome?`${esc(nome)}<small>${pts[nome]||0} ${pts[nome]===1?"gol/assistência":"gols + assistências"} no domingo</small>`
+                      :l?`${esc(l.atletas.join(", "))}<small>${esc(l.desc)}</small>`:"(lance removido)";
+        const ver=l?`<a class="watch" href="#" data-kind="${e.kind}" data-i="${li++}" aria-label="Assistir: ${esc(l.desc)}">▶</a>`:"";
+        return `<div class="opt-row"><button class="opt${e.meu===o.id?" voted":""}" data-kind="${e.kind}" data-id="${o.id}" data-enq="${e.id}" aria-pressed="${e.meu===o.id}"${ab?"":" disabled"}>
+          <span class="bar" style="width:${tot?Math.round(v/tot*100):0}%"></span>
+          <span class="t">${ganhou?"🏆 ":""}${txt}</span><span class="n">${v}</span></button>${ver}</div>`}).join("")}
+      <div class="foot">${tot} ${tot===1?"voto":"votos"} · ${ab?(e.meu?"Seu voto foi registrado. Toque em outro para trocar.":"Um voto por pessoa; dá para trocar até fechar."):"Votação encerrada."}</div></div>`;
+  }).join("");
+}
+async function votar(ev){
+  const b=ev.target.closest(".opt[data-enq]");if(!b)return;   // ▶ "Veja o lance" segue com o código do site
+  ev.stopPropagation();ev.preventDefault();
+  if(b.disabled)return;
+  const e=ENQ.find(x=>x.id===b.dataset.enq),op=b.dataset.id;
+  if(!e||e.meu===op)return;
+  b.disabled=true;
+  // trocar voto = update; primeiro voto = insert
+  let{data:up,error}=await sb.from("votos").update({opcao_id:op}).eq("enquete_id",e.id).eq("membro_id",VOT.membro).select("opcao_id");
+  if(!error&&!(up||[]).length)({error}=await sb.from("votos").insert({enquete_id:e.id,membro_id:VOT.membro,opcao_id:op,grupo_id:VOT.g}));
+  if(error){b.disabled=false;alert("Não deu para votar: "+((error.message||"").includes("row-level")?"a votação já fechou.":error.message));return}
+  e.meu=op;
+  const{data:r}=await sb.rpc("resultado_enquete",{p_enquete:e.id});
+  if(r){e.votos=Object.fromEntries(r.map(x=>[x.opcao_id,+x.votos]));e.total=r.length?+r[0].total:0}
+  desenhaEnquetes();
 }
 
 // ---------- barra "Logado como…" ----------
