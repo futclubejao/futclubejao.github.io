@@ -91,7 +91,7 @@ window.MIDIA={
 async function iniciar(){
   const{data:{session}}=await sb.auth.getSession();
   if(!session)return paraEntrar();
-  const{data:gs,error:eg}=await sb.from("grupos").select("id,nome").eq("slug",GRUPO);
+  const{data:gs,error:eg}=await sb.from("grupos").select("id,nome,votos_abertos").eq("slug",GRUPO);
   if(eg)return falhou(eg.message);
   if(!gs.length)return paraEntrar();          // ainda não aprovado (ou de fora)
   const g=gs[0].id;
@@ -135,15 +135,15 @@ async function iniciar(){
   if(meu)voce(meu.nome);
   if(mod)pedidos(g);
   const ult=rodadas.filter(r=>!r.campeonato_id).sort((x,y)=>y.data.localeCompare(x.data))[0];
-  if(ult)enquetes(g,eu.id,ult);
+  if(ult)enquetes(g,eu.id,ult,gs[0].votos_abertos,Object.fromEntries(atletas.map(a=>[a.id,a.nome])));
 }
 
 // ---------- Enquetes de verdade (1 voto por pessoa, troca até fechar; parcial e total ao vivo) ----------
 // Substitui as enquetes "de mentirinha" do index.html (voto só no aparelho). Mesmo visual.
 const KIND={craque:"craque",golaco:"gol",murcha:"comico"};
 let ENQ=[],VOT={g:null,membro:null};
-async function enquetes(g,membro,rod){
-  VOT={g,membro,rod};
+async function enquetes(g,membro,rod,abertos,nomeAtl){
+  VOT={g,membro,rod,abertos,nomeAtl};
   const{data:es}=await sb.from("enquetes").select("id,tipo,titulo,fecha_em").eq("rodada_id",rod.id);
   const ids=(es||[]).map(e=>e.id);
   const[ops,meus,...res]=ids.length?await Promise.all([
@@ -158,9 +158,19 @@ async function enquetes(g,membro,rod){
       meu:((meus.data||[]).find(v=>v.enquete_id===e.id)||{}).opcao_id||null};
   });
   await nomesDasOpcoes();
+  await quemVotou();
   window.renderPolls=desenhaEnquetes;
   desenhaEnquetes();
   $("polls").addEventListener("click",votar,true);
+}
+// Votos abertos (regra do grupo): cada opção mostra quem votou nela
+async function quemVotou(){
+  if(!VOT.abertos||!ENQ.length)return;
+  const[v,m]=await Promise.all([sb.from("votos").select("opcao_id,membro_id").in("enquete_id",ENQ.map(e=>e.id)),
+                               sb.from("membros").select("id,atleta_id").eq("grupo_id",VOT.g)]);
+  const nome=Object.fromEntries((m.data||[]).map(x=>[x.id,VOT.nomeAtl[x.atleta_id]||"Conta do grupo"]));
+  ENQ.forEach(e=>e.quem={});
+  (v.data||[]).forEach(x=>{const e=ENQ.find(e=>e.opcoes.some(o=>o.id===x.opcao_id));if(e)(e.quem[x.opcao_id]=e.quem[x.opcao_id]||[]).push(nome[x.membro_id]||"?")});
 }
 // opção → lance (pelo código) ou atleta (pelo nome)
 const OPC={lance:{},atleta:{}};
@@ -186,7 +196,7 @@ function desenhaEnquetes(){
     const cand=e.opcoes.map(o=>o.lance_id?byId[OPC.lance[o.lance_id]]:null);
     if(e.kind!=="craque")pollCands[e.kind]=cand.filter(Boolean);
     let li=0;
-    return `<div class="poll" data-kind="${e.kind}"><h3><span class="dot"></span>${esc(e.titulo)}</h3>
+    return `<div class="poll" data-kind="${e.kind}"><h3><span class="dot"></span>${esc(e.titulo.replace(/ · \d\d\/\d\d$/,""))} · ${fmt(VOT.rod.data)}</h3>
       <div class="opt-head"><span>${ab?(e.kind==="craque"?"Toque no atleta para votar":"Toque no lance para votar"):"Resultado final"}</span><span>${e.kind==="craque"?"":"Veja o lance ▾"}</span></div>
       ${e.opcoes.map((o,i)=>{const v=e.votos[o.id]||0,l=cand[i],nome=o.atleta_id?OPC.atleta[o.atleta_id]:null;
         const ganhou=!ab&&v>0&&v===max;
@@ -195,7 +205,7 @@ function desenhaEnquetes(){
         const ver=l?`<a class="watch" href="#" data-kind="${e.kind}" data-i="${li++}" aria-label="Assistir: ${esc(l.desc)}">▶</a>`:"";
         return `<div class="opt-row"><button class="opt${e.meu===o.id?" voted":""}" data-kind="${e.kind}" data-id="${o.id}" data-enq="${e.id}" aria-pressed="${e.meu===o.id}"${ab?"":" disabled"}>
           <span class="bar" style="width:${tot?Math.round(v/tot*100):0}%"></span>
-          <span class="t">${ganhou?"🏆 ":""}${txt}</span><span class="n">${v}</span></button>${ver}</div>`}).join("")}
+          <span class="t">${ganhou?"🏆 ":""}${txt}${e.quem&&e.quem[o.id]?`<small>Votaram: ${esc(e.quem[o.id].sort().join(", "))}</small>`:""}</span><span class="n">${v}</span></button>${ver}</div>`}).join("")}
       <div class="foot">${tot} ${tot===1?"voto":"votos"} · ${ab?(e.meu?"Seu voto foi registrado. Toque em outro para trocar.":"Um voto por pessoa; dá para trocar até fechar."):"Votação encerrada."}</div></div>`;
   }).join("");
 }
@@ -213,6 +223,7 @@ async function votar(ev){
   e.meu=op;
   const{data:r}=await sb.rpc("resultado_enquete",{p_enquete:e.id});
   if(r){e.votos=Object.fromEntries(r.map(x=>[x.opcao_id,+x.votos]));e.total=r.length?+r[0].total:0}
+  await quemVotou();
   desenhaEnquetes();
 }
 

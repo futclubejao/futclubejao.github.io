@@ -617,12 +617,12 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
     <div class="sec-head"><h2 id="h-cards">Cards</h2><span id="cards-sub"></span></div>
     <a class="cards-link" href="#h-tipos">O que cada card significa ↓</a>
     <a class="patro-mini" id="patro-cards" hidden target="_blank" rel="noopener sponsored"><span>Cards oferecidos por</span><img alt=""></a>
-    <div class="rod-head"><h3 class="fig-tit">Destaques da rodada</h3>
+    <div class="rod-head"><h3 class="fig-tit" id="tit-rod">Destaques da rodada</h3>
       <div class="field"><label for="f-rod">Rodada</label><select id="f-rod"></select></div></div>
     <div class="fig-row" id="cards-rodada"></div>
-    <h3 class="fig-tit">Artilharia da temporada</h3>
+    <h3 class="fig-tit" id="tit-art">Artilharia da temporada</h3>
     <div class="fig-row" id="cards-art"></div>
-    <h3 class="fig-tit">Assistências da temporada</h3>
+    <h3 class="fig-tit" id="tit-ass">Assistências da temporada</h3>
     <div class="fig-row" id="cards-ass"></div>
   </section>
 
@@ -723,7 +723,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792606270"></script>
+<script src="central-dados.js?v=1792608850"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -911,7 +911,7 @@ function pollCraque(){
   doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
   const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
   const meu=meusVotos.craque,votos=cand.map(a=>meu===a?1:0),total=votos.reduce((x,y)=>x+y,0)||1;
-  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada</h3>
+  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada · ${fmt(ultima)}</h3>
     <div class="opt-head"><span>Toque no atleta para votar</span><span></span></div>
     ${cand.map((a,i)=>`<div class="opt-row"><button class="opt${meu===a?" voted":""}" data-kind="craque" data-id="${esc(a)}" aria-pressed="${meu===a}">
       <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
@@ -923,7 +923,7 @@ function renderPolls(){
   document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
   // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
   const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
-  const polls=[["gol","⚽ Golaço do domingo",["golaco"],"gol"],["comico","😂 Lance da Resenha do domingo",["furada","polemica"],"murcha"]];
+  const polls=[["gol",`⚽ Golaço do domingo · ${fmt(ultima)}`,["golaco"],"gol"],["comico",`😂 Lance da Resenha do domingo · ${fmt(ultima)}`,["furada","polemica"],"murcha"]];
   document.getElementById("polls").innerHTML=pollCraque()+polls.map(([kind,titulo,tipos,chave])=>{
     const doDia=LANCES.filter(l=>l.data===ultima);
     const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
@@ -1380,6 +1380,8 @@ document.getElementById("hall").addEventListener("click",e=>{const b=e.target.cl
 // Destaques de uma rodada escolhida na lista (a última mostra também o que ainda está em votação)
 function renderRodada(){
   const sem=document.getElementById("f-rod").value||ultima,h=destaques(sem,sem===ultima);
+  // sempre dizer de qual domingo são os cards (quem entra no domingo pode achar que é do jogo do dia)
+  document.getElementById("tit-rod").textContent=`Destaques da rodada de ${fmtAno(sem)}`;
   document.getElementById("cards-rodada").innerHTML=h||`<p class="rod-vazio">Sem destaques registrados na rodada de ${fmtAno(sem)}.</p>`;
 }
 function renderCards(){
@@ -1389,6 +1391,8 @@ function renderCards(){
   if(!selR.options.length){selR.innerHTML=dias.map(d=>`<option value="${d}">${fmtAno(d)}${d===ultima?" · última":""}</option>`).join("");selR.onchange=renderRodada}
   renderRodada();
   renderHall();
+  document.getElementById("tit-art").textContent=`Artilharia da temporada · até ${fmtAno(ultima)}`;
+  document.getElementById("tit-ass").textContent=`Assistências da temporada · até ${fmtAno(ultima)}`;
   document.getElementById("cards-art").innerHTML=top3(S,"gols").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
   document.getElementById("cards-ass").innerHTML=top3(S,"assist").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
