@@ -426,7 +426,8 @@ section{margin-top:32px}
 .fig-nums::before{content:"";position:absolute;left:4cqw;right:4cqw;top:-2.8cqw;height:.5cqw;background:color-mix(in srgb,var(--t1) 28%,transparent)}
 .fig-nums small{font-size:4.8cqw}
 .fig-nums b{font-size:10cqw}
-.fig-tag{top:128.6cqw!important;font-size:5cqw!important;letter-spacing:.14em!important;white-space:nowrap}
+/* 21/10: rótulo maior (o limite era BOLA MURCHA; agora o mais longo é RESENHA/DIAMOND) */
+.fig-tag{top:128cqw!important;font-size:6.6cqw!important;letter-spacing:.12em!important;white-space:nowrap}
 .fig.murcha::before{top:9cqw;right:9cqw}
 /* Atleta com 2 cards */
 .fig-stack{position:relative;width:100%}
@@ -753,7 +754,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792611533"></script>
+<script src="central-dados.js?v=1792611788"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
