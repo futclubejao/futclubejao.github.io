@@ -324,10 +324,15 @@ section{margin-top:32px}
 /* SILVER mais escuro e metálico (22/10: o claro se confundia com o fundo da página) */
 .fig.prata{--fundo:linear-gradient(160deg,#e3e7eb 0%,#98a0aa 26%,#d8dce1 44%,#7a828d 66%,#b9c0c8 84%,#868e99 100%);--t1:#11151a;--t2:#2f353d}
 .fig.bronze{--fundo:linear-gradient(160deg,#f0c08e,#b9773f 35%,#e8b07a 52%,#8a522a 78%,#d99a62);--t1:#2e1608;--t2:#5e3518}
-/* moldura (22/10): GOLD/SILVER/BRONZE ganham um contorno da mesma cor, bem mais escuro, seguindo o formato do card */
-.fig.ouro{--mc:#6b4c08}.fig.prata{--mc:#363c44}.fig.bronze{--mc:#4a250e}
-.fig.ouro,.fig.prata,.fig.bronze{--moldura:drop-shadow(2px 0 0 var(--mc)) drop-shadow(-2px 0 0 var(--mc)) drop-shadow(0 2px 0 var(--mc)) drop-shadow(0 -2px 0 var(--mc));
-  filter:var(--moldura) drop-shadow(0 3px 6px rgba(0,0,0,.28))}
+/* moldura de metal polido + brilho do MVP (22/10, híbrido escolhido pelo Gustavo).
+   A moldura é uma peça atrás do card (::before, mesmo formato, um pouco maior) — leve para o navegador. */
+.fig.ouro{--m1:#fff1b8;--m2:#8a6510;--m3:#4a3405}.fig.prata{--m1:#ffffff;--m2:#5d6570;--m3:#2b3036}.fig.bronze{--m1:#ffd9b3;--m2:#7a4318;--m3:#3d1d08}
+.fig.ouro::before,.fig.prata::before,.fig.bronze::before,.fig.ouro::after,.fig.prata::after,.fig.bronze::after{content:"";position:absolute;z-index:-1;clip-path:url(#figshape)}
+.fig.ouro::before,.fig.prata::before,.fig.bronze::before{inset:-6px;background:var(--m3)}   /* aro escuro por fora */
+.fig.ouro::after,.fig.prata::after,.fig.bronze::after{inset:-3.5px;                          /* metal polido por dentro */
+  background:linear-gradient(160deg,var(--m1) 0%,var(--m2) 22%,var(--m1) 42%,var(--m3) 62%,var(--m1) 80%,var(--m2) 100%)}
+@media (prefers-reduced-motion:no-preference){.fig.ouro .fig-card,.fig.prata .fig-card,.fig.bronze .fig-card{background-size:220% 100%,auto,auto,auto;animation:brilho1 5s ease-in-out infinite}}
+@keyframes brilho1{0%,100%{background-position:-60cqw 0,0 0,0 0,0 0}50%{background-position:60cqw 0,0 0,0 0,0 0}}
 /* BOLA MURCHA = bola furada: azul-petróleo apagado, remendo em X, "psss…" (mesmo tamanho dos outros desde 19/10) */
 .fig.murcha{--fundo:linear-gradient(170deg,#6f8a91,#56717a 50%,#46606a);--t1:#eef4f5;--t2:#c3d3d6}
 .fig.murcha .fig-q{display:none}
@@ -713,7 +718,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792673395"></script>
+<script src="lances.js?v=1792674882"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1404,9 +1409,8 @@ function renderCards(){
 }
 function renderSquad(){
   const a=document.getElementById("f-squad").value;
-  const VALOR={black:0,diamante:1,ouro:2,prata:3,bronze:4},val=x=>{const c=cardsDoAtleta(x)[0]||{};return c.tier in VALOR?VALOR[c.tier]:9};
-  const lista=a?[a]:elenco.map((x,i)=>[x,val(x),i]).sort((p,q)=>p[1]-q[1]||p[2]-q[2]).map(p=>p[0]);
-  document.getElementById("squad").innerHTML=lista.map(x=>cardDoAtleta(x)).join("")
+  // Elenco em ordem ALFABÉTICA (22/10); só a legenda "Os cards" segue a ordem por valor
+  document.getElementById("squad").innerHTML=(a?[a]:elenco).map(x=>cardDoAtleta(x)).join("")
     +(a?`<button type="button" class="mais squad-todos">Mostrar todos os atletas</button>`:"");
 }
 ["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
