@@ -324,6 +324,10 @@ section{margin-top:32px}
 /* SILVER mais escuro e metálico (22/10: o claro se confundia com o fundo da página) */
 .fig.prata{--fundo:linear-gradient(160deg,#e3e7eb 0%,#98a0aa 26%,#d8dce1 44%,#7a828d 66%,#b9c0c8 84%,#868e99 100%);--t1:#11151a;--t2:#2f353d}
 .fig.bronze{--fundo:linear-gradient(160deg,#f0c08e,#b9773f 35%,#e8b07a 52%,#8a522a 78%,#d99a62);--t1:#2e1608;--t2:#5e3518}
+/* moldura (22/10): GOLD/SILVER/BRONZE ganham um contorno da mesma cor, bem mais escuro, seguindo o formato do card */
+.fig.ouro{--mc:#6b4c08}.fig.prata{--mc:#363c44}.fig.bronze{--mc:#4a250e}
+.fig.ouro,.fig.prata,.fig.bronze{--moldura:drop-shadow(2px 0 0 var(--mc)) drop-shadow(-2px 0 0 var(--mc)) drop-shadow(0 2px 0 var(--mc)) drop-shadow(0 -2px 0 var(--mc));
+  filter:var(--moldura) drop-shadow(0 3px 6px rgba(0,0,0,.28))}
 /* BOLA MURCHA = bola furada: azul-petróleo apagado, remendo em X, "psss…" (mesmo tamanho dos outros desde 19/10) */
 .fig.murcha{--fundo:linear-gradient(170deg,#6f8a91,#56717a 50%,#46606a);--t1:#eef4f5;--t2:#c3d3d6}
 .fig.murcha .fig-q{display:none}
@@ -709,7 +713,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792672959"></script>
+<script src="lances.js?v=1792673395"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1327,16 +1331,16 @@ function destaques(sem,vazio){
     return vazio?figVazio(VAZIO[k][0],VAZIO[k][1],"em votação · vote acima",VAZIO[k][2]):""}).join("");
 }
 // Legenda: o que cada card significa
-const LEGENDA=[
-  ["normal","Atleta","bola","Card de todo atleta: gols, assistências e jogos da temporada."],
-  ["bronze","Bronze","bola","3º lugar na artilharia ou nas assistências da temporada."],
-  ["prata","Silver","bola","2º lugar na artilharia ou nas assistências da temporada."],
-  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards. Empate: todos levam o mesmo card e a posição seguinte é pulada."],
+const LEGENDA=[ // do mais valioso para o menos (22/10)
   ["black","MVP do ano","bola","Black com coroa: o craque do ano. Os que mais vezes foram Craque da rodada vão para a votação final. Fica no histórico com o ano (em breve)."],
   ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
+  ["ouro","Gold","bola","1º lugar na artilharia ou nas assistências. Quem está no pódio das duas tem 2 cards. Empate: todos levam o mesmo card e a posição seguinte é pulada."],
+  ["prata","Silver","bola","2º lugar na artilharia ou nas assistências da temporada."],
+  ["bronze","Bronze","bola","3º lugar na artilharia ou nas assistências da temporada."],
   ["craque","Craque da rodada","trofeu","Votado pela turma: o melhor do domingo. Leva o troféu dourado."],
   ["esmeralda","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo. Card esmeralda."],
-  ["murcha","Resenha da rodada","murcha","Votado pela turma: o lance mais engraçado do domingo (furada, tombo, polêmica). Card de zoeira, na amizade."]];
+  ["murcha","Resenha da rodada","murcha","Votado pela turma: o lance mais engraçado do domingo (furada, tombo, polêmica). Card de zoeira, na amizade."],
+  ["normal","Atleta","bola","Card de todo atleta: gols, assistências e jogos da temporada."]];
 document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
   `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
 // ===== Campeões: ranking de prêmios + destaques de cada rodada (histórico) =====
@@ -1400,7 +1404,9 @@ function renderCards(){
 }
 function renderSquad(){
   const a=document.getElementById("f-squad").value;
-  document.getElementById("squad").innerHTML=(a?[a]:elenco).map(x=>cardDoAtleta(x)).join("")
+  const VALOR={black:0,diamante:1,ouro:2,prata:3,bronze:4},val=x=>{const c=cardsDoAtleta(x)[0]||{};return c.tier in VALOR?VALOR[c.tier]:9};
+  const lista=a?[a]:elenco.map((x,i)=>[x,val(x),i]).sort((p,q)=>p[1]-q[1]||p[2]-q[2]).map(p=>p[0]);
+  document.getElementById("squad").innerHTML=lista.map(x=>cardDoAtleta(x)).join("")
     +(a?`<button type="button" class="mais squad-todos">Mostrar todos os atletas</button>`:"");
 }
 ["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
