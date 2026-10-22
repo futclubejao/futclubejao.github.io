@@ -185,6 +185,11 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+// Voltou do Google/e-mail? (lido ANTES de o Supabase limpar o endereço) — 22/10: no iPhone a 1ª volta do Google
+// mostrava o login de novo porque a página decidia antes de o login ser registrado.
+const RETORNO=(()=>{const h=location.hash+"&"+location.search;
+  return{volta:/access_token=|error=|[?&]code=/.test(h),erro:(h.match(/error_code=([^&]+)/)||h.match(/error=([^&]+)/)||[])[1]||""}})();
+let OAUTH=null;try{OAUTH=sessionStorage.getItem("cp_oauth");sessionStorage.removeItem("cp_oauth")}catch(e){}
 const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
 const volta=location.origin+location.pathname;
 const $=id=>document.getElementById(id);
@@ -235,7 +240,14 @@ $("bt-token").onclick=async()=>{
   $("msg-token").textContent="Pronto! Abrindo a Central…";
   location.replace(CENTRAL);   // entrar.html confere aprovação; aprovado cai direto na Central
 };
-$("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:voltaComConvite()}});
+$("bt-google").onclick=()=>{try{sessionStorage.setItem("cp_oauth","google")}catch(e){}
+  sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:voltaComConvite()}})};
+// registro anônimo de cada volta do login (só deu certo/não e o código do erro — nunca o login em si)
+function registraLogin(ok){if(!(RETORNO.volta||OAUTH))return;
+  try{fetch("https://fvxecqjiyjstyacqrumr.supabase.co/rest/v1/eventos",{method:"POST",keepalive:true,
+    headers:{apikey:"sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS","Content-Type":"application/json",Prefer:"return=minimal"},
+    body:JSON.stringify({tipo:"login",alvo:`${OAUTH||"link"}:${RETORNO.volta?"voltou":"sem-retorno"}:${ok?"ok":"falhou"}${RETORNO.erro?":"+RETORNO.erro:""}`.slice(0,200),
+      sessao:"entrar",origem:"entrar.html",dispositivo:/iPhone|iPad/.test(navigator.userAgent)?"iphone":/Android/.test(navigator.userAgent)?"android":"computador"})})}catch(e){}}
 $("bt-email").onclick=async()=>{
   const e=$("email").value.trim(); if(!e){$("msg-login").textContent="Digite seu e-mail.";return}
   $("bt-email").disabled=true; $("msg-login").textContent="Enviando…";
@@ -246,9 +258,16 @@ $("bt-email").onclick=async()=>{
 document.querySelectorAll(".bt-sair").forEach(b=>b.onclick=async()=>{await sb.auth.signOut();location.reload()});
 
 // ---------- quem sou eu ----------
+let jaRegistrou=false;
 async function carrega(){
-  const{data:{session}}=await sb.auth.getSession();
+  let{data:{session}}=await sb.auth.getSession();
+  // voltando do Google/e-mail: espera o login ser registrado (até ~3 s) antes de mostrar o botão de novo
+  if(!session&&(RETORNO.volta||OAUTH)&&!RETORNO.erro){
+    mostra("v-carrega");$("v-carrega").firstElementChild.textContent="Entrando…";
+    for(let i=0;i<6&&!session;i++){await new Promise(r=>setTimeout(r,500));({data:{session}}=await sb.auth.getSession())}
+  }
   eu=session&&session.user;
+  if(!jaRegistrou){jaRegistrou=true;registraLogin(!!eu)}
   if(!eu){mostra("v-login");return}
   document.querySelectorAll(".eu-email").forEach(s=>s.textContent=eu.email);
   const{data:ms,error}=await sb.from("membros").select("id,grupo_id,atleta_id,papel,situacao,nome_informado").eq("user_id",eu.id);
