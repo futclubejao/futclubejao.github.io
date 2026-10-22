@@ -77,6 +77,26 @@ section{margin-top:32px}
 .cp{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;margin-left:auto}
 .cp:hover{color:var(--link)}
 .poll .foot{font-size:13px;color:var(--muted)}
+/* vitrine dos cards e 1x1 (22/10) */
+.cl-item{cursor:pointer;border-radius:12px;transition:background .15s}.cl-item:hover{background:color-mix(in srgb,var(--sun) 8%,transparent)}
+.cl-dica{font-size:13px;color:var(--link);font-weight:600}
+.vt-card{width:min(190px,52vw);margin:0 auto 12px}
+.vt h3{font:800 28px/1.05 var(--display);margin:0 0 4px;text-align:center}
+.vt .vt-desc{text-align:center;color:var(--muted);margin:0 0 14px}
+.vt h4{font:800 18px/1.1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+.vt-lin{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.vt-lin .who-btn{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;font:inherit;color:var(--fg);cursor:pointer;text-align:left}
+.vt-lin b{white-space:nowrap}
+.vt-nota{font-size:14px;color:var(--muted);margin:6px 0}
+.vt-ver{font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 10px;cursor:pointer}
+.cmp-sel{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin:4px 0 12px}
+.cmp-sel .vs{font:800 22px var(--display);color:var(--sun);padding-bottom:6px}
+.cmp-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:380px;margin:0 auto 10px}
+.cmp-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px}
+.cmp-tbl td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:center}
+.cmp-tbl td.l{color:var(--muted);font-size:13px}
+.cmp-tbl td.ganha{font-weight:800;color:var(--sun)}
+.cmp-placar{text-align:center;font:800 20px var(--display);margin:12px 0 0}
 .squad-busca{max-width:360px;margin:0 0 14px}
 .squad .squad-todos{grid-column:1/-1}
 /* situação da votação (22/10): verde = em aberto, vermelho = encerrada */
@@ -695,6 +715,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
         <h4>Gols e assistências por domingo</h4><div class="plot" id="pf-chart"></div>
         <p class="pf-best" id="pf-best"></p>
         <button class="mais" id="pf-lances" type="button"></button>
+        <button class="mais" id="pf-cmp" type="button">⚔️ Comparar com outro atleta</button>
       </div>
     </div>
   </div>
@@ -742,6 +763,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
   <section aria-labelledby="h-stats">
     <div class="sec-head"><h2 id="h-stats">Estatísticas</h2>
       <div class="field year"><label for="f-ano">Temporada</label><select id="f-ano"></select></div></div>
+    <button class="mais" id="bt-cmp" type="button" style="margin:0 0 14px">⚔️ Comparar dois atletas (1x1)</button>
     <div class="podium" id="podium"></div>
     <div class="tbl-wrap"><table class="stats-tbl" id="stats-tbl"></table></div>
     <div class="charts">
@@ -818,7 +840,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792675225"></script>
+<script src="central-dados.js?v=1792675700"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -1238,6 +1260,7 @@ function abrirPerfil(a){
   ligarHover(pc,ds.length,i=>`<b>${fmtAno(ds[i])}</b><div class="r"><span><i class="sw" style="background:var(--s1)"></i>Gols</span><span>${gd[i]}</span></div><div class="r"><span><i class="sw" style="background:var(--s2)"></i>Assist.</span><span>${ad[i]}</span></div>`);
   const tot=gd.map((v,i)=>v+ad[i]),mb2=Math.max(...tot,0);
   document.getElementById("pf-best").textContent=mb2?`Melhor domingo: ${fmtAno(ds[tot.indexOf(mb2)])}, com ${gd[tot.indexOf(mb2)]} gol(s) e ${ad[tot.indexOf(mb2)]} assistência(s).`:"Ainda sem gols ou assistências registrados nesta temporada.";
+  document.getElementById("pf-cmp").dataset.a=a;
   const bl=document.getElementById("pf-lances");bl.textContent=`▶ Ver os ${meus.length} lances de ${a}`;bl.hidden=!meus.length;bl.dataset.a=a;
   const p=document.getElementById("perfil");p.hidden=false;document.body.style.overflow="hidden";document.getElementById("pf-x").focus();
 }
@@ -1518,6 +1541,102 @@ renderPolls();render();renderStats();renderCharts();renderCards();
   state.dia=l.data;render();
   if(EMBED){mLista=listaAtual;abrir(listaAtual.findIndex(x=>x.id===h))}
   else document.querySelector(`.card[data-id="${h}"]`)?.scrollIntoView({block:"center"});})();
+
+// ===== Vitrine dos cards (22/10): toque num card de "Os cards" → o que é, raridade, ganhadores, quem segura, quem está perto =====
+document.body.insertAdjacentHTML("beforeend",`<div class="pf-wrap" id="vitrine" hidden role="dialog" aria-modal="true" aria-labelledby="vt-t"><div class="pf vt"><button class="pf-x" type="button" aria-label="Fechar">✕</button><div id="vt-corpo"></div></div></div>
+<div class="pf-wrap" id="cmp" hidden role="dialog" aria-modal="true" aria-labelledby="cmp-t"><div class="pf vt"><button class="pf-x" type="button" aria-label="Fechar">✕</button><div id="cmp-corpo"></div></div></div>`);
+function abreJanela(id){const j=document.getElementById(id);j.hidden=false;document.body.style.overflow="hidden";j.querySelector(".pf-x").focus()}
+function fechaJanela(id){document.getElementById(id).hidden=true;if(document.getElementById("perfil").hidden)document.body.style.overflow=""}
+["vitrine","cmp"].forEach(id=>{const j=document.getElementById(id);
+  j.addEventListener("click",e=>{if(e.target===j||e.target.closest(".pf-x"))return fechaJanela(id);
+    const w=e.target.closest(".who-btn[data-a]");if(w){fechaJanela(id);fecharPerfil();abrirPerfil(w.dataset.a);return}
+    const v=e.target.closest(".vt-ver");if(v&&byId[v.dataset.id]){fechaJanela(id);mLista=[byId[v.dataset.id]];abrir(0)}});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!j.hidden)fechaJanela(id)})});
+const KIND_TIER={craque:"craque",esmeralda:"gol",murcha:"comico"},POS_TIER={ouro:1,prata:2,bronze:3};
+// gols/assistências somados até um domingo (para saber quem segurava cada card em cada domingo)
+function statsAte(ano,ate){const L=STATS.filter(l=>l.data.startsWith(ano)&&l.data<=ate);
+  return [...new Set(L.flatMap(l=>l.atletas).concat(L.map(l=>l.gol),L.map(l=>l.assist)))].filter(a=>a&&!a.startsWith("❓"))
+    .map(a=>({a,gols:L.filter(l=>l.gol===a).length,assist:L.filter(l=>l.assist===a).length}))}
+const linhaVt=(a,dir)=>`<div class="vt-lin"><button class="who-btn" data-a="${esc(a)}">${av(a)}${esc(a)}</button><b>${dir}</b></div>`;
+function abrirVitrine(tier){
+  const[,titulo,ico,desc]=LEGENDA.find(x=>x[0]===tier),ano=anos[0],ds=dias.filter(d=>d.startsWith(ano)).sort(),S=calcStats(ano);
+  let h="";
+  if(KIND_TIER[tier]){                                   // prêmios da rodada (permanentes)
+    const cs=CAMPEOES.filter(c=>c.kind===KIND_TIER[tier]&&c.semana.startsWith(ano)).sort((x,y)=>y.semana.localeCompare(x.semana));
+    const n={};cs.forEach(c=>{const a=ganhador(c);if(a)n[a]=(n[a]||0)+1});
+    const rk=Object.entries(n).sort((x,y)=>y[1]-x[1]||x[0].localeCompare(y[0],"pt"));
+    h+=`<h4>Raridade</h4><p class="vt-nota">Conquistado ${cs.length} ${cs.length===1?"vez":"vezes"} na temporada ${ano}, por ${rk.length} ${rk.length===1?"atleta":"atletas"}.</p>`;
+    if(cs.length){const c=cs[0],l=c.id&&byId[c.id];
+      h+=`<h4>Último</h4>${linhaVt(ganhador(c),fmtAno(c.semana))}${l?`<p class="vt-nota">${esc(l.desc)} <button class="vt-ver" data-id="${l.id}">▶ ver o lance</button></p>`:""}`;
+      h+=`<h4>Quem mais ganhou</h4>`+rk.map(([a,q])=>linhaVt(a,q+"×")).join("");}
+    else h+=`<p class="vt-nota">Ninguém ganhou ainda. A primeira votação decide!</p>`;
+  }else if(POS_TIER[tier]){                              // GOLD/SILVER/BRONZE: temporários — quem passar, rouba
+    const pos=POS_TIER[tier];
+    for(const[k,nome,un]of[["gols","Artilharia","gol"],["assist","Assistências","assistência"]]){
+      const top=top3(S,k),dono=top.filter(s=>s._pos===pos);
+      h+=`<h4>${nome}</h4>`;
+      if(!dono.length){h+=`<p class="vt-nota">Ninguém com este card agora (empate na posição de cima pulou o ${pos}º lugar).</p>`;continue}
+      dono.forEach(s=>{
+        const seg=ds.map(d=>(top3(statsAte(ano,d),k).find(x=>x.a===s.a)||{})._pos===pos);
+        let seq=0;for(let i=seg.length-1;i>=0&&seg[i];i--)seq++;
+        h+=linhaVt(s.a,`${s[k]} ${s[k]===1?un:un+"s"}`)+`<p class="vt-nota">Com o card há ${seq} ${seq===1?"domingo seguido":"domingos seguidos"} · ${seg.filter(Boolean).length} de ${ds.length} domingos no total.</p>`;
+      });
+      const alvo=dono[0][k],perto=S.filter(s=>s[k]<alvo&&!top.some(x=>x.a===s.a&&x._pos<=pos)).sort((x,y)=>y[k]-x[k])[0];
+      if(perto){const f=alvo-perto[k];h+=`<p class="vt-nota">🔥 Quem está mais perto: <b>${esc(perto.a)}</b>, a ${f} ${f===1?un:un+"s"} de empatar e levar o card.</p>`}
+    }
+  }else if(tier==="diamante"){
+    const mg=Math.max(0,...S.map(s=>s.gols)),ma=Math.max(0,...S.map(s=>s.assist)),falta=DOMINGOS_P_ESPECIAIS-ds.length;
+    const dono=S.filter(s=>s.gols===mg&&s.assist===ma&&mg>0);
+    h+=`<h4>Quem tem</h4>`+(dono.length&&falta<=0?dono.map(s=>linhaVt(s.a,"💎")).join(""):`<p class="vt-nota">Ainda ninguém.${falta>0?` Só vale a partir do ${DOMINGOS_P_ESPECIAIS}º domingo (faltam ${falta}).`:""}</p>`);
+    const pr=S.map(s=>({a:s.a,fg:mg-s.gols,fa:ma-s.assist})).sort((x,y)=>x.fg+x.fa-(y.fg+y.fa)||x.a.localeCompare(y.a,"pt")).slice(0,3);
+    h+=`<h4>Quem está mais perto</h4>`+pr.map(p=>linhaVt(p.a,p.fg+p.fa===0?"lidera os dois!":"falta "+[p.fg&&`${p.fg} gol${p.fg>1?"s":""}`,p.fa&&`${p.fa} assist.`].filter(Boolean).join(" e "))).join("");
+  }else if(tier==="black"){
+    const n={};CAMPEOES.filter(c=>c.kind==="craque"&&c.semana.startsWith(ano)).forEach(c=>{const a=ganhador(c);if(a)n[a]=(n[a]||0)+1});
+    h+=`<h4>Quem tem</h4><p class="vt-nota">Ainda ninguém: o MVP do ano sai no fim da temporada.</p><h4>Na briga (mais vezes Craque da rodada)</h4>`
+      +(Object.keys(n).length?Object.entries(n).sort((x,y)=>y[1]-x[1]).slice(0,5).map(([a,q])=>linhaVt(a,q+"×")).join(""):`<p class="vt-nota">Ninguém foi Craque da rodada ainda.</p>`);
+  }else{
+    h+=`<h4>Na temporada</h4><p class="vt-nota">${elenco.length} atletas têm card · ${atletas.filter(a=>!a.startsWith("❓")).length} já apareceram em lances filmados.</p>`;
+  }
+  document.getElementById("vt-corpo").innerHTML=`<div class="vt-card">${figVazio(titulo.replace(" da rodada",""),ico,"",tier)}</div>
+    <h3 id="vt-t">${esc(titulo)}</h3><p class="vt-desc">${esc(desc)}</p>${h}`;
+  abreJanela("vitrine");
+}
+document.querySelectorAll("#cards-leg .cl-item").forEach(it=>{it.setAttribute("role","button");it.tabIndex=0;
+  it.querySelector("p")?.insertAdjacentHTML("afterend",`<span class="cl-dica">Toque para ver ganhadores →</span>`)});
+document.getElementById("cards-leg").addEventListener("click",e=>{const it=e.target.closest(".cl-item");if(!it)return;
+  const f=it.querySelector(".fig");const tier=LEGENDA.map(x=>x[0]).find(t=>f.classList.contains(t));if(tier)abrirVitrine(tier)});
+document.getElementById("cards-leg").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.closest(".cl-item"))e.target.click()});
+
+// ===== 1x1 (22/10): dois atletas lado a lado, linha por linha =====
+function abrirComparar(a,b){
+  const ano=anos[0],S=calcStats(ano),por=Object.fromEntries(S.map(s=>[s.a,s]));
+  if(!b){const ga=x=>(por[x]?por[x].gols+por[x].assist:0);b=elenco.filter(x=>x!==a).sort((x,y)=>Math.abs(ga(x)-ga(a))-Math.abs(ga(y)-ga(a))||x.localeCompare(y,"pt"))[0]}
+  const opt=sel=>elenco.map(x=>`<option value="${esc(x)}"${x===sel?" selected":""}>${esc(x)}</option>`).join("");
+  const pr=(x,k)=>CAMPEOES.filter(c=>c.kind===k&&c.semana.startsWith(ano)&&ganhador(c)===x).length;
+  const v=x=>{const s=por[x]||{gols:0,assist:0,dom:0,lances:0,golacos:0,furadas:0};
+    return{gols:s.gols,assist:s.assist,ga:s.gols+s.assist,media:s.dom?(s.gols+s.assist)/s.dom:0,dom:s.dom,lances:s.lances,golacos:s.golacos,
+      craque:pr(x,"craque"),golrod:pr(x,"gol"),resenha:pr(x,"comico"),furadas:s.furadas}};
+  const A=v(a),B=v(b);
+  // [rótulo, chave, conta no placar?] — Resenha e Furadas são só zoeira, não contam
+  const L=[["Gols","gols",1],["Assistências","assist",1],["Gols + assist.","ga",1],["Média G+A por domingo","media",1],["Domingos","dom",1],["Lances","lances",1],
+    ["Golaços","golacos",1],["🏆 Craque da rodada","craque",1],["🌟 Golaço da rodada","golrod",1],["😂 Resenha da rodada","resenha",0],["Furadas","furadas",0]];
+  let pa=0,pb=0;
+  const linhas=L.map(([r,k,conta])=>{const x=A[k],y=B[k],f=n=>k==="media"?n.toFixed(1).replace(".",","):n;
+    const ga=conta&&x>y,gb=conta&&y>x;if(ga)pa++;if(gb)pb++;
+    return`<tr><td class="${ga?"ganha":""}">${f(x)}</td><td class="l">${r}${conta?"":"<br>(só zoeira)"}</td><td class="${gb?"ganha":""}">${f(y)}</td></tr>`}).join("");
+  const cartao=x=>figurinha(x,(cardsDoAtleta(x)||[{}])[0]).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>");
+  document.getElementById("cmp-corpo").innerHTML=`<h3 id="cmp-t">⚔️ 1x1 · temporada ${ano}</h3>
+    <div class="cmp-sel"><div class="field"><label for="cmp-a">Atleta</label><select id="cmp-a">${opt(a)}</select></div><span class="vs">x</span>
+      <div class="field"><label for="cmp-b">Atleta</label><select id="cmp-b">${opt(b)}</select></div></div>
+    <div class="cmp-cards">${cartao(a)}${cartao(b)}</div>
+    <table class="cmp-tbl"><colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup><tbody>${linhas}</tbody></table>
+    <p class="cmp-placar">${pa===pb?`Empate: ${pa} a ${pb}`:`${esc(pa>pb?a:b)} vence ${Math.max(pa,pb)} a ${Math.min(pa,pb)}`}</p>`;
+  const muda=()=>abrirComparar(document.getElementById("cmp-a").value,document.getElementById("cmp-b").value);
+  document.getElementById("cmp-a").onchange=muda;document.getElementById("cmp-b").onchange=muda;
+  if(document.getElementById("cmp").hidden)abreJanela("cmp");
+}
+document.getElementById("pf-cmp").onclick=e=>abrirComparar(e.currentTarget.dataset.a);
+document.getElementById("bt-cmp").onclick=()=>{const S=calcStats(anos[0]).sort((x,y)=>y.gols+y.assist-(x.gols+x.assist));abrirComparar(S[0].a,S[1]&&S[1].a)};
 
 // ===== Supabase (19/10): sugestões + métricas anônimas de uso =====
 // Chave PÚBLICA (publishable): o banco só aceita GRAVAR em sugestoes/eventos (RLS); ninguém lê pelo site.
