@@ -75,6 +75,8 @@ input,select{font:inherit;width:100%;padding:12px;border:1px solid var(--line);b
 .mini{font-size:14px;color:var(--muted)}
 textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);margin:8px 0}
 .gsvg{width:18px;height:18px;flex:none}
+.sugerido{border:2px solid var(--sun);border-radius:12px;padding:14px;margin:4px 0 12px;background:color-mix(in srgb,var(--sun) 8%,transparent)}
+.sugerido p{margin:0 0 10px}
 .quando{text-align:center;margin:6px 0 0}
 .ped.feito{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
 .ped.feito b{color:var(--ok)}
@@ -95,6 +97,7 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
     <h2>Entrar</h2>
     <p class="lead">A Central é fechada para os atletas do Jaó. Entre com sua conta Google ou receba um link no e-mail.</p>
     <button class="g" id="bt-google"><svg class="gsvg" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg>Entrar com Google</button>
+    <p class="mini" style="text-align:center;margin:8px 0 0">Tem Gmail? Entrar com Google é o mais rápido.</p>
     <div class="or">ou receba um link por e-mail</div>
     <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" inputmode="email">
     <button class="p" id="bt-email">Enviar link de acesso</button>
@@ -115,6 +118,7 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
   <div class="box" id="v-escolher" hidden>
     <h2>Esse é você?</h2>
     <p class="lead">Ache o seu nome na lista e toque nele. Um moderador confirma e você entra.</p>
+    <div class="sugerido" id="sugerido" hidden></div>
     <input type="search" id="busca" placeholder="Buscar nome ou apelido" autocomplete="off">
     <ul class="lista" id="lista-atletas"></ul>
     <div class="or">não está na lista?</div>
@@ -187,9 +191,17 @@ let eu=null, membro=null, livres=[];
 const guarda={get(k="cp_convite"){try{return localStorage.getItem(k)}catch(e){return null}},
               set(v,k="cp_convite"){try{localStorage.setItem(k,v)}catch(e){}},
               tira(k){try{localStorage.removeItem(k)}catch(e){}}};
-const cURL=new URLSearchParams(location.search).get("c");
+const qs=new URLSearchParams(location.search),cURL=qs.get("c"),cardURL=qs.get("card");
+if(cardURL)guarda.set(cardURL,"cp_card");   // convite pessoal: o card já vem sugerido ("Você é o Gil?")
 if(cURL){guarda.set(cURL);history.replaceState(null,"",volta+location.hash)}
 let convite=cURL||guarda.get();
+// O link do e-mail/Google volta com o convite (e o card) no endereço: quem abre o e-mail em OUTRO
+// aplicativo/navegador não cai em "Falta o convite" (caso do Gil, 22/10).
+function voltaComConvite(){
+  if(!convite)return volta;
+  const card=guarda.get("cp_card");
+  return `${volta}?c=${encodeURIComponent(convite)}${card?`&card=${encodeURIComponent(card)}`:""}`;
+}
 
 function mostra(...ids){VISTAS.forEach(v=>$(v).hidden=!ids.includes(v))}
 function el(tag,attrs={},...filhos){const e=document.createElement(tag);
@@ -201,13 +213,13 @@ function erroAmigavel(e){const m=(e&&e.message)||String(e);
   return m.replace(/^.*?exception:?\s*/i,"")}
 
 // ---------- login ----------
-$("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:volta}});
+$("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:voltaComConvite()}});
 $("bt-email").onclick=async()=>{
   const e=$("email").value.trim(); if(!e){$("msg-login").textContent="Digite seu e-mail.";return}
   $("bt-email").disabled=true; $("msg-login").textContent="Enviando…";
-  const{error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:volta}});
+  const{error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:voltaComConvite()}});
   $("bt-email").disabled=false;
-  $("msg-login").textContent=error?"Não deu certo: "+error.message:"Pronto! Abra seu e-mail e toque no link (olhe também no spam).";
+  $("msg-login").textContent=error?"Não deu certo: "+error.message:"Pronto! Abra seu e-mail e toque no link. Pode demorar alguns minutos: olhe também no spam / lixo eletrônico.";
 };
 document.querySelectorAll(".bt-sair").forEach(b=>b.onclick=async()=>{await sb.auth.signOut();location.reload()});
 
@@ -239,7 +251,16 @@ async function carregaLivres(){
 // ---------- "Esse é você?" ----------
 function escolher(){
   mostra("v-escolher"); $("msg-escolher").textContent="";
-  desenhaLista(); $("busca").focus();
+  // convite pessoal: o card do convidado aparece em destaque (o moderador aprova depois, como sempre)
+  const sug=livres.find(a=>a.id===guarda.get("cp_card")),box=$("sugerido");
+  box.hidden=!sug;box.replaceChildren();
+  if(sug){
+    box.append(el("p",{},"Esse convite é para ",el("b",{text:nomeCard(sug)}),". É você?"),
+      el("div",{class:"row"},
+        el("button",{class:"s",text:"Não sou",onclick:()=>{guarda.tira("cp_card");box.hidden=true}}),
+        el("button",{class:"o",text:"Sim, sou eu",onclick:()=>pede(sug.id,null,nomeCard(sug))})));
+  }
+  desenhaLista(); if(!sug)$("busca").focus();
 }
 function semAcento(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
 function desenhaLista(){
@@ -285,6 +306,7 @@ const agora=()=>new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-
 
 // ---------- dentro ----------
 async function dentro(){
+  guarda.tira("cp_card");
   const{data:a}=await sb.from("atletas").select("nome,apelido").eq("id",membro.atleta_id).maybeSingle();
   $("dentro-quem").textContent=a?nomeCard(a):"Conta do grupo (sem card de atleta)";
   $("dentro-papel").textContent=PAPEL[membro.papel]||membro.papel;

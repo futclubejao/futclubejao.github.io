@@ -609,6 +609,10 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 .cp-pr-nomes{display:block!important;font-size:13px;color:var(--muted);margin-top:4px}
 .cp-pr-total{font-size:14px;margin:12px 0 4px;padding-top:10px;border-top:1px solid var(--line)}
 #cards-rodada .fig.craque,#cards-rodada .fig.esmeralda,#cards-rodada .fig.murcha,#pf-hist .ph{cursor:pointer}
+/* quem já está na Central × convidar */
+.cp-on{position:absolute;z-index:6;right:4cqw;bottom:22cqw;width:6cqw;height:6cqw;border-radius:50%;background:#22a55a;box-shadow:0 0 0 1cqw rgba(255,255,255,.9);pointer-events:none}
+.cp-f-ativo{color:#1d8a4a;font-weight:600;margin:8px 0 0!important}
+.cp-f-convidar{margin-top:8px;font:600 15px var(--body);border:0;border-radius:999px;padding:10px 16px;background:#1f8f4e;color:#fff;cursor:pointer}
 /* ficha do atleta no perfil */
 #cp-ficha{margin:12px 0 4px;font-size:15px}
 #cp-ficha p{margin:0 0 8px}
@@ -788,7 +792,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792669745"></script>
+<script src="central-dados.js?v=1792671842"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}

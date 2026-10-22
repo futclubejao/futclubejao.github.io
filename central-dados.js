@@ -92,7 +92,7 @@ window.MIDIA={
 async function iniciar(){
   const{data:{session}}=await sb.auth.getSession();
   if(!session)return paraEntrar();
-  const{data:gs,error:eg}=await sb.from("grupos").select("id,nome,votos_abertos").eq("slug",GRUPO);
+  const{data:gs,error:eg}=await sb.from("grupos").select("id,nome,votos_abertos,convite").eq("slug",GRUPO);
   if(eg)return falhou(eg.message);
   if(!gs.length)return paraEntrar();          // ainda não aprovado (ou de fora)
   const g=gs[0].id;
@@ -125,7 +125,9 @@ async function iniciar(){
   const meu=atletas.find(a=>a.id===eu.atleta_id);
   const mod=eu.papel==="dono"||eu.papel==="moderador";
   barra(session.user.email,meu?meu.nome:null,eu.papel);
-  CP.g=g;CP.eu=meu?meu.nome:null;CP.ficha=Object.fromEntries(perfis.map(p=>[(atletas.find(a=>a.id===p.atleta_id)||{}).nome,p]));
+  CP.g=g;CP.eu=meu?meu.nome:null;CP.convite=gs[0].convite;CP.idAtl=Object.fromEntries(atletas.map(a=>[a.nome,a.id]));
+  {const{data:mm}=await sb.rpc("membros_do_grupo",{p_grupo:g});CP.donos=new Set((mm||[]).map(x=>x.atleta_id).filter(Boolean))}
+CP.ficha=Object.fromEntries(perfis.map(p=>[(atletas.find(a=>a.id===p.atleta_id)||{}).nome,p]));
   registra("visita");
 
   // liga o site (mesmo código do index.html)
@@ -135,7 +137,7 @@ async function iniciar(){
   document.body.classList.add("cp-pronto");
   $("cp-carrega").remove();
 
-  ficha();compartilhar();janelaPremio();
+  ficha();compartilhar();janelaPremio();marcaAtivos();
   if(meu)voce(meu.nome);
 
   if(mod)pedidos(g);
@@ -258,14 +260,16 @@ function ficha(){
       f.aniversario_dia&&f.aniversario_mes&&`🎂 ${String(f.aniversario_dia).padStart(2,"0")}/${String(f.aniversario_mes).padStart(2,"0")}`].filter(Boolean);
     const r=f.redes||{},links=[r.instagram&&`<a href="https://instagram.com/${encodeURIComponent(r.instagram.replace(/^@/,""))}" target="_blank" rel="noopener">Instagram @${esc(r.instagram.replace(/^@/,""))}</a>`,
       r.tiktok&&`<a href="https://www.tiktok.com/@${encodeURIComponent(r.tiktok.replace(/^@/,""))}" target="_blank" rel="noopener">TikTok @${esc(r.tiktok.replace(/^@/,""))}</a>`].filter(Boolean);
-    const eu=a===CP.eu;
-    if(!itens.length&&!(f.caracteristicas||[]).length&&!f.sobre&&!links.length&&!eu)return;
+    const eu=a===CP.eu,id=CP.idAtl[a],ativo=CP.donos.has(id);
+    // quem já está na Central × convite pessoal (qualquer membro convida; o moderador aprova a entrada)
+    const conv=eu?"":ativo?`<p class="cp-f-ativo">✓ Já está na Central</p>`
+      :`<button type="button" class="cp-f-convidar" data-a="${esc(a)}">📨 Convidar ${esc(a.split(" ")[0])} para a Central</button>`;
     box.insertAdjacentHTML("afterend",`<div id="cp-ficha">
       ${itens.length?`<p class="cp-f-itens">${itens.join("<span>·</span>")}</p>`:""}
       ${(f.caracteristicas||[]).length?`<p class="cp-f-chips">${f.caracteristicas.map(c=>`<span>${esc(c)}</span>`).join("")}</p>`:""}
       ${f.sobre?`<p class="cp-f-sobre">${esc(f.sobre)}</p>`:""}
       ${links.length?`<p class="cp-f-redes">${links.join(" · ")}</p>`:""}
-      ${eu?`<a class="cp-f-editar" href="perfil.html">✏️ Editar meu perfil</a>`:""}</div>`);
+      ${eu?`<a class="cp-f-editar" href="perfil.html">✏️ Editar meu perfil</a>`:""}${conv}</div>`);
   };
 }
 
@@ -339,6 +343,23 @@ function janelaPremio(){
     if(L.length)box.innerHTML=`<p class="cp-pr-obs">Votaram em ${esc(a)}:</p>${votantes(L).replace('class="cp-vnomes"','class="cp-vnomes cp-pr-nomes"')}`;
   }
   const OPC_ATL=(o,a)=>o.atleta_id&&VOT.nomeAtl&&VOT.nomeAtl[o.atleta_id]===a;
+}
+
+// convite pessoal: abre o WhatsApp com a mensagem pronta; o link já sugere o card ("Você é o Gil?")
+document.addEventListener("click",e=>{const b=e.target.closest(".cp-f-convidar");if(!b)return;
+  const a=b.dataset.a,link=`${location.origin}${location.pathname.replace(/[^/]*$/,"")}entrar.html?c=${encodeURIComponent(CP.convite)}&card=${CP.idAtl[a]}`;
+  const txt=`⚽ ${a.split(" ")[0]}, seu card está te esperando na Central da Pelada!
+Entre aqui: ${link}
+
+Dica: se tiver Gmail, use "Entrar com Google" — é o mais rápido. Um moderador confirma e pronto.`;
+  window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");
+});
+// bolinha verde nos cards do Elenco de quem já está na Central
+function marcaAtivos(){
+  let pend=false;
+  const marca=()=>{pend=false;document.querySelectorAll("#squad .fig[data-a]:not(.cp-on-ok)").forEach(f=>{f.classList.add("cp-on-ok");
+    if(CP.donos.has(CP.idAtl[f.dataset.a]))f.insertAdjacentHTML("beforeend",'<span class="cp-on" title="Já está na Central" aria-label="já está na Central"></span>')})};
+  marca();new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(marca)}}).observe(document.getElementById("squad"),{childList:true,subtree:true});
 }
 
 // ---------- compartilhar: WhatsApp (link), Instagram/TikTok (o vídeo), baixar, copiar link ----------
