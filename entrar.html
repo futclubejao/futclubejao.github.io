@@ -222,13 +222,18 @@ function erroAmigavel(e){const m=(e&&e.message)||String(e);
 
 // ---------- login ----------
 // Link de entrada (gerado pelo moderador/suporte): ?t=<token> → botão → entra. Sem o toque, nada acontece.
+let tokenUsado=false;
 $("bt-token").onclick=async()=>{
+  if(tokenUsado)return;tokenUsado=true;                 // um toque só (toque duplo gastava o link e mostrava erro)
   $("bt-token").disabled=true;$("msg-token").className="msg";$("msg-token").textContent="Entrando…";
   const{error}=await sb.auth.verifyOtp({token_hash:tokenURL,type:"magiclink"});
-  if(error){$("bt-token").disabled=false;$("msg-token").className="msg bad";
+  // deu erro, mas já está logado (ex.: link usado num toque anterior)? segue em frente
+  const{data:{session}}=await sb.auth.getSession();
+  if(error&&!session){tokenUsado=false;$("bt-token").disabled=false;$("msg-token").className="msg bad";
     $("msg-token").textContent="Este link já foi usado ou venceu. Peça um novo ao Gustavo, ou entre pelo e-mail/Google abaixo.";
     $("v-login").hidden=false;return}
-  location.replace(volta);
+  $("msg-token").textContent="Pronto! Abrindo a Central…";
+  location.replace(CENTRAL);   // entrar.html confere aprovação; aprovado cai direto na Central
 };
 $("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:voltaComConvite()}});
 $("bt-email").onclick=async()=>{
