@@ -75,6 +75,7 @@ input,select{font:inherit;width:100%;padding:12px;border:1px solid var(--line);b
 .mini{font-size:14px;color:var(--muted)}
 textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);margin:8px 0}
 .gsvg{width:18px;height:18px;flex:none}
+.quando{text-align:center;margin:6px 0 0}
 .ped.feito{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
 .ped.feito b{color:var(--ok)}
 .wa{background:#1f8f4e;color:#fff}
@@ -155,6 +156,7 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
     <h2>Pedidos de entrada <span id="mod-n"></span></h2>
     <p class="lead">Confira se a pessoa é mesmo quem diz ser e aprove com um toque.</p>
     <button class="s" id="bt-atualiza">Atualizar</button>
+    <p class="mini quando" id="quando-ped" aria-live="polite"></p>
     <div id="pedidos"></div>
     <div class="msg" id="msg-mod" role="status"></div>
   </div>
@@ -277,7 +279,9 @@ function aguarda(){
 }
 $("bt-trocar").onclick=()=>{$("novo").hidden=true;$("bt-novo").hidden=false;escolher()};
 $("bt-reconfere").onclick=async()=>{$("msg-aguarda").textContent="Conferindo…";await carrega();
-  if(!$("v-aguarda").hidden)$("msg-aguarda").textContent="Ainda aguardando o moderador."};
+  if(!$("v-aguarda").hidden)$("msg-aguarda").textContent=`Ainda aguardando o moderador · conferido às ${agora()}`};
+// "Atualizado às 10:42:15" embaixo dos botões de atualizar
+const agora=()=>new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 
 // ---------- dentro ----------
 async function dentro(){
@@ -376,7 +380,8 @@ function cartaoPedido(p){
     el("div",{class:"row",style:"margin-top:10px"},bR,bA),
     msg);
 }
-$("bt-atualiza").onclick=carregaPedidos;
+$("bt-atualiza").onclick=async()=>{$("quando-ped").textContent="Atualizando…";await carregaPedidos();
+  $("quando-ped").textContent=`Atualizado às ${agora()}`};
 
 // Volta para a aba (ex.: depois de abrir o e-mail) → confere de novo.
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&eu)carrega()});
