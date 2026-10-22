@@ -92,6 +92,14 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
   <!-- carregando -->
   <div class="box" id="v-carrega"><p class="lead">Carregando…</p></div>
 
+  <!-- 0. link de entrada pessoal: só o TOQUE no botão usa a entrada (a prévia do WhatsApp não gasta) -->
+  <div class="box" id="v-token" hidden>
+    <h2>Seu acesso à Central</h2>
+    <p class="lead">Este link é só seu. Toque no botão para entrar.</p>
+    <button class="o" id="bt-token">Entrar na Central</button>
+    <div class="msg" id="msg-token" role="status"></div>
+  </div>
+
   <!-- 1. login -->
   <div class="box" id="v-login" hidden>
     <h2>Entrar</h2>
@@ -180,7 +188,7 @@ textarea{font:14px/1.45 var(--body);width:100%;min-height:150px;padding:12px;bor
 const sb=supabase.createClient("https://fvxecqjiyjstyacqrumr.supabase.co","sb_publishable_le3V4al6wKdsfPZ4DXHKZg_cXtEP3DS");
 const volta=location.origin+location.pathname;
 const $=id=>document.getElementById(id);
-const VISTAS=["v-carrega","v-login","v-semconvite","v-escolher","v-aguarda","v-dentro","v-mod","v-convite"];
+const VISTAS=["v-token","v-carrega","v-login","v-semconvite","v-escolher","v-aguarda","v-dentro","v-mod","v-convite"];
 const PAPEL={dono:"Dono",moderador:"Moderador",atleta:"Atleta",visitante:"Visitante"};
 // Central FECHADA: central.html até o lançamento; no lançamento vira a página principal ("./")
 const CENTRAL=new URL("central.html",location.href).href;
@@ -191,7 +199,7 @@ let eu=null, membro=null, livres=[];
 const guarda={get(k="cp_convite"){try{return localStorage.getItem(k)}catch(e){return null}},
               set(v,k="cp_convite"){try{localStorage.setItem(k,v)}catch(e){}},
               tira(k){try{localStorage.removeItem(k)}catch(e){}}};
-const qs=new URLSearchParams(location.search),cURL=qs.get("c"),cardURL=qs.get("card");
+const qs=new URLSearchParams(location.search),cURL=qs.get("c"),cardURL=qs.get("card"),tokenURL=qs.get("t");
 if(cardURL)guarda.set(cardURL,"cp_card");   // convite pessoal: o card já vem sugerido ("Você é o Gil?")
 if(cURL){guarda.set(cURL);history.replaceState(null,"",volta+location.hash)}
 let convite=cURL||guarda.get();
@@ -213,6 +221,15 @@ function erroAmigavel(e){const m=(e&&e.message)||String(e);
   return m.replace(/^.*?exception:?\s*/i,"")}
 
 // ---------- login ----------
+// Link de entrada (gerado pelo moderador/suporte): ?t=<token> → botão → entra. Sem o toque, nada acontece.
+$("bt-token").onclick=async()=>{
+  $("bt-token").disabled=true;$("msg-token").className="msg";$("msg-token").textContent="Entrando…";
+  const{error}=await sb.auth.verifyOtp({token_hash:tokenURL,type:"magiclink"});
+  if(error){$("bt-token").disabled=false;$("msg-token").className="msg bad";
+    $("msg-token").textContent="Este link já foi usado ou venceu. Peça um novo ao Gustavo, ou entre pelo e-mail/Google abaixo.";
+    $("v-login").hidden=false;return}
+  location.replace(volta);
+};
 $("bt-google").onclick=()=>sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:voltaComConvite()}});
 $("bt-email").onclick=async()=>{
   const e=$("email").value.trim(); if(!e){$("msg-login").textContent="Digite seu e-mail.";return}
@@ -407,8 +424,8 @@ $("bt-atualiza").onclick=async()=>{$("quando-ped").textContent="Atualizando…";
 
 // Volta para a aba (ex.: depois de abrir o e-mail) → confere de novo.
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&eu)carrega()});
-sb.auth.onAuthStateChange((evento)=>{if(evento==="SIGNED_IN"||evento==="SIGNED_OUT")carrega()});
-carrega();
+if(tokenURL){mostra("v-token");history.replaceState(null,"",volta)}
+else{sb.auth.onAuthStateChange((evento)=>{if(evento==="SIGNED_IN"||evento==="SIGNED_OUT")carrega()});carrega()}
 </script>
 </body>
 </html>
