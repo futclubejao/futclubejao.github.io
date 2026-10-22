@@ -137,7 +137,7 @@ CP.ficha=Object.fromEntries(perfis.map(p=>[(atletas.find(a=>a.id===p.atleta_id)|
   document.body.classList.add("cp-pronto");
   $("cp-carrega").remove();
 
-  ficha();compartilhar();janelaPremio();marcaAtivos();
+  ficha();compartilhar();janelaPremio();marcaAtivos(eu.atleta_id,eu.id);
   if(meu)voce(meu.nome);
 
   if(mod)pedidos(g);
@@ -355,11 +355,29 @@ Dica: se tiver Gmail, use "Entrar com Google" — é o mais rápido. Um moderado
   window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");
 });
 // bolinha verde nos cards do Elenco de quem já está na Central
-function marcaAtivos(){
+// Situação de cada atleta nos cards do Elenco (22/10): verde = online agora · sem cor = tem conta, fora do ar ·
+// X vermelho = ainda não entrou na Central. "Online" vem da presença do Supabase (ninguém grava nada no banco).
+const ST={on:["online agora","cp-st on"],off:["tem conta, fora do ar agora","cp-st off"],no:["ainda não entrou na Central","cp-st no"]};
+function marcaAtivos(meuAtleta,membro){
+  CP.online=new Set();
+  const sq=document.getElementById("squad");
+  const leg=document.createElement("p");leg.className="cp-leg-st";
+  leg.innerHTML=Object.values(ST).map(([t,c])=>`<span><i class="${c}" aria-hidden="true"></i>${t}</span>`).join("");
+  sq.before(leg);
   let pend=false;
-  const marca=()=>{pend=false;document.querySelectorAll("#squad .fig[data-a]:not(.cp-on-ok)").forEach(f=>{f.classList.add("cp-on-ok");
-    if(CP.donos.has(CP.idAtl[f.dataset.a]))f.insertAdjacentHTML("beforeend",'<span class="cp-on" title="Já está na Central" aria-label="já está na Central"></span>')})};
-  marca();new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(marca)}}).observe(document.getElementById("squad"),{childList:true,subtree:true});
+  const marca=()=>{pend=false;
+    sq.querySelectorAll(".fig[data-a]").forEach(f=>{if(f.closest(".fig-back"))return;   // card de trás da pilha: sem marca
+      const id=CP.idAtl[f.dataset.a],s=CP.online.has(id)?"on":CP.donos.has(id)?"off":"no";
+      let el=f.querySelector(":scope > .cp-st");
+      if(!el){el=document.createElement("span");f.appendChild(el)}
+      if(el.dataset.s!==s){el.dataset.s=s;el.className=ST[s][1];el.title=ST[s][0];el.setAttribute("aria-label",ST[s][0])}
+    })};
+  marca();new MutationObserver(()=>{if(!pend){pend=true;requestAnimationFrame(marca)}}).observe(sq,{childList:true,subtree:true});
+  // presença em tempo real: cada aba aberta da Central avisa "estou aqui" (chave = membro, para não duplicar)
+  const ch=sb.channel("presenca-"+GRUPO,{config:{presence:{key:membro}}});
+  ch.on("presence",{event:"sync"},()=>{
+    CP.online=new Set(Object.values(ch.presenceState()).flat().map(p=>p.atleta).filter(Boolean));marca();
+  }).subscribe(async s=>{if(s==="SUBSCRIBED")await ch.track({atleta:meuAtleta||null})});
 }
 
 // ---------- compartilhar: WhatsApp (link), Instagram/TikTok (o vídeo), baixar, copiar link ----------
