@@ -311,8 +311,9 @@ section{margin-top:32px}
 .fig:hover{transform:translateY(-4px)}
 .fig:focus-visible{outline:3px solid var(--sun);outline-offset:4px}
 .fig-card{position:absolute;inset:0;clip-path:url(#figshape);overflow:hidden;color:var(--t1);
+  /* 1ª camada = faixa de brilho: só nos cards com brilho animado (GOLD/SILVER/BRONZE); nos outros ficava uma faixa parada (22/10) */
   background:
-    linear-gradient(125deg,transparent 38%,rgba(255,255,255,.55) 46%,transparent 53%),
+    var(--banda,linear-gradient(transparent,transparent)),
     repeating-linear-gradient(118deg,rgba(255,255,255,.14) 0 1.5px,transparent 1.5px 9cqw),
     linear-gradient(200deg,rgba(255,255,255,.35),transparent 40%),
     var(--fundo)}
@@ -326,6 +327,7 @@ section{margin-top:32px}
 .fig.bronze{--fundo:linear-gradient(160deg,#f0c08e,#b9773f 35%,#e8b07a 52%,#8a522a 78%,#d99a62);--t1:#2e1608;--t2:#5e3518}
 /* moldura de metal polido + brilho do MVP (22/10, híbrido escolhido pelo Gustavo).
    A moldura é uma peça atrás do card (::before, mesmo formato, um pouco maior) — leve para o navegador. */
+.fig.ouro,.fig.prata,.fig.bronze{--banda:linear-gradient(125deg,transparent 38%,rgba(255,255,255,.55) 46%,transparent 53%)}
 .fig.ouro{--m1:#fff1b8;--m2:#8a6510;--m3:#4a3405}.fig.prata{--m1:#ffffff;--m2:#5d6570;--m3:#2b3036}.fig.bronze{--m1:#ffd9b3;--m2:#7a4318;--m3:#3d1d08}
 .fig.ouro::before,.fig.prata::before,.fig.bronze::before,.fig.ouro::after,.fig.prata::after,.fig.bronze::after{content:"";position:absolute;z-index:-1;clip-path:url(#figshape)}
 .fig.ouro::before,.fig.prata::before,.fig.bronze::before{inset:-6px;background:var(--m3)}   /* aro escuro por fora */
@@ -718,7 +720,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792674882"></script>
+<script src="lances.js?v=1792675223"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
