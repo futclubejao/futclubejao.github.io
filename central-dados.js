@@ -395,14 +395,26 @@ function barra(email,nome,papel){
   b.className="cp-barra";
   b.innerHTML=`<div class="in">
     <span class="cp-quem">Logado como <b>${esc(nome||"Conta do grupo")}</b><small> · ${esc(email)}${papel!=="atleta"?` · ${PAPEL[papel]}`:""}</small></span>
-    <span class="cp-acoes">${nome?`<a href="#meu-card" id="cp-meu">Meu card</a>`:""}<a href="entrar.html" id="cp-ped" hidden></a>${papel==="dono"||papel==="moderador"?`<a href="painel.html">📊 Painel</a>`:""}<a href="config.html">⚙ Configurações</a><button type="button" id="cp-sair">Sair</button></span></div>`;
+    <span class="cp-acoes">${nome?`<a href="#meu-card" id="cp-meu">Meu card</a>`:""}<a href="entrar.html" id="cp-sino" class="cp-sino" hidden aria-label="Pendências">🔔<span class="cp-sino-n" id="cp-sino-n"></span></a>${papel==="dono"||papel==="moderador"?`<a href="painel.html">📊 Painel</a>`:""}<a href="config.html">⚙ Configurações</a><button type="button" id="cp-sair">Sair</button></span></div>`;
   document.body.prepend(b);
+  const fx=document.createElement("a");fx.id="cp-faixa";fx.href="entrar.html";fx.hidden=true;b.after(fx);
   $("cp-sair").onclick=async()=>{await sb.auth.signOut();location.replace("entrar.html")};
 }
+// Pendências do moderador: sininho com número na barra + faixa chamativa no topo.
+// Confere de novo a cada minuto e quando a pessoa volta para a aba.
 async function pedidos(g){
-  const{data}=await sb.rpc("pedidos_pendentes",{p_grupo:g});
-  const n=(data||[]).length,a=$("cp-ped");
-  a.hidden=!n;a.textContent=`Pedidos (${n})`;
+  const confere=async()=>{
+    const{data}=await sb.rpc("pedidos_pendentes",{p_grupo:g});
+    const L=data||[],n=L.length;
+    $("cp-sino").hidden=!n;$("cp-sino-n").textContent=n;
+    $("cp-sino").setAttribute("aria-label",n?`${n} ${n===1?"pendência":"pendências"}`:"Pendências");
+    const nomes=L.slice(0,2).map(p=>(p.atleta_nome||p.nome_informado||p.conta_nome||"alguém").split(" ")[0]);
+    $("cp-faixa").hidden=!n;
+    $("cp-faixa").innerHTML=n?`🙋 <b>${n===1?`${esc(nomes[0])} pediu`:`${n} pedidos`}</b> para entrar na Central${n>2?"":n===2?` (${esc(nomes.join(" e "))})`:""} <span>Aprovar →</span>`:"";
+  };
+  await confere();
+  setInterval(confere,60000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)confere()});
 }
 
 // ---------- "Você": selo nos seus cards, linha destacada nas tabelas, atalho "Meu card" ----------

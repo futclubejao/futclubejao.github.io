@@ -547,7 +547,15 @@ body:not(.cp-pronto)>*:not(#cp-carrega){visibility:hidden}
 .cp-acoes{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
 .cp-acoes a,.cp-acoes button{color:var(--link);font:600 14px var(--body);text-decoration:none;background:none;border:0;padding:4px 0;cursor:pointer}
 .cp-acoes a:hover,.cp-acoes button:hover{text-decoration:underline}
-#cp-ped{background:var(--sun);color:#fff;border-radius:999px;padding:4px 12px}
+/* pendências do moderador: sininho + faixa */
+.cp-acoes a.cp-sino{position:relative;font-size:19px;line-height:1;padding:2px 4px;text-decoration:none}
+.cp-sino-n{position:absolute;top:-6px;right:-8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#d32f2f;color:#fff;
+  font:700 11px/18px var(--body);text-align:center;box-shadow:0 0 0 2px var(--surface)}
+@media (prefers-reduced-motion:no-preference){.cp-sino:not([hidden]){animation:cp-balanca 2.4s ease-in-out 3}}
+@keyframes cp-balanca{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(14deg)}20%,40%{transform:rotate(-14deg)}}
+#cp-faixa{display:block;background:var(--sun);color:#fff;text-decoration:none;font:500 15px/1.35 var(--body);padding:10px 16px;text-align:center}
+#cp-faixa[hidden]{display:none}
+#cp-faixa span{display:inline-block;margin-left:8px;font-weight:700;text-decoration:underline}
 .secnav a.cp-nav-eu{background:var(--sun)}
 .fig.cp-eu{filter:drop-shadow(0 0 1.2cqw var(--sun)) drop-shadow(0 0 .6cqw var(--sun)) drop-shadow(0 3px 6px rgba(0,0,0,.28))}
 .cp-voce{position:absolute;z-index:6;left:50%;top:-3.5cqw;transform:translateX(-50%);background:var(--sun);color:#fff;
@@ -773,7 +781,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792667543"></script>
+<script src="central-dados.js?v=1792669462"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
