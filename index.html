@@ -77,6 +77,8 @@ section{margin-top:32px}
 .cp{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;margin-left:auto}
 .cp:hover{color:var(--link)}
 .poll .foot{font-size:13px;color:var(--muted)}
+.squad-busca{max-width:360px;margin:0 0 14px}
+.squad .squad-todos{grid-column:1/-1}
 /* situação da votação (22/10): verde = em aberto, vermelho = encerrada */
 .pl-st{font:800 21px/1.2 var(--display);letter-spacing:.05em;text-transform:uppercase}
 .pl-st.aberto{color:#1d8a4a}.pl-st.fim{color:#c62828}
@@ -661,6 +663,7 @@ section{margin-top:32px}
 
   <section aria-labelledby="h-squad">
     <div class="sec-head"><h2 id="h-squad">Atletas</h2><span>toque no atleta para ver o card com números e conquistas</span></div>
+    <div class="field squad-busca"><label for="f-squad">Escolher atleta</label><select id="f-squad"></select></div>
     <div class="squad" id="squad"></div>
   </section>
 
@@ -705,7 +708,7 @@ section{margin-top:32px}
   </div>
 </div>
 
-<script src="lances.js?v=1792669744"></script>
+<script src="lances.js?v=1792672789"></script>
 <script>
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -940,7 +943,9 @@ document.getElementById("polls").addEventListener("click",e=>{
 // Elenco = quem tem lance + quem está cadastrado em atletas.json (mesmo sem lance ainda)
 const elenco=[...new Set([...atletas,...Object.keys(ATLETAS)])].filter(a=>!a.startsWith("❓")).sort((a,b)=>a.localeCompare(b,"pt"));
 // (o Elenco é desenhado como figurinhas em renderCards, mais abaixo)
-document.getElementById("squad").addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
+document.getElementById("squad").addEventListener("click",e=>{
+  if(e.target.closest(".squad-todos")){document.getElementById("f-squad").value="";renderSquad();return}
+  const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)});
 
 // Estatísticas por temporada
 const COLS=[["dom","Domingos"],["lances","Lances"],["gols","Gols"],["assist","Assist."],["golacos","Golaços"],["furadas","Furadas"],["premios","Prêmios"]];
@@ -1384,7 +1389,18 @@ function renderCards(){
   document.getElementById("cards-art").innerHTML=top3(S,"gols").map(s=>cardDaCategoria(s.a,"gols")).join("")||`<p class="note">Sem gols registrados ainda.</p>`;
   document.getElementById("cards-ass").innerHTML=top3(S,"assist").map(s=>cardDaCategoria(s.a,"assist")).join("")||`<p class="note">Sem assistências registradas ainda.</p>`;
   // Elenco: cada um com o card que tem hoje (azul se não estiver em nenhum pódio)
-  document.getElementById("squad").innerHTML=elenco.map(a=>cardDoAtleta(a)).join("");
+  // lista suspensa (22/10): com muitos atletas, escolher pelo nome mostra só aquele card e abre o perfil
+  const selS=document.getElementById("f-squad");
+  if(!selS.options.length){
+    selS.innerHTML=`<option value="">Todos os atletas (${elenco.length})</option>`+elenco.map(a=>`<option value="${esc(a)}">${esc(a)}${apelido(a)?` (${esc(apelido(a))})`:""}</option>`).join("");
+    selS.onchange=()=>{renderSquad();if(selS.value)abrirPerfil(selS.value)};
+  }
+  renderSquad();
+}
+function renderSquad(){
+  const a=document.getElementById("f-squad").value;
+  document.getElementById("squad").innerHTML=(a?[a]:elenco).map(x=>cardDoAtleta(x)).join("")
+    +(a?`<button type="button" class="mais squad-todos">Mostrar todos os atletas</button>`:"");
 }
 ["cards-rodada","cards-art","cards-ass"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest(".fig[data-a]");if(b)abrirPerfil(b.dataset.a)}));
 
