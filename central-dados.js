@@ -43,7 +43,7 @@ function cpConverte(d){
   });
   const CAMPEOES=d.premios.filter(p=>p.rodada_id&&rod[p.rodada_id]&&!p.campeonato_id&&CP_PREMIO[p.tipo]&&atl[p.atleta_id])
     .sort((x,y)=>rod[x.rodada_id].data.localeCompare(rod[y.rodada_id].data))
-    .map(p=>{const c={kind:CP_PREMIO[p.tipo],semana:rod[p.rodada_id].data,atleta:atl[p.atleta_id].nome,votos:p.votos};
+    .map(p=>{const c={kind:CP_PREMIO[p.tipo],semana:rod[p.rodada_id].data,atleta:atl[p.atleta_id].nome,votos:p.votos,enquete:p.enquete_id||null};
       if(p.lance_id&&codigo[p.lance_id])c.id=codigo[p.lance_id];return c});
   return {LANCES,FOTOS,ATLETAS,ENQUETES:{},EXTRAS,CAMPEOES};
 }
@@ -59,6 +59,7 @@ function paraEntrar(){
   location.replace("entrar.html");
 }
 function falhou(msg){
+  if(!$("cp-carrega")){console.error("Central:",msg);return}   // erro depois de a página já ter aberto
   $("cp-carrega").innerHTML=`<p>Não deu para abrir a Central agora.</p><p class="cp-err">${esc(msg)}</p><button type="button" onclick="location.reload()">Tentar de novo</button>`;
 }
 // Busca a tabela inteira (o Supabase entrega no máximo 1000 linhas por vez)
@@ -107,7 +108,7 @@ async function iniciar(){
     todos("lance_atletas","lance_id,atleta_id,ordem",g),
     todos("gols_sem_video","rodada_id,tipo,atleta_id",g),
     todos("fotos","rodada_id,path,ordem",g),
-    todos("premios","rodada_id,tipo,atleta_id,lance_id,votos,campeonato_id",g)]);
+    todos("premios","rodada_id,tipo,atleta_id,lance_id,votos,campeonato_id,enquete_id",g)]);
   const D=cpConverte({atletas,perfis,rodadas,lances,lance_atletas,gols,fotos,premios});
 
   // links temporários de todas as imagens de uma vez
@@ -134,7 +135,7 @@ async function iniciar(){
   document.body.classList.add("cp-pronto");
   $("cp-carrega").remove();
 
-  ficha();compartilhar();
+  ficha();compartilhar();janelaPremio();
   if(meu)voce(meu.nome);
 
   if(mod)pedidos(g);
@@ -264,6 +265,78 @@ function ficha(){
       ${links.length?`<p class="cp-f-redes">${links.join(" · ")}</p>`:""}
       ${eu?`<a class="cp-f-editar" href="perfil.html">✏️ Editar meu perfil</a>`:""}</div>`);
   };
+}
+
+// ---------- card de PRÊMIO: toque abre a janela com o card grande + resumo (data, votação, votos, quem votou, total de prêmios) ----------
+// Vale para os prêmios já apurados: Destaques da rodada e "Cards conquistados" do perfil.
+const TIER_KIND={craque:"craque",esmeralda:"gol",murcha:"comico"};
+const NOME_PREMIO={craque:"🏆 Craque da rodada",gol:"🌟 Golaço da rodada",comico:"😂 Lance da Resenha"};
+function janelaPremio(){
+  const m=document.createElement("div");m.id="cp-premio";m.hidden=true;
+  m.innerHTML=`<div class="cp-pr-box" role="dialog" aria-modal="true" aria-labelledby="cp-pr-t"><button class="cp-pr-x" type="button" aria-label="Fechar">✕</button><div id="cp-pr-corpo"></div></div>`;
+  document.body.appendChild(m);
+  const fecha=()=>{m.hidden=true;if(document.getElementById("perfil").hidden)document.body.style.overflow=""};
+  m.addEventListener("click",e=>{if(e.target===m||e.target.closest(".cp-pr-x"))fecha();
+    const v=e.target.closest(".cp-pr-ver");if(v){fecha();const l=byIdCP[v.dataset.id];if(l){mLista=[l];abrir(0)}}
+    const pf=e.target.closest(".cp-pr-perfil");if(pf){fecha();abrirPerfil(pf.dataset.a)}});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!m.hidden)fecha()});
+  // Destaques da rodada
+  document.getElementById("cards-rodada").addEventListener("click",e=>{
+    const f=e.target.closest(".fig[data-a]");if(!f)return;
+    const kind=Object.keys(TIER_KIND).find(t=>f.classList.contains(t));if(!kind)return;
+    const sem=document.getElementById("f-rod").value||ultima;
+    const c=CAMPEOES.find(x=>x.kind===TIER_KIND[kind]&&x.semana===sem&&ganhador(x)===f.dataset.a);
+    if(!c)return;e.stopPropagation();abre(c);
+  },true);
+  // "Cards conquistados" no perfil (mesma ordem do perfil: mais recente primeiro)
+  document.getElementById("pf-hist").addEventListener("click",e=>{
+    const ph=e.target.closest(".ph");if(!ph)return;
+    const a=document.getElementById("pf-nome").textContent;
+    const meus=CAMPEOES.filter(c=>ganhador(c)===a).sort((x,y)=>y.semana.localeCompare(x.semana));
+    const c=meus[[...ph.parentNode.children].indexOf(ph)];if(c)abre(c);
+  });
+  async function abre(c){
+    const a=ganhador(c),l=c.id?byIdCP[c.id]:null;
+    const meus=CAMPEOES.filter(x=>ganhador(x)===a),qt=k=>meus.filter(x=>x.kind===k).length;
+    const card=figurinha(a,{...PREMIO_CARD[c.kind],ate:c.semana}).replace('<button type="button"','<div role="img"').replace(/<\/button>$/,"</div>");
+    document.getElementById("cp-pr-corpo").innerHTML=`<div class="cp-pr-card">${card}</div>
+      <h3 id="cp-pr-t">${NOME_PREMIO[c.kind]}</h3>
+      <p class="cp-pr-quem">${esc(a)}</p>
+      <dl class="cp-pr-dl">
+        <dt>Jogo</dt><dd>${new Date(c.semana+"T12:00").toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"})}</dd>
+        <dt>Votação</dt><dd id="cp-pr-vot">…</dd>
+        <dt>Votos</dt><dd id="cp-pr-votos">${c.votos!=null?c.votos:"—"}</dd>
+        ${l?`<dt>Lance</dt><dd>${esc(l.desc)} <button type="button" class="cp-pr-ver" data-id="${l.id}">▶ ver</button></dd>`:""}
+      </dl>
+      <div id="cp-pr-quemvotou"></div>
+      <p class="cp-pr-total">Prêmios de ${esc(a)}: 🏆 Craque <b>${qt("craque")}×</b> · 🌟 Golaço <b>${qt("gol")}×</b> · 😂 Resenha <b>${qt("comico")}×</b></p>
+      <button type="button" class="cp-pr-perfil" data-a="${esc(a)}">Ver o perfil de ${esc(a)}</button>`;
+    m.className="cp-pr-"+({craque:"craque",gol:"esmeralda",comico:"murcha"}[c.kind]);
+    m.hidden=false;document.body.style.overflow="hidden";m.querySelector(".cp-pr-x").focus();
+    if(!c.enquete){document.getElementById("cp-pr-vot").textContent="—";return}
+    const[{data:e},{data:r},{data:ops}]=await Promise.all([
+      sb.from("enquetes").select("abre_em,fecha_em").eq("id",c.enquete).maybeSingle(),
+      sb.rpc("resultado_enquete",{p_enquete:c.enquete}),
+      sb.from("enquete_opcoes").select("id,lance_id,atleta_id").eq("enquete_id",c.enquete)]);
+    const d=x=>new Date(x).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" "+new Date(x).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    if(e)document.getElementById("cp-pr-vot").textContent=`${d(e.abre_em)} até ${d(e.fecha_em)}`;
+    const total=r&&r.length?+r[0].total:0;
+    if(total)document.getElementById("cp-pr-votos").textContent=`${c.votos} de ${total} (${Math.round(c.votos/total*100)}%)`;
+    // quem votou: só com "votos abertos" (o banco só devolve os votos dos outros nesse caso)
+    const lids=(ops||[]).map(o=>o.lance_id).filter(Boolean);
+    const{data:cods}=lids.length?await sb.from("lances").select("id,codigo").in("id",lids):{data:[]};
+    const cod=Object.fromEntries((cods||[]).map(x=>[x.id,x.codigo]));
+    const venc=(ops||[]).find(o=>c.kind==="craque"?OPC_ATL(o,a):o.lance_id&&cod[o.lance_id]===c.id)||null;
+    const box=document.getElementById("cp-pr-quemvotou");
+    if(!VOT.abertos){box.innerHTML=`<p class="cp-pr-obs">Voto secreto: só aparece o total.</p>`;return}
+    if(!venc)return;
+    const[{data:vs},{data:mb}]=await Promise.all([sb.from("votos").select("membro_id").eq("opcao_id",venc.id),
+      sb.from("membros").select("id,atleta_id").eq("grupo_id",CP.g)]);
+    const nome=Object.fromEntries((mb||[]).map(x=>[x.id,VOT.nomeAtl[x.atleta_id]||"Conta do grupo"]));
+    const L=(vs||[]).map(v=>nome[v.membro_id]||"?");
+    if(L.length)box.innerHTML=`<p class="cp-pr-obs">Votaram em ${esc(a)}:</p>${votantes(L).replace('class="cp-vnomes"','class="cp-vnomes cp-pr-nomes"')}`;
+  }
+  const OPC_ATL=(o,a)=>o.atleta_id&&VOT.nomeAtl&&VOT.nomeAtl[o.atleta_id]===a;
 }
 
 // ---------- compartilhar: WhatsApp (link), Instagram/TikTok (o vídeo), baixar, copiar link ----------
