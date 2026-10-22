@@ -77,6 +77,12 @@ section{margin-top:32px}
 .cp{font:inherit;font-size:12px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;margin-left:auto}
 .cp:hover{color:var(--link)}
 .poll .foot{font-size:13px;color:var(--muted)}
+/* situação da votação (22/10): verde = em aberto, vermelho = encerrada */
+.pl-st{font:800 21px/1.2 var(--display);letter-spacing:.05em;text-transform:uppercase}
+.pl-st.aberto{color:#1d8a4a}.pl-st.fim{color:#c62828}
+.pl-st small{font:600 14px var(--body);letter-spacing:0;text-transform:none;margin-left:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pl-st.aberto{color:#4cc27e}:root:not([data-theme="light"]) .pl-st.fim{color:#ff6b6b}}
+:root[data-theme="dark"] .pl-st.aberto{color:#4cc27e}:root[data-theme="dark"] .pl-st.fim{color:#ff6b6b}
 
 /* Filtros */
 .filters{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
@@ -551,7 +557,8 @@ body:not(.cp-pronto)>*:not(#cp-carrega){visibility:hidden}
 .cp-acoes a.cp-sino{position:relative;font-size:19px;line-height:1;padding:2px 4px;text-decoration:none}
 .cp-sino-n{position:absolute;top:-6px;right:-8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#d32f2f;color:#fff;
   font:700 11px/18px var(--body);text-align:center;box-shadow:0 0 0 2px var(--surface)}
-@media (prefers-reduced-motion:no-preference){.cp-sino:not([hidden]){animation:cp-balanca 2.4s ease-in-out 3}}
+.cp-sino-n[hidden]{display:none}
+@media (prefers-reduced-motion:no-preference){.cp-sino:has(.cp-sino-n:not([hidden])){animation:cp-balanca 2.4s ease-in-out 3}}
 @keyframes cp-balanca{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(14deg)}20%,40%{transform:rotate(-14deg)}}
 #cp-faixa{display:block;background:var(--sun);color:#fff;text-decoration:none;font:500 15px/1.35 var(--body);padding:10px 16px;text-align:center}
 #cp-faixa[hidden]{display:none}
@@ -781,7 +788,7 @@ tr.cp-eu-tr td{background:color-mix(in srgb,var(--sun) 14%,transparent)}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="central-dados.js?v=1792669462"></script>
+<script src="central-dados.js?v=1792669745"></script>
 <script type="text/plain" id="app-js">
 const TIPOS={gol:"⚽ Gol",golaco:"🌟 Golaço",trave:"🥅 Na trave",assist:"🎯 Assistência",defesa:"🧤 Defesaça",drible:"🪄 Drible",bonito:"✨ Lance bonito",furada:"😂 Furada/Engraçado",coletiva:"🔥 Jogada coletiva",polemica:"🤬 Polêmica",outro:"❓ A classificar"};
 // Vencedores das enquetes: {kind:"gol"|"comico",semana:"AAAA-MM-DD",id:"<id do lance>",votos:N} · craque: {kind:"craque",semana,atleta,votos}
@@ -969,7 +976,7 @@ function pollCraque(){
   doDia.forEach(l=>{for(const a of [l.gol,l.assist])if(a in pts)pts[a]++});
   const cand=Object.keys(pts).sort((x,y)=>pts[y]-pts[x]||x.localeCompare(y,"pt")).slice(0,5);
   const meu=meusVotos.craque,votos=cand.map(a=>meu===a?1:0),total=votos.reduce((x,y)=>x+y,0)||1;
-  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada · ${fmt(ultima)}</h3>
+  return `<div class="poll" data-kind="craque"><h3><span class="dot"></span>🏆 Craque da rodada</h3>
     <div class="opt-head"><span>Toque no atleta para votar</span><span></span></div>
     ${cand.map((a,i)=>`<div class="opt-row"><button class="opt${meu===a?" voted":""}" data-kind="craque" data-id="${esc(a)}" aria-pressed="${meu===a}">
       <span class="bar" style="width:${Math.round(votos[i]/total*100)}%"></span>
@@ -978,10 +985,12 @@ function pollCraque(){
     <div class="foot">${meu?"Seu voto foi registrado. Toque em outro atleta para trocar.":"Toque num atleta para votar. Um voto por pessoa."}</div></div>`;
 }
 function renderPolls(){
-  document.getElementById("poll-date").textContent=`Jogo de ${fmtAno(ultima)} · votação aberta até sexta`;
+  // título com a data do jogo; situação da votação em destaque (verde = em aberto, vermelho = encerrada)
+  document.getElementById("h-polls").textContent=`Enquetes da semana (${fmtAno(ultima)})`;
+  document.getElementById("poll-date").innerHTML=`<span class="pl-st aberto">Em aberto</span>`;
   // Até 5 opções; se enquetes.json escolheu os lances do dia, usa a escolha
   const ESC=(typeof ENQUETES==="object"&&ENQUETES[ultima])||{};
-  const polls=[["gol",`⚽ Golaço do domingo · ${fmt(ultima)}`,["golaco"],"gol"],["comico",`😂 Lance da Resenha do domingo · ${fmt(ultima)}`,["furada","polemica"],"murcha"]];
+  const polls=[["gol","⚽ Golaço da rodada",["golaco"],"gol"],["comico","😂 Resenha da rodada",["furada","polemica"],"murcha"]];
   document.getElementById("polls").innerHTML=pollCraque()+polls.map(([kind,titulo,tipos,chave])=>{
     const doDia=LANCES.filter(l=>l.data===ultima);
     const cand=(ESC[chave]?ESC[chave].map(n=>doDia.find(l=>l.n===n)).filter(Boolean)
@@ -1400,7 +1409,7 @@ const LEGENDA=[
   ["diamante","Diamond","bola","1º na artilharia E nas assistências. O mais raro (a partir do 5º domingo)."],
   ["craque","Craque da rodada","trofeu","Votado pela turma: o melhor do domingo. Leva o troféu dourado."],
   ["esmeralda","Golaço da rodada","estrela","Votado pela turma: o gol mais bonito do domingo. Card esmeralda."],
-  ["murcha","Lance da Resenha","murcha","Votado pela turma: o lance mais engraçado do domingo (furada, tombo, polêmica). Card de zoeira, na amizade."]];
+  ["murcha","Resenha da rodada","murcha","Votado pela turma: o lance mais engraçado do domingo (furada, tombo, polêmica). Card de zoeira, na amizade."]];
 document.getElementById("cards-leg").innerHTML=LEGENDA.map(([tier,t,ico,d])=>
   `<div class="cl-item">${figVazio(t.replace(" da rodada",""),ico,"",tier)}<div><h4>${esc(t)}</h4><p>${esc(d)}</p></div></div>`).join("");
 // ===== Campeões: ranking de prêmios + destaques de cada rodada (histórico) =====

@@ -193,7 +193,9 @@ function desenhaEnquetes(){
   const ordem=["craque","gol","comico"];
   const L=ENQ.slice().sort((x,y)=>ordem.indexOf(x.kind)-ordem.indexOf(y.kind));
   const prazo=L.find(aberta);
-  $("poll-date").textContent=`Jogo de ${fmtAno(VOT.rod.data)} · `+(prazo?`votação até ${quando(prazo.fecha_em)}`:L.length?"votação encerrada":"enquetes ainda não abertas");
+  $("h-polls").textContent=`Enquetes da semana (${fmtAno(VOT.rod.data)})`;
+  $("poll-date").innerHTML=prazo?`<span class="pl-st aberto">Em aberto<small>encerra ${quando(prazo.fecha_em)}</small></span>`
+    :L.length?`<span class="pl-st fim">Votação encerrada</span>`:`<span class="pl-st">Enquetes ainda não abertas</span>`;
   if(!L.length){box.innerHTML=`<div class="empty">As enquetes desta rodada ainda não foram abertas.</div>`;return}
   const pts={};STATS.filter(l=>l.data===VOT.rod.data).forEach(l=>{for(const a of[l.gol,l.assist])if(a)pts[a]=(pts[a]||0)+1});
   box.innerHTML=L.map(e=>{
@@ -201,7 +203,7 @@ function desenhaEnquetes(){
     const cand=e.opcoes.map(o=>o.lance_id?byId[OPC.lance[o.lance_id]]:null);
     if(e.kind!=="craque")pollCands[e.kind]=cand.filter(Boolean);
     let li=0;
-    return `<div class="poll" data-kind="${e.kind}"><h3><span class="dot"></span>${esc(e.titulo.replace(/ · \d\d\/\d\d$/,""))} · ${fmt(VOT.rod.data)}</h3>
+    return `<div class="poll" data-kind="${e.kind}"><h3><span class="dot"></span>${{craque:"🏆 Craque da rodada",gol:"⚽ Golaço da rodada",comico:"😂 Resenha da rodada"}[e.kind]}</h3>
       <div class="opt-head"><span>${ab?(e.kind==="craque"?"Toque no atleta para votar":"Toque no lance para votar"):"Resultado final"}</span><span>${e.kind==="craque"?"":"Veja o lance ▾"}</span></div>
       ${e.opcoes.map((o,i)=>{const v=e.votos[o.id]||0,l=cand[i],nome=o.atleta_id?OPC.atleta[o.atleta_id]:null;
         const ganhou=!ab&&v>0&&v===max;
@@ -270,7 +272,7 @@ function ficha(){
 // ---------- card de PRÊMIO: toque abre a janela com o card grande + resumo (data, votação, votos, quem votou, total de prêmios) ----------
 // Vale para os prêmios já apurados: Destaques da rodada e "Cards conquistados" do perfil.
 const TIER_KIND={craque:"craque",esmeralda:"gol",murcha:"comico"};
-const NOME_PREMIO={craque:"🏆 Craque da rodada",gol:"🌟 Golaço da rodada",comico:"😂 Lance da Resenha"};
+const NOME_PREMIO={craque:"🏆 Craque da rodada",gol:"🌟 Golaço da rodada",comico:"😂 Resenha da rodada"};
 function janelaPremio(){
   const m=document.createElement("div");m.id="cp-premio";m.hidden=true;
   m.innerHTML=`<div class="cp-pr-box" role="dialog" aria-modal="true" aria-labelledby="cp-pr-t"><button class="cp-pr-x" type="button" aria-label="Fechar">✕</button><div id="cp-pr-corpo"></div></div>`;
@@ -406,7 +408,9 @@ async function pedidos(g){
   const confere=async()=>{
     const{data}=await sb.rpc("pedidos_pendentes",{p_grupo:g});
     const L=data||[],n=L.length;
-    $("cp-sino").hidden=!n;$("cp-sino-n").textContent=n;
+    // sininho sempre visível p/ dono/moderador; o número vermelho só quando há pendência
+    $("cp-sino").hidden=false;$("cp-sino-n").hidden=!n;$("cp-sino-n").textContent=n;
+    $("cp-sino").title=n?"Pedidos esperando aprovação":"Nenhuma pendência";
     $("cp-sino").setAttribute("aria-label",n?`${n} ${n===1?"pendência":"pendências"}`:"Pendências");
     const nomes=L.slice(0,2).map(p=>(p.atleta_nome||p.nome_informado||p.conta_nome||"alguém").split(" ")[0]);
     $("cp-faixa").hidden=!n;
